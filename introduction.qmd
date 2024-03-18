@@ -1,0 +1,86 @@
+---
+title: "Introduction"
+---
+
+
+# **Powering Change: The Economic Impact of Energy Sector**
+
+
+*"To truly transform our economy, protect our security, and save our planet from the ravages of climate change, we need to ultimately make clean, renewable energy the profitable kind of energy."* – Barack Obama 
+
+The statement highlights the role clean water has in our existence, our well-being, and the world around us. Yet, it is under constant scrutiny as factors of modern living threaten its sanctity. My connection with water goes beyond necessity; it’s a relationship forged through curiosity, concern, and a deep-seated respect for nature’s intricate balance. In this project, we delve into California’s drinking water quality from 1998 to 2011, focusing on the nitrate levels in the drinking water. California’s juxtaposition of natural beauty and industrial advancement presents a complex narrative of water quality. Through the lens of time series analysis, I aspire to decode the patterns, understand the impacts, and anticipate the future of water quality in California.
+
+
+## **Bigger Picture**
+
+Before we dive into the intricate details, it is essential to understand the broader landscape. To understand what’s happening with nitrate levels in California’s drinking water, we need to zoom out and look at the whole picture. We’ll explore data to answer some key questions. How have these nitrate levels shifted from 1998 to 2011? What patterns emerge with the changing seasons, and how might these be tied to maybe some agricultural practices or city life? Do the rules and regulations set by the government make a noticeable dent in these levels? Do these levels have any impact on our health?
+
+This project will examine how nitrates in our drinking water could affect various factors, including health. The insights we gain will help us understand the past and present but will also help us look ahead. Here are the key points:
+
+* **Chronicles of Change:** Tracking the shifts in nitrate levels over the years to decode what's happening.
+* **Seasonal Changes:** Examine how nitrate levels fluctuate with the seasons and determine what’s behind those patterns.
+* **Regulatory Reflections:** Checking out how laws and policies have made a difference in nitrate levels in our water.
+* **Health Implications:** Exploring the link between nitrates in our water and our health to see how one affects the other.
+* **Regional Narratives:** Investigating how water quality varies across different parts of California and what that tells us about the places and the people living there.
+
+
+
+![Big picture of Nitrate Trends in California's Drinking Water](Bigger_Picture.png)
+*Figure 1: Blueprint of Nitrate Trends in California's Drinking Water. This blueprint provides a visual representation of the project's scope.*
+
+
+These thematic explorations pave the way for specific inquiries we will tackle throughout this project.
+
+
+## **Literature Review**
+
+The significance of nitrate contamination in drinking water is well-documented, with numerous studies highlighting its potential risks to public health and its correlation with socio-economic disparities. This section delves into existing literature that sets the stage for our investigation into nitrate trends in California’s drinking water from 1998 to 2011.
+
+[Knobeloch et al. (2000)](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1638204/) [1] highlight the direct health impact of nitrate-contaminated water, where they investigate instances of methemoglobinemia, or “blue baby syndrome,” caused by high nitrate levels. They underscore the vulnerability of infants to nitrate exposure, a crucial aspect that heightens the importance of our study.
+
+[Balazs et al. (2011)](https://pubmed.ncbi.nlm.nih.gov/21642046/) [2] highlight the social disparities linked to nitrate contamination. Their research in California’s San Joaquin Valley reveals that communities with a higher proportion of Latino residents or lower socio-economic status tend to have higher nitrate levels in their water systems, especially in smaller systems. This study raises questions about environmental justice, which we aim to explore further concerning the nitrate levels in drinking water.
+
+Looking at the broader implications of nitrate contamination, a study focusing on Wisconsin by [Mathewson et al. (2020)](https://pubmed.ncbi.nlm.nih.gov/33095309/) [3] evaluates the health risks and financial burdens stemming from nitrate-polluted drinking water. By estimating the incidence of certain cancers and adverse birth outcomes attributable to nitrate exposure, the study provides a methodology that could be applied to our analysis of California’s data.
+
+Finally, the study by [McDonald and Jones (2018)](https://pubmed.ncbi.nlm.nih.gov/30138072/) [4] adds another dimension to our understanding of water quality issues. It focuses on the intersection of drinking water violations with environmental justice in the United States from 2011 to 2015 and aims to uncover how these violations correlate with the racial, ethnic, and socio-economic makeup of counties.
+
+In synthesizing these studies, we aim to build a comprehensive picture of how nitrates in drinking water intersect with public health concerns and social equity issues. The following questions and analyses will draw from these foundational insights, extending the conversation to the unique context of California from 1998 to 2011.
+
+
+## **Guiding Questions:**
+
+The project is navigated by probing questions that aim to shed light on the multifaceted nature of water quality, such as:
+
+1. **How have nitrate levels in California’s drinking water changed from 1998 to 2011?**
+
+2. **What seasonal patterns can be identified in the nitrate levels, and how do these correlate with agricultural cycles or urban activities?**
+
+3. **How have state and federal regulatory measures influenced nitrate concentrations in the water supply over the examined period?**
+
+4. **Can significant public health trends or events be correlated with changes in nitrate levels during this time?**
+
+5. **Are there noticeable differences in nitrate levels between different geographic regions of California, and what factors contribute to these variations?**
+
+6. **How do socio-economic factors in the various areas of California influence or correlate with nitrate levels in drinking water?**
+
+7. **What impact do climate conditions, particularly drought and rainfall patterns, have on nitrate levels in California’s water sources?**
+
+8. **How effective are current water treatment methods in reducing nitrate levels, and have there been improvements over the study period?**
+
+9. **What are the long-term trends in agricultural practices in California, and how do they align with changes in nitrate levels?**
+
+10. **Can we predict future trends in nitrate levels based on historical data, and what implications might this have for water resource management in California?**
+
+
+
+## **Reference**
+
+
+
+[1]   Knobeloch, L., Salna, B., Hogan, A., Postle, J., & Anderson, H. (2000). Blue babies and nitrate-contaminated well water. Environmental health perspectives, 108(7), 675–678.          https://doi.org/10.1289/ehp.00108675
+
+[2]   Balazs, C., Morello-Frosch, R., Hubbard, A., & Ray, I. (2011). Social disparities in nitrate-contaminated drinking water in California's San Joaquin Valley. Environmental health perspectives, 119(9), 1272–1278. https://doi.org/10.1289/ehp.1002878
+
+[3]   Mathewson, P. D., Evans, S., Byrnes, T., Joos, A., & Naidenko, O. V. (2020). Health and economic impact of nitrate pollution in drinking water: a Wisconsin case study. Environmental monitoring and assessment, 192(11), 724. https://doi.org/10.1007/s10661-020-08652-0
+
+[4]   McDonald, Y. J., & Jones, N. E. (2018). Drinking Water Violations and Environmental Justice in the United States, 2011-2015. American journal of public health, 108(10), 1401–1407. https://doi.org/10.2105/AJPH.2018.304621

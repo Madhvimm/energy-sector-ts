@@ -1,0 +1,37 @@
+project:
+  type: website
+
+website:
+  title: "Powering Change"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home  # "Home" can stay as it is, typically represents the main page
+      - href: about.qmd
+        text: About You
+      - href: introduction.qmd
+        text: Introduction
+      - href: data-sources.qmd
+        text: Data Sources
+      - href: data-visualization.qmd
+        text: Data Visualization
+      - href: exploratory-data-analysis.qmd
+        text: Exploratory Data Analysis
+      - href: univariate-ts-models.qmd
+        text: Univariate TS Models (ARIMA/SARIMA)
+      - href: multivariate-ts-models.qmd
+        text: Multivariate TS Models (ARIMAX/SARIMAX/VAR)
+      - href: financial-ts-models.qmd
+        text: Financial Time Series Models (ARCH/GARCH)
+      - href: deep-learning-ts.qmd
+        text: Deep Learning for TS
+      - href: other-ts-methods.qmd
+        text: Other: Interrupted TS/ARFIMA/Spectral Analysis
+      - href: conclusions.qmd
+        text: Conclusions
+
+format:
+  html:
+    theme: zephyr
+    css: styles.css
+    toc: true
