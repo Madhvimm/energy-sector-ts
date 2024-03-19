@@ -1,0 +1,80 @@
+---
+title: "**Data Sources**"
+---
+
+
+
+To thoroughly investigate the economic impact of the energy sector, this project utilizes a series of detailed datasets focusing on crude oil and natural gas prices, electricity costs, and key economic indicators. These datasets serve as the foundation for our analysis, enabling us to explore the intricate dynamics between energy market fluctuations and economic performance.
+
+
+### **Crude Oil Price Summary (Table 9.1)**
+
+**Source:** U.S. Energy Information Administration (EIA)
+
+**Content:** This dataset offers historical data on crude oil prices, capturing trends and volatility over time, which are crucial for understanding the energy market's impact on the economy.
+
+**Application:** We will leverage this dataset to analyze how crude oil price fluctuations correlate with economic indicators such as GDP and CPI, providing insights into the broader economic implications of oil price movements.
+
+
+
+
+### **Natural Gas Prices (Table 9.10)**
+**Source:** U.S. Energy Information Administration (EIA)
+
+**Content:** Contains historical price data for natural gas, illustrating trends and shifts in this vital energy source's pricing.
+
+**Application:** This dataset will be used to examine the trends in natural gas prices and their impact on the economy, particularly focusing on their influence on electricity pricing and economic indicators.
+
+
+
+### **Average Prices of Electricity to Ultimate Customers (Table 9.8)**
+
+**Source:** U.S. Energy Information Administration (EIA)
+
+
+**Content:** Details the average electricity prices paid by ultimate customers in various sectors, such as Residential, Commercial, Industrial, and Transportation.
+
+
+**Application:** We aim to explore how fluctuations in energy prices affect electricity costs across different sectors, shedding light on the sector-specific economic impacts of energy price changes.
+
+
+
+
+### **External Economic Indicators**
+
+
+##### **[GDP Data](https://fred.stlouisfed.org/series/GDP)**
+
+**Source:** Federal Reserve Economic Data (FRED), (Federal Reserve Bank of St. Louis)
+
+**Content:** The dataset provides data on the Gross Domestic Product (GDP), reflecting the economic growth and health of the nation.
+
+**Application:** GDP data will be correlated with energy and electricity price trends to assess the broader economic impacts of energy market dynamics.
+
+
+
+##### **[Consumer Price Index (CPI)](https://fred.stlouisfed.org/series/CPIAUCSL)**
+
+**Source:** Federal Reserve Economic Data (FRED), (Federal Reserve Bank of St. Louis)
+
+**Content:** This dataset offers data on the Consumer Price Index for All Urban Consumers: All Items in U.S. City Average (CPIAUCSL), which tracks the average change over time in the prices paid by urban consumers for a basket of consumer goods and services, providing a comprehensive view of inflation.
+
+**Application:** Analyzing CPI data will help us understand the relationship between energy prices, inflation, and the overall economic condition, offering insights into how fluctuations in the energy sector influence consumer price levels.
+
+
+
+
+
+By integrating these datasets, our analysis will provide a comprehensive view of the interconnections between the energy sector's fluctuations and the U.S. economy's health, contributing to the broader discourse on energy economics and policy-making.
+
+
+
+<a href="https://www.eia.gov/totalenergy/data/monthly/">
+  <img src="eia logo.png" style="display: inline; margin-right: 10px;"/>
+</a>
+<a href="https://fred.stlouisfed.org/series/GDP">
+  <img src="fred_logo.png" style="display: inline; margin-right: 10px;"/>
+</a>
+
+
+

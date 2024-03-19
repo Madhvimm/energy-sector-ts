@@ -33,6 +33,27 @@ This visual representation will serve as a guide through the thematic exploratio
 
 
 
+## **Analytical Angles**
+
+To navigate the complexities of how energy prices influence the U.S. economy, this project will dissect the data through multiple lenses, each offering a unique insight into the dynamics at play. The following analytical angles will structure our exploration:
+
+### 1. **Energy Market Dynamics**:
+We will examine the historical trends and volatilities in crude oil and natural gas markets. Understanding these patterns is key to grasping how energy costs affect the broader economy and to predicting future trends.
+
+### 2. **Economic Indicators Interplay**:
+A critical angle is the relationship between energy prices and primary economic indicators—GDP and CPI. This perspective will allow us to measure the real impact of energy market fluctuations on economic health and consumer purchasing power.
+
+### 3. **Renewable Energy Integration**:
+As the energy sector evolves, so too does its economic impact. We'll assess how the increasing presence of renewable energy in the national energy portfolio influences the traditional energy market and what that means for the future economy.
+
+### 4. **Sector-Specific Effects**:
+Different sectors respond to energy price changes in various ways. We'll delve into sector-specific data, particularly focusing on how electricity costs for residential, commercial, industrial, and transportation sectors are shaped by underlying energy prices.
+
+### 5. **Policy Influence**:
+Energy policies can have a profound impact on prices and market stability. We will analyze the effects of past and present energy policies on market behavior and economic outcomes, offering insights into effective policy frameworks.
+
+Each of these angles will be explored through rigorous data analysis, employing time series methodologies to unpack the intricate relationship between energy markets and economic performance. By examining these perspectives, we aim to build a holistic understanding of the energy-economy nexus and provide actionable insights for policymakers, businesses, and consumers.
+
 
 
 ## **Literature Review**
@@ -44,7 +65,8 @@ The report by the **Congressional Budget Office** titled ["The Economic Effects 
 
 
 
-![CBO Graph](CBO Graph)
+
+<img src="CBO Graph.png" alt="CBO Graph" style="width: 500px; height: 400px;">
 
 
 
