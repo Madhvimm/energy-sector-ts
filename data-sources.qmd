@@ -7,18 +7,19 @@ title: "**Data Sources**"
 To thoroughly investigate the economic impact of the energy sector, this project utilizes a series of detailed datasets focusing on crude oil and natural gas prices, electricity costs, and key economic indicators. These datasets serve as the foundation for our analysis, enabling us to explore the intricate dynamics between energy market fluctuations and economic performance.
 
 
-### **Crude Oil Price Summary (Table 9.1)**
+### **[Crude Oil Price Summary](https://www.eia.gov/totalenergy/data/browser/?tbl=T09.01#/?f=A)**
 
 **Source:** U.S. Energy Information Administration (EIA)
 
-**Content:** This dataset offers historical data on crude oil prices, capturing trends and volatility over time, which are crucial for understanding the energy market's impact on the economy.
+**Content:** This dataset offers historical data on crude oil prices, capturing trends and volatility over time, which are crucial for understanding the energy market’s impact on the economy.
 
 **Application:** We will leverage this dataset to analyze how crude oil price fluctuations correlate with economic indicators such as GDP and CPI, providing insights into the broader economic implications of oil price movements.
 
 
 
 
-### **Natural Gas Prices (Table 9.10)**
+### **[Natural Gas Prices](https://www.eia.gov/totalenergy/data/browser/?tbl=T09.10#/?f=A)**
+
 **Source:** U.S. Energy Information Administration (EIA)
 
 **Content:** Contains historical price data for natural gas, illustrating trends and shifts in this vital energy source's pricing.
@@ -27,7 +28,7 @@ To thoroughly investigate the economic impact of the energy sector, this project
 
 
 
-### **Average Prices of Electricity to Ultimate Customers (Table 9.8)**
+### **[Average Prices of Electricity to Ultimate Customers](https://www.eia.gov/totalenergy/data/browser/?tbl=T09.08#/?f=M&start=197601&end=202311&charted=0-1-2-3-4)**
 
 **Source:** U.S. Energy Information Administration (EIA)
 
