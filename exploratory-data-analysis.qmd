@@ -1,0 +1,115 @@
+---
+title: "Exploratory Data Analysis"
+---
+
+```{r}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: false
+library(tidyverse)
+library(ggplot2)
+library(forecast)
+library(astsa) 
+library(xts)
+library(tseries)
+library(fpp2)
+library(fma)
+library(lubridate)
+library(tidyverse)
+library(TSstudio)
+library(quantmod)
+library(tidyquant)
+library(plotly)
+library(ggplot2)
+library(imputeTS)
+library(gridExtra)
+library(reticulate)
+library(readxl)
+```
+
+# Time Series Data Visualization
+
+Check text
+
+::: panel-tabset
+
+::: panel-tab Crude Oil
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+# Read the data from the CSV file
+# Load the Crude Oil Price dataset
+crude_oil_prices <- read.csv("MER_T09_01_CRUDE_OIL_PRICE.csv")
+
+# Convert YYYYMM to Date format
+crude_oil_prices <- crude_oil_prices[substr(crude_oil_prices$YYYYMM, 5, 6) <= 12, ]
+# After filtering, attempt to convert 'YYYYMM' to Date format again
+crude_oil_prices$Date <- as.Date(paste0(substr(crude_oil_prices$YYYYMM, 1, 4), 
+                                         substr(crude_oil_prices$YYYYMM, 5, 6), 
+                                         "01"), format="%Y%m%d")
+
+
+head(crude_oil_prices$Date)
+
+
+sum(is.na(crude_oil_prices$Value))
+
+
+
+crude_oil_prices$Value[crude_oil_prices$Value == "Not Available"] <- NA
+
+# Convert the 'Value' column to numeric, since it might be a character because of the "Not Available" strings
+crude_oil_prices$Value <- as.numeric(crude_oil_prices$Value)
+
+# Check for NA values again
+sum(is.na(crude_oil_prices$Value))
+
+# Now, handle NA values according to your chosen strategy
+# Option 1: Remove rows with NA values
+crude_oil_prices <- na.omit(crude_oil_prices)
+
+# Plotting with ggplot2
+p_crude_oil <- ggplot(crude_oil_prices, aes(x = Date, y = Value)) +
+  geom_line() + # Add a line geometry
+  theme_minimal() + # Optional: Use a minimal theme for a cleaner look
+  labs(title = "Crude Oil Prices Over Time",
+       x = "Date",
+       y = "Value (USD)")
+
+# Convert ggplot object to plotly for interactivity
+p_crude_oil
+
+
+```
+
+
+
+```{r, warning=FALSE, message=FALSE}
+#| code-fold: true
+#| code-summary: 'Average Nitrate Levels'
+#| warning: false
+#| output: true
+
+
+```
+
+
+The yearly graph above shows the average nitrate levels in California's drinking water from 1998 to 2011. The points represent annual average nitrate concentrations, the red dashed line, representing a linear regression model, has been added to indicate the overall trend within the observed period. 
+
+This helps us identify potential patterns, trends, or anomalies in nitrate levels over the years. Notably, it's crucial to observe how these levels fluctuate and consider external factors that might influence these changes, such as environmental regulations or significant events affecting water quality.
+
+
+
+# Tableau Dashboard
+
+#### Interactive County-level Nitrate Level Map
+
+The Tableau dashboard below is an interactive exploration of nitrate levels across various counties in California. This map helps in providing insights into regional disparities or areas of particular concern. There is time slider feature where you can see how nitrate levels in each county have evolved from 1998 to 2011.
+
+
+<iframe src="https://public.tableau.com/views/california_17104055601850/Dashboard1?:embed=y&:display_count=yes&:showVizHome=no" width="100%" height="1200"></iframe>
+
+
+

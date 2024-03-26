@@ -5,10 +5,6 @@ website:
   title: "Powering Change"
   navbar:
     left:
-      - href: index.qmd
-        text: Home  # "Home" can stay as it is, typically represents the main page
-      - href: about.qmd
-        text: About You
       - href: introduction.qmd
         text: Introduction
       - href: data-sources.qmd
@@ -32,6 +28,6 @@ website:
 
 format:
   html:
-    theme: zephyr
+    theme: lux
     css: styles.css
     toc: true

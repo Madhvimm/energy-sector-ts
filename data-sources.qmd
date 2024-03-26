@@ -4,16 +4,15 @@ title: "**Data Sources**"
 
 
 
-To thoroughly investigate the economic impact of the energy sector, this project utilizes a series of detailed datasets focusing on crude oil and natural gas prices, electricity costs, and key economic indicators. These datasets serve as the foundation for our analysis, enabling us to explore the intricate dynamics between energy market fluctuations and economic performance.
+To investigate the economic impact of the energy sector, this project utilizes a series of datasets focusing on crude oil and natural gas prices, electricity costs, and key economic indicators. These datasets serve as the foundation for our analysis, enabling us to explore the intricate dynamics between energy market fluctuations and economic performance.
 
 
 ### **[Crude Oil Price Summary](https://www.eia.gov/totalenergy/data/browser/?tbl=T09.01#/?f=A)**
 
 **Source:** U.S. Energy Information Administration (EIA)
 
-**Content:** This dataset offers historical data on crude oil prices, capturing trends and volatility over time, which are crucial for understanding the energy market’s impact on the economy.
 
-**Application:** We will leverage this dataset to analyze how crude oil price fluctuations correlate with economic indicators such as GDP and CPI, providing insights into the broader economic implications of oil price movements.
+We will leverage this dataset to analyze how crude oil price fluctuations correlate with economic indicators such as GDP and CPI, providing insights into the broader economic implications of oil price movements.
 
 
 
@@ -22,9 +21,7 @@ To thoroughly investigate the economic impact of the energy sector, this project
 
 **Source:** U.S. Energy Information Administration (EIA)
 
-**Content:** Contains historical price data for natural gas, illustrating trends and shifts in this vital energy source's pricing.
-
-**Application:** This dataset will be used to examine the trends in natural gas prices and their impact on the economy, particularly focusing on their influence on electricity pricing and economic indicators.
+We will leverage this dataset to examine the trends in natural gas prices and their impact on the economy, particularly focusing on their influence on electricity pricing and economic indicators.
 
 
 
@@ -32,11 +29,7 @@ To thoroughly investigate the economic impact of the energy sector, this project
 
 **Source:** U.S. Energy Information Administration (EIA)
 
-
-**Content:** Details the average electricity prices paid by ultimate customers in various sectors, such as Residential, Commercial, Industrial, and Transportation.
-
-
-**Application:** We aim to explore how fluctuations in energy prices affect electricity costs across different sectors, shedding light on the sector-specific economic impacts of energy price changes.
+We will leverage this dataset to explore how fluctuations in energy prices affect electricity costs across different sectors, shedding light on the sector-specific economic impacts of energy price changes.
 
 
 
@@ -48,9 +41,8 @@ To thoroughly investigate the economic impact of the energy sector, this project
 
 **Source:** Federal Reserve Economic Data (FRED), (Federal Reserve Bank of St. Louis)
 
-**Content:** The dataset provides data on the Gross Domestic Product (GDP), reflecting the economic growth and health of the nation.
 
-**Application:** GDP data will be correlated with energy and electricity price trends to assess the broader economic impacts of energy market dynamics.
+We will leverage this dataset to find patterns and correlate them with energy and electricity price trends to assess the broader economic impacts of energy market dynamics
 
 
 
@@ -58,10 +50,7 @@ To thoroughly investigate the economic impact of the energy sector, this project
 
 **Source:** Federal Reserve Economic Data (FRED), (Federal Reserve Bank of St. Louis)
 
-**Content:** This dataset offers data on the Consumer Price Index for All Urban Consumers: All Items in U.S. City Average (CPIAUCSL), which tracks the average change over time in the prices paid by urban consumers for a basket of consumer goods and services, providing a comprehensive view of inflation.
-
-**Application:** Analyzing CPI data will help us understand the relationship between energy prices, inflation, and the overall economic condition, offering insights into how fluctuations in the energy sector influence consumer price levels.
-
+We will leverage this dataset to analyze CPI data and understand the relationship between energy prices, inflation, and the overall economic condition, offering insights into how fluctuations in the energy sector influence consumer price levels.
 
 
 
@@ -78,4 +67,7 @@ By integrating these datasets, our analysis will provide a comprehensive view of
 </a>
 
 
+
+
+https://united-states.reaproject.org/data-tables/gsp-a900n/tools/560000/1997/2022/
 
