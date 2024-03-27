@@ -1,9 +1,0 @@
-[
-  {
-    "objectID": "exploratory-data-analysis.html",
-    "href": "exploratory-data-analysis.html",
-    "title": "Exploratory Data Analysis",
-    "section": "",
-    "text": "Importing Libraries\nlibrary(tidyverse)\nlibrary(ggplot2)\nlibrary(forecast)\nlibrary(astsa) \nlibrary(xts)\nlibrary(tseries)\nlibrary(fpp2)\nlibrary(fma)\nlibrary(lubridate)\nlibrary(tidyverse)\nlibrary(TSstudio)\nlibrary(quantmod)\nlibrary(tidyquant)\nlibrary(plotly)\nlibrary(ggplot2)\nlibrary(imputeTS)\nlibrary(gridExtra)\nlibrary(reticulate)\nlibrary(readxl)\n\n\n\nTime Series Data Visualization\nCheck text\n::: panel-tabset\n::: panel-tab Crude Oil\n\n\n[1] \"1973-01-01\" \"1973-02-01\" \"1973-03-01\" \"1973-04-01\" \"1973-05-01\"\n[6] \"1973-06-01\"\n\n\n[1] 0\n\n\n[1] 69\n\n\n\n\n\n\n\n\n\nThe yearly graph above shows the average nitrate levels in California’s drinking water from 1998 to 2011. The points represent annual average nitrate concentrations, the red dashed line, representing a linear regression model, has been added to indicate the overall trend within the observed period.\nThis helps us identify potential patterns, trends, or anomalies in nitrate levels over the years. Notably, it’s crucial to observe how these levels fluctuate and consider external factors that might influence these changes, such as environmental regulations or significant events affecting water quality.\n\n\nTableau Dashboard\n\nInteractive County-level Nitrate Level Map\nThe Tableau dashboard below is an interactive exploration of nitrate levels across various counties in California. This map helps in providing insights into regional disparities or areas of particular concern. There is time slider feature where you can see how nitrate levels in each county have evolved from 1998 to 2011."
-  }
-]
