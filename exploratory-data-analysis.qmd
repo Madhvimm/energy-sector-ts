@@ -28,13 +28,12 @@ library(gridExtra)
 
 In this section, we delve into time series data, focusing on the energy sector's economic impact. Time series analysis is pivotal in understanding the temporal patterns and trends within data points collected sequentially over time. By employing time series plots, we gain invaluable insights into the underlying structures of our datasets, such as trends, seasonality, and cyclical fluctuations.
 
-The forthcoming visualizations will present a detailed examination of several key data sets: Crude Oil Prices, Natural Gas Prices, Electricity Prices, GDP, and CPI. Each plot is designed to elucidate the temporal progression of these variables, providing a foundation for deeper analytical exploration. Through these visualizations, we aim to identify significant patterns, anomalies, and correlations within the data, enabling us to draw meaningful conclusions about the economic interplay between energy prices and broader economic indicators.
+The visualizations will present a detailed examination of several key data sets: Crude Oil Prices, Natural Gas Prices, Electricity Prices, GDP, and CPI. Each plot is designed to elucidate the temporal progression of these variables, providing a foundation for deeper analytical exploration. Through these visualizations, we aim to identify significant patterns, anomalies, and correlations within the data, enabling us to draw meaningful conclusions about the economic interplay between energy prices and broader economic indicators.
 
 
 ::: panel-tabset
 
 ## Crude Oil
-
 
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -106,7 +105,6 @@ ggplotly(p_composite_crude_oil)
 ```
 
 
-Graph Interpretation:
 The time series plot for crude oil showcases the historical refiner acquisition costs. Observations include a long-term upward trend, significant volatility, and notable peaks, particularly around 2008 and 2011-2014. The recent years exhibit a declining trend post the last peak, highlighting the dynamic nature of crude oil prices.
 
 Analysis:
