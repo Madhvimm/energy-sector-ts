@@ -66,8 +66,3 @@ By integrating these datasets, our analysis will provide a comprehensive view of
   <img src="fred_logo.png" style="display: inline; margin-right: 10px;"/>
 </a>
 
-
-
-
-https://united-states.reaproject.org/data-tables/gsp-a900n/tools/560000/1997/2022/
-
