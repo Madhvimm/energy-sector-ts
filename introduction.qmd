@@ -24,7 +24,7 @@ Before diving into the intricate details, it is essential to understand the broa
 
 
 
-![*Figure 1: This blueprint visually represents the project's scope.*](Economic Impact of the Energy Sector.png)
+![*Figure 1: This blueprint represents the project's scope.*](Economic Impact of the Energy Sector.png)
 
 
 This visual representation will serve as a guide through the thematic explorations of the project, setting the stage for a deep dive into the complex interplay between energy dynamics and economic indicators.
@@ -37,7 +37,6 @@ To navigate the complexities of how energy prices influence the U.S. economy, th
 
 ### 1. **Energy Market Dynamics**:
 We will examine the historical trends and volatility in crude oil and natural gas markets. Understanding these patterns is critical in comprehending how energy costs affect the broader economy and predicting future trends.
-
 
 ### 2. **Economic Indicators Interplay**:
 A critical angle is the relationship between energy prices and primary economic indicators, like GDP and CPI. This perspective will allow us to measure the real impact of energy market fluctuations on financial health and consumer purchasing power.
@@ -52,6 +51,11 @@ Different sectors respond to energy price changes in various ways. We'll delve i
 Energy policies can have a profound impact on prices and market stability. We will analyze the effects of past and present energy policies on market behavior and economic outcomes, offering insights into effective policy frameworks.
 
 Each of these angles will be explored through rigorous data analysis, employing time series methodologies to unpack the intricate relationship between energy markets and economic performance. By examining these perspectives, we aim to build a holistic understanding of the energy-economy nexus and provide actionable insights for policymakers, businesses, and consumers.
+
+
+
+
+![](energy.jpeg)
 
 
 
