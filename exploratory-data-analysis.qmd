@@ -1081,6 +1081,7 @@ adf_test_cpi
 
 The CPI series is also non-stationary based on the high p-value, indicating that preprocessing steps are needed before further analysis or modeling.
 
+##
 :::
 
 
@@ -1091,6 +1092,12 @@ These Dickey-Fuller test results across different datasets corroborate our earli
 
 
 # Detrend VS Difference
+
+
+Detrending and differencing are two methods used to make time series data stationary, it involves removing the underlying trend from the data, while differencing focuses on the changes between consecutive observations.
+
+Detrending typically subtracts the estimated trend component from the original series, while differencing transforms the series into the sequence of differences between adjacent values. While detrending addresses the trend, differencing can help eliminate both trend and seasonality, making the series stationary.
+
 
 ::: panel-tabset
 
@@ -1131,6 +1138,15 @@ grid.arrange(plot1_crude_oil, plot2_crude_oil, nrow = 2)
 
 ```
 
+**Detrended:**
+
+The residuals after detrending indicate that linear detrending might not fully account for all underlying components, as patterns still emerge.
+
+**First Difference:**
+
+The differenced series shows fluctuations around zero, indicative of improved stationarity. While the mean appears stabilized, examining autocorrelation in the differenced data is crucial to confirm stationarity fully.
+
+
 
 ## Natural Gas
 
@@ -1167,6 +1183,17 @@ grid.arrange(plot1_natural_gas, plot2_natural_gas, nrow = 2)
 ```
 
 
+**Detrended:**
+
+The detrended series shows periods of volatility, indicating that removing the linear trend doesn't capture all the data's dynamics, remaining fluctuations may reflect other underlying components like seasonality
+
+**First Difference:**
+
+Consistent mean but varying volatility and a spike around 2020, which could be due to the pandemic
+
+
+
+
 ## Electricity
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -1200,6 +1227,17 @@ grid.arrange(plot1_electricity, plot2_electricity, nrow = 2)
 
 
 ```
+
+
+**Detrended:**
+
+The detrended plot of electricity prices displays clear periodic fluctuations, suggesting the presence of seasonality.
+
+**First Difference:**
+
+The first differenced series oscillates around a central mean, which is indicative of stationarity in the mean of the series. However, the consistent pattern of spikes followed by a return to the mean—indicates a strong seasonal component.
+
+
 
 
 ## GDP
@@ -1238,6 +1276,16 @@ grid.arrange(plot1_gdp, plot2_gdp, nrow = 2)
 ```
 
 
+**Detrended:**
+
+The detrended GDP plot showcases that the residuals seem to have a non-linear component, as evidenced by the gradual decline and subsequent increase over time. The residuals decrease and then slowly begin to rise after the 1980s, accelerating significantly in recent years. GDP growth rate is not constant and a simple linear model may not be sufficient to capture the complexities.
+
+
+**First Difference:**
+
+The differenced series predominantly hovers around the zero line, which indicates that this transformation effectively removes the trend from the data, leading to a stationary series in terms of the mean. The substantial spike observed towards the end is likely due to the recent economic downturn due to the COVID-19 pandemic, which represents a significant economic shock not accounted for by typical GDP growth patterns. 
+
+
 
 ## CPI
 
@@ -1273,12 +1321,33 @@ grid.arrange(plot1_cpi, plot2_cpi, nrow = 2)
 
 ```
 
+
+
+
+**Detrended:**
+
+The detrended CPI plot reveals residuals that decline over a prolonged period before stabilizing and then increasing. This pattern suggests that a simple linear trend does not fully capture the complexity of the inflationary trend over time. 
+
+
+**First Difference:**
+
+The first difference plot for CPI demonstrates a series that fluctuates around a central mean value.
+
+
+
+
+
+
+
+##
+
+
 :::
 
 
 
 
-#### Moving Average Smoothing
+# Moving Average Smoothing
 
 ::: panel-tabset
 
@@ -1323,6 +1392,21 @@ ggplot(df_crude_oil, aes(x = Date, y = Value, color = "Data")) +
   theme_bw()
 
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ## Natural Gas
