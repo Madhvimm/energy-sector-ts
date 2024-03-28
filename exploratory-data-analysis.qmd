@@ -164,7 +164,7 @@ description_counts
 #| warning: false
 #| output: false
 
-# Filter for 'Natural Gas Price, Citygate'
+# Filter for 'Natural Gas Price'
 citygate_gas_prices <- subset(natural_gas_prices, Description == "Natural Gas Price, Citygate")
 
 ```
@@ -181,7 +181,7 @@ citygate_gas_prices <- subset(natural_gas_prices, Description == "Natural Gas Pr
 p_citygate_gas <- ggplot(citygate_gas_prices, aes(x = Date, y = Value)) +
   geom_line() + # Add a line geometry
   theme_minimal() + # Use a minimal theme for a cleaner look
-  labs(title = "Natural Gas Price, Citygate Over Time",
+  labs(title = "Natural Gas Price Over Time",
        x = "Date",
        y = "Price (USD)")
 
@@ -407,6 +407,7 @@ The CPI graph illustrates a continuous upward trend, indicative of inflation. Re
 *Nature of Series:* Additive, with a steady increase in consumer prices over time.
 
 
+##
 
 
 :::
@@ -497,7 +498,7 @@ The lag plots for the Cost of Crude Oil reveal a positive autocorrelation. The p
 gglagplot(citygate_gas_ts, do.lines=FALSE) + 
   xlab("Lags") + 
   ylab("Price (USD)") + 
-  ggtitle("Lag Plot for Natural Gas Price, Citygate") + 
+  ggtitle("Lag Plot for Natural Gas Price") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
   theme_bw()
 ```
@@ -591,9 +592,9 @@ The CPI lag plots show a strong positive autocorrelation, indicating consistent 
 
 
 
+##
+
 :::
-
-
 
 
 
@@ -650,7 +651,7 @@ decomposed_natural_gas <- decompose(citygate_gas_ts, "multiplicative")
 
 # Plot the decomposed components
 autoplot(decomposed_natural_gas) + 
-  ggtitle("Decomposition Plot for Natural Gas Price, Citygate") +
+  ggtitle("Decomposition Plot for Natural Gas Price") +
   theme_bw()
 
 ```
@@ -757,12 +758,22 @@ The CPI decomposition plot sheds light on inflation trends.
 
 
 
+For all the data series examined, the decomposition plots provide a detailed confirmation of the preliminary insights highlighted in Part 1. These plots dissect the time series into trend, seasonal, and irregular components, offering a more granular perspective that reinforces our initial analyses. 
+
+##
+
 :::
 
 
 
-
 # ACF & PACF Plots
+
+Autocorrelation Function (ACF) and Partial Autocorrelation Function (PACF) plots are crucial tools in time series analysis, helping to identify the type of model that best describes a series. The ACF plot shows the correlation of the series with its own lags, providing insights into the overall correlation structure and potential seasonality. On the other hand, the PACF plot reveals the direct effect of past values on the current value, helping to pinpoint the order of autoregressive models.
+
+By examining the ACF and PACF plots, we can discern patterns that suggest the presence of autoregressive (AR) or moving average (MA) components in our time series models. Significant spikes in the ACF plot indicate potential AR terms, while significant spikes in the PACF plot suggest MA terms. These plots also assist in determining the stationarity of the series, a crucial aspect in time series modeling, where non-stationary data often require differencing to achieve stationarity.
+
+In this section, we'll explore the ACF and PACF plots for our datasets delving into their autocorrelation structures and deriving insights that will inform our model selection and forecasting approach.
+
 
 ::: panel-tabset
 
@@ -781,19 +792,27 @@ The CPI decomposition plot sheds light on inflation trends.
 crude_oil_acf <- ggAcf(composite_crude_oil_ts) + 
   ggtitle("ACF Plot for Refiner Acquisition Cost of Crude Oil, Composite") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#5a3196") +
-  geom_hline(yintercept = 0, color = "#5a3196") 
+  geom_segment(lineend = "butt", color = "turquoise4") +
+  geom_hline(yintercept = 0, color = "turquoise4") 
 
 crude_oil_pacf <- ggPacf(composite_crude_oil_ts) + 
   ggtitle("PACF Plot for Refiner Acquisition Cost of Crude Oil, Composite") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#5a3196") +
-  geom_hline(yintercept = 0, color = "#5a3196") 
+  geom_segment(lineend = "butt", color = "turquoise4") +
+  geom_hline(yintercept = 0, color = "turquoise4") 
 
 grid.arrange(crude_oil_acf, crude_oil_pacf, nrow = 2)
 
 
 ```
+
+The **ACF plot** for crude oil prices demonstrates prolonged significant autocorrelation, suggesting a non-stationary series. The gradual decline in correlation as lags increase indicates a potential long-term dependency or trend in the data. 
+
+The **PACF plot** shows significant spike at lag 1 and 2, followed by non-significant values
+
+The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1 and 2. The slow decay in the ACF implies that differencing (d > 0) may be necessary to achieve stationarity.
+
+
 
 
 ## Natural Gas
@@ -806,21 +825,29 @@ grid.arrange(crude_oil_acf, crude_oil_pacf, nrow = 2)
 
 # ACF and PACF for Natural Gas
 natural_gas_acf <- ggAcf(citygate_gas_ts) + 
-  ggtitle("ACF Plot for Natural Gas Price, Citygate") + 
+  ggtitle("ACF Plot for Natural Gas Price") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#5a3196") +
-  geom_hline(yintercept = 0, color = "#5a3196") 
+  geom_segment(lineend = "butt", color = "turquoise4") +
+  geom_hline(yintercept = 0, color = "turquoise4") 
 
 natural_gas_pacf <- ggPacf(citygate_gas_ts) + 
-  ggtitle("PACF Plot for Natural Gas Price, Citygate") + 
+  ggtitle("PACF Plot for Natural Gas Price") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#5a3196") +
-  geom_hline(yintercept = 0, color = "#5a3196") 
+  geom_segment(lineend = "butt", color = "turquoise4") +
+  geom_hline(yintercept = 0, color = "turquoise4") 
 
 grid.arrange(natural_gas_acf, natural_gas_pacf, nrow = 2)
 
 
 ```
+
+The **ACF plot** for natural gas prices shows a very slow decay, suggesting non-stationarity and a need for differencing. 
+
+The **PACF plot** shows a significant spike at lag 1, followed by a drop-off.
+
+The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1 and 2. The slow decay in the ACF implies that differencing (d > 0) may be necessary to achieve stationarity.
+
+
 
 
 ## Electricity
@@ -835,19 +862,26 @@ grid.arrange(natural_gas_acf, natural_gas_pacf, nrow = 2)
 electricity_acf <- ggAcf(total_electricity_ts) + 
   ggtitle("ACF Plot for Average Price of Electricity to Ultimate Customers, Total") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#5a3196") +
-  geom_hline(yintercept = 0, color = "#5a3196") 
+  geom_segment(lineend = "butt", color = "turquoise4") +
+  geom_hline(yintercept = 0, color = "turquoise4") 
 
 electricity_pacf <- ggPacf(total_electricity_ts) + 
   ggtitle("PACF Plot for Average Price of Electricity to Ultimate Customers, Total") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#5a3196") +
-  geom_hline(yintercept = 0, color = "#5a3196") 
+  geom_segment(lineend = "butt", color = "turquoise4") +
+  geom_hline(yintercept = 0, color = "turquoise4") 
 
 grid.arrange(electricity_acf, electricity_pacf, nrow = 2)
 
 
 ```
+
+The **ACF plot** for electricity shows a strong positive autocorrelation across all the lags indicating a potential MA term and a need for differencing due to non-stationarity.
+
+The **PACF plot** shows a significant correlations at lag 1. The choice of 'p' could be 1 or 2 based on the first significant spikes.
+
+The consistent autocorrelation in the ACF plot suggests a potential need for a higher-order MA term or differencing, leading to an ARIMA(p,d,q) model consideration.
+
 
 
 ## GDP
@@ -863,19 +897,27 @@ grid.arrange(electricity_acf, electricity_pacf, nrow = 2)
 gdp_acf <- ggAcf(gdp_ts) + 
   ggtitle("ACF Plot for GDP") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#5a3196") +
-  geom_hline(yintercept = 0, color = "#5a3196") 
+  geom_segment(lineend = "butt", color = "turquoise4") +
+  geom_hline(yintercept = 0, color = "turquoise4") 
 
 gdp_pacf <- ggPacf(gdp_ts) + 
   ggtitle("PACF Plot for GDP") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#5a3196") +
-  geom_hline(yintercept = 0, color = "#5a3196") 
+  geom_segment(lineend = "butt", color = "turquoise4") +
+  geom_hline(yintercept = 0, color = "turquoise4") 
 
 grid.arrange(gdp_acf, gdp_pacf, nrow = 2)
 
 
 ```
+
+
+The **ACF plot** for GDP shows a persistent strong autocorrelation across all lags indicates non-stationarity, suggesting that differencing may be necessary.
+
+The **PACF plot** have a sharp cutoff after lag 1 indicating an AR(1) process, suggesting that previous values have a significant impact on current GDP.
+
+Given the strong autocorrelation and the PACF cutoff, an ARIMA(1,1,0) model may be a good starting point for modeling GDP, but  differencing (d > 0) may be necessary.
+
 
 
 
@@ -891,14 +933,14 @@ grid.arrange(gdp_acf, gdp_pacf, nrow = 2)
 cpi_acf <- ggAcf(cpi_ts) + 
   ggtitle("ACF Plot for CPI") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#5a3196") +
-  geom_hline(yintercept = 0, color = "#5a3196") 
+  geom_segment(lineend = "butt", color = "turquoise4") +
+  geom_hline(yintercept = 0, color = "turquoise4") 
 
 cpi_pacf <- ggPacf(cpi_ts) + 
   ggtitle("PACF Plot for CPI") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#5a3196") +
-  geom_hline(yintercept = 0, color = "#5a3196") 
+  geom_segment(lineend = "butt", color = "turquoise4") +
+  geom_hline(yintercept = 0, color = "turquoise4") 
 
 grid.arrange(cpi_acf, cpi_pacf, nrow = 2)
 
@@ -906,6 +948,17 @@ grid.arrange(cpi_acf, cpi_pacf, nrow = 2)
 
 ```
 
+
+
+The **ACF plot** for CPI shows a sustained high autocorrelation across lags suggests a non-stationary time series, indicative of CPI's long memory.
+
+The **PACF plot** have a sharp spike and a cutoff after lag 1 indicating an AR(1) process, suggesting that previous values have a significant impact on current GDP.
+
+The sustained autocorrelation in the ACF plot implies that differencing might be needed. An initial ARIMA(1,1,0) model could be considered.
+
+
+
+## 
 :::
 
 
@@ -1263,8 +1316,8 @@ ggplot(df_crude_oil, aes(x = Date, y = Value, color = "Data")) +
 decomposed_natural_gas <- decompose(citygate_gas_ts, "multiplicative")
 
 # Plot the decomposed components
-autoplot(decomposed_natural_gas, colour = "#5a3196") + 
-  ggtitle("Decomposition Plot for Natural Gas Price, Citygate") +
+autoplot(decomposed_natural_gas, colour = "turquoise4") + 
+  ggtitle("Decomposition Plot for Natural Gas Price") +
   theme_bw()
 
 ```
@@ -1282,7 +1335,7 @@ autoplot(decomposed_natural_gas, colour = "#5a3196") +
 decomposed_electricity <- decompose(total_electricity_ts, "multiplicative")
 
 # Plot the decomposed components
-autoplot(decomposed_electricity, colour = "#5a3196") + 
+autoplot(decomposed_electricity, colour = "turquoise4") + 
   ggtitle("Decomposition Plot for Average Price of Electricity to Ultimate Customers, Total") +
   theme_bw()
 
@@ -1302,7 +1355,7 @@ autoplot(decomposed_electricity, colour = "#5a3196") +
 decomposed_gdp <- decompose(gdp_ts, "multiplicative")
 
 # Plot the decomposed components
-autoplot(decomposed_gdp, colour = "#5a3196") + 
+autoplot(decomposed_gdp, colour = "turquoise4") + 
   ggtitle("Decomposition Plot for GDP") +
   theme_bw()
 
@@ -1322,7 +1375,7 @@ autoplot(decomposed_gdp, colour = "#5a3196") +
 decomposed_cpi <- decompose(cpi_ts, "multiplicative")
 
 # Plot the decomposed components
-autoplot(decomposed_cpi, colour = "#5a3196") + 
+autoplot(decomposed_cpi, colour = "turquoise4") + 
   ggtitle("Decomposition Plot for CPI") +
   theme_bw()
 
