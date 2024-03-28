@@ -19,12 +19,17 @@ library(forecast)
 library(tseries)
 library(plotly)
 library(gridExtra)
+library(zoo)
+
+library(ggplot2)
+library(zoo)
+library(plotly)
 
 ```
 
 
 
-## Time Series Plot
+# Time Series Plot
 
 In this section, we delve into time series data, focusing on the energy sector's economic impact. Time series analysis is pivotal in understanding the temporal patterns and trends within data points collected sequentially over time. By employing time series plots, we gain invaluable insights into the underlying structures of our datasets, such as trends, seasonality, and cyclical fluctuations.
 
@@ -95,7 +100,7 @@ composite_crude_oil_prices <- subset(crude_oil_prices, Description == "Refiner A
 p_composite_crude_oil <- ggplot(composite_crude_oil_prices, aes(x = Date, y = Value)) +
   geom_line() + # Add a line geometry
   theme_minimal() + # Use a minimal theme for a cleaner look
-  labs(title = "Refiner Acquisition Cost of Crude Oil, Composite Over Time",
+  labs(title = "Cost of Crude Oil Over Time",
        x = "Date",
        y = "Value (USD)")
 
@@ -105,13 +110,13 @@ ggplotly(p_composite_crude_oil)
 ```
 
 
-The time series plot for crude oil showcases the historical refiner acquisition costs. Observations include a long-term upward trend, significant volatility, and notable peaks, particularly around 2008 and 2011-2014. The recent years exhibit a declining trend post the last peak, highlighting the dynamic nature of crude oil prices.
+The time series plot for crude oil showcases the historical refiner acquisition costs. Observations include a long-term upward trend, significant volatility, and notable peaks, particularly around 2008 and 2011 and 2015. The recent years exhibit a declining trend post the last peak, highlighting the dynamic nature of crude oil prices.
 
-Analysis:
+*Trend:* Increasing over the long term with recent decline.
 
-Trend: Increasing over the long term with recent decline.
-Seasonality: No clear seasonality observed due to the dominant influence of geopolitical and economic factors on oil prices.
-Nature of Series: The series seems to be multiplicative, given the percentage changes and volatility patterns.
+*Seasonality:* No clear seasonality observed due to the dominant influence of geopolitical and economic factors on oil prices.
+
+*Nature of Series:* The series seems to be multiplicative, given the percentage changes and volatility patterns.
 
 
 
@@ -164,7 +169,7 @@ description_counts
 #| warning: false
 #| output: false
 
-# Filter for 'Natural Gas Price, Citygate'
+# Filter for 'Natural Gas Price'
 citygate_gas_prices <- subset(natural_gas_prices, Description == "Natural Gas Price, Citygate")
 
 ```
@@ -181,7 +186,7 @@ citygate_gas_prices <- subset(natural_gas_prices, Description == "Natural Gas Pr
 p_citygate_gas <- ggplot(citygate_gas_prices, aes(x = Date, y = Value)) +
   geom_line() + # Add a line geometry
   theme_minimal() + # Use a minimal theme for a cleaner look
-  labs(title = "Natural Gas Price, Citygate Over Time",
+  labs(title = "Natural Gas Price Over Time",
        x = "Date",
        y = "Price (USD)")
 
@@ -191,8 +196,14 @@ ggplotly(p_citygate_gas)
 
 
 
+The natural gas price graph, reveals substantial fluctuations, a significant peaks in 2001, 2005, 2008 and around 2021, and recent volatile trends. Unlike crude oil, natural gas prices do not exhibit a clear long-term trend but return closer to the baseline after peaks.
 
 
+*Trend:* Fluctuating without a clear long-term direction.
+
+*Seasonality:* Less evident due to the market's response to short-term supply and demand changes.
+
+*Nature of Series:* Likely multiplicative, reflecting the proportional changes and variability in prices.
 
 
 
@@ -244,9 +255,6 @@ colnames(avg_prices_electricity)
 
 total_electricity_prices <- subset(avg_prices_electricity, Description == "Average Price of Electricity to Ultimate Customers, Total")
 
-
-
-
 ```
 
 
@@ -260,7 +268,7 @@ total_electricity_prices <- subset(avg_prices_electricity, Description == "Avera
 p_total_electricity <- ggplot(total_electricity_prices, aes(x = Date, y = Value)) +
   geom_line() + # Add a line geometry
   theme_minimal() + # Use a minimal theme for a cleaner look
-  labs(title = "Average Price of Electricity to Ultimate Customers, Total Over Time",
+  labs(title = "Average Price of Electricity to Ultimate Customers",
        x = "Date",
        y = "Price (Cents per Kilowatthour)")
 
@@ -269,6 +277,16 @@ ggplotly(p_total_electricity)
 
 
 ```
+
+
+The "Average Price of Electricity to Ultimate Customers" graph offers insights into the pricing trends of electricity, an essential commodity for consumers and industries alike.
+
+*Trend:* There is a upward trend showcasing long-term growth.
+
+*Seasonality:* Periodic oscillations in price could signify seasonal demand changes, driven by heating needs in winter or cooling in summer, impacting production costs and consumption patterns.
+
+*Nature of Series:* Likely additive, characterized by a regular oscillations indicating seasonality.
+
 
 
 
@@ -320,6 +338,19 @@ ggplotly(p_gdp)
 
 
 
+GDP growth exhibits an overall upward trend with a notable dip in 2020, possibly due to economic downturns because of the pandemic. The recovery post-dip indicates economic resilience.
+
+
+*Trend:* Increasing with acceleration in recent decades.
+
+*Seasonality:* Not applicable for GDP as it reflects economic trends and we cant see in the graph as well.
+
+*Nature of Series:* Additive, considering the steady growth pattern with occasional dips and recoveries.
+
+
+
+
+
 ## CPI
 
 
@@ -366,15 +397,35 @@ ggplotly(p_cpi)
 
 
 
+
+
+
+
+
+
+
+
+The CPI graph illustrates a continuous upward trend, indicative of inflation. Recent increases suggest a period of higher inflation, potentially influenced by various economic factors.
+
+
+*Trend:* Consistently upward, indicating inflation.
+
+*Seasonality:* Not distinctly observable, as CPI reflects broader economic price changes
+
+*Nature of Series:* Additive, with a steady increase in consumer prices over time.
+
+
+##
+
+
 :::
 
 
 
-## Lag Plots
+# Lag Plots
 
 
-Lag plot is a visual representation of the nitrate levels for each month, to identify any patterns or relationships in the data over time. Each panel represents a different lag, meaning the number of months between the points in the series. The plot shows data from a public water system (PWS) with the ID CA1910067.
-
+Lag plots are essential tools in time series analysis, offering insights into the temporal dependency within the data. By comparing data points with their previous values (lags), we can uncover patterns, trends, and potential autocorrelation in the series. Each lag in the plot helps us to visualize how past values relate to current values, which is crucial for understanding the dynamics and forecasting future trends. In this section, we explore lag plots for various key economic indicators and energy prices, providing a deeper understanding of their time-dependent structures.
 
 
 ::: panel-tabset
@@ -402,12 +453,12 @@ start_year_elec <- as.numeric(format(min(total_electricity_prices$Date), "%Y"))
 start_month_elec <- as.numeric(format(min(total_electricity_prices$Date), "%m"))
 total_electricity_ts <- ts(total_electricity_prices$Value, start=c(start_year_elec, start_month_elec), frequency=12)
 
-# For GDP (assuming it's quarterly, replace with actual data if different)
+# For GDP (it's quarterly)
 start_year_gdp <- as.numeric(format(min(gdp_data$DATE), "%Y"))
 start_quarter_gdp <- quarter(min(gdp_data$DATE))
 gdp_ts <- ts(gdp_data$GDP, start=c(start_year_gdp, start_quarter_gdp), frequency=4)
 
-# For CPI (assuming it's quarterly, replace with actual data if different)
+# For CPI (it's quarterly)
 start_year_cpi <- as.numeric(format(min(cpi_data$DATE), "%Y"))
 start_quarter_cpi <- quarter(min(cpi_data$DATE))
 cpi_ts <- ts(cpi_data$CPIAUCSL, start=c(start_year_cpi, start_quarter_cpi), frequency=4)
@@ -429,10 +480,18 @@ library(forecast)
 gglagplot(composite_crude_oil_ts, do.lines=FALSE) + 
   xlab("Lags") + 
   ylab("Value (USD)") + 
-  ggtitle("Lag Plot for Refiner Acquisition Cost of Crude Oil, Composite") + 
+  ggtitle("Lag Plot for Refiner Acquisition Cost of Crude Oil") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
   theme_bw()
 ```
+
+
+The lag plots for the Cost of Crude Oil reveal a positive autocorrelation. The presence of color-coded months suggests seasonal trends, though they are not starkly evident. As lags increase, the correlation weakens, diminishing predictive power over longer time lags.
+
+- Positive Autocorrelation evident across the lags, suggesting that past prices influence future prices.
+
+- The strength of autocorrelation decreases with higher lags.
+
 
 
 ## Natural Gas
@@ -447,10 +506,18 @@ gglagplot(composite_crude_oil_ts, do.lines=FALSE) +
 gglagplot(citygate_gas_ts, do.lines=FALSE) + 
   xlab("Lags") + 
   ylab("Price (USD)") + 
-  ggtitle("Lag Plot for Natural Gas Price, Citygate") + 
+  ggtitle("Lag Plot for Natural Gas Price") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
   theme_bw()
 ```
+
+Natural Gas Price lag plots display a positive autocorrelation, especially evident in the initial lags. With increasing lags, the data points become more dispersed, indicating a reduction in autocorrelation strength.
+
+- Strong Autocorrelation in the initial lags, indicating past prices are good predictors for the near future.
+
+- As the lag increases, the correlation diminishes, which is common in time series data.
+
+
 
 
 ## Electricity
@@ -465,10 +532,19 @@ gglagplot(citygate_gas_ts, do.lines=FALSE) +
 gglagplot(total_electricity_ts, do.lines=FALSE) + 
   xlab("Lags") + 
   ylab("Price (Cents per Kilowatthour)") + 
-  ggtitle("Lag Plot for Average Price of Electricity to Ultimate Customers, Total") + 
+  ggtitle("Lag Plot for Average Price of Electricity to Ultimate Customers") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
   theme_bw()
 ```
+
+Electricity price lag plots show a strong and consistent positive autocorrelation across all lags, suggesting stable and predictable price trends. The seasonal effect is visible, with certain months consistently clustering together.
+
+- Strong positive auto-correlation is maintained across various lags.
+
+- Clear month-to-month price consistency suggests significant seasonality.
+
+- The strong correlation at higher lags implies underlying factors affecting electricity prices.
+
 
 
 ## GDP
@@ -490,6 +566,13 @@ gglagplot(gdp_ts, do.lines=FALSE) +
 ```
 
 
+GDP's lag plots exhibit a very strong linear relationship across all lags, reflecting the steady economic growth.
+
+- Persistent growth indicates steady economic progression.
+
+- No distinct seasonal patterns are visible, suggesting uniform economic growth across quarters.
+
+
 
 ## CPI
 
@@ -509,16 +592,24 @@ gglagplot(cpi_ts, do.lines=FALSE) +
 ```
 
 
+The CPI lag plots show a strong positive autocorrelation, indicating consistent inflation trends. 
+
+- Reflects a steady inflation rate over the years.
+
+- The consistent distribution of quarterly colors across lags indicates an even inflation rate across all quarters.
+
+
+
+##
+
 :::
 
 
 
-We can observe clusters of similarly colored points at lag 1 do indicate some level of autocorrelation in the nitrate levels. This means that the nitrate level from the previous month has some degree of influence on the current month's level. For time series modeling, such as ARIMA (Autoregressive Integrated Moving Average), this suggests that an autoregressive term would indeed be significant, meaning that the model would use previous data points to predict future ones.
+# Decomposition Plots
 
-The fact that this autocorrelation weakens at higher lags, implies that older data points have less predictive power. This would be important when determining the order of the AR term in an ARIMA model; a smaller order may be sufficient, as incorporating too many past values might not improve the model. The presence of seasonality, suggested by the clustering of the same months' colors, might also imply that a seasonal component should be considered in the modeling process, which could lead to the use of a Seasonal ARIMA (SARIMA) model.
+Decomposition plots are powerful tools in time series analysis, allowing us to dissect a series into its core components: trend, seasonality, and irregular (residual) components. This breakdown provides a clearer understanding of the underlying patterns and behaviors in the data. For instance, the trend component shows the long-term direction of the series, while the seasonal component highlights repeating patterns over fixed periods. The irregular component captures random fluctuations that are not part of the trend or seasonality. Here, we explore the decomposition plots for various key datasets, unveiling the distinct dynamics of each.
 
-
-#### Decomposition Plot
 
 ::: panel-tabset
 
@@ -537,11 +628,22 @@ The fact that this autocorrelation weakens at higher lags, implies that older da
 decomposed_crude_oil <- decompose(composite_crude_oil_ts, "multiplicative")
 
 # Plot the decomposed components
-autoplot(decomposed_crude_oil, colour = "#5a3196") + 
-  ggtitle("Decomposition Plot for Refiner Acquisition Cost of Crude Oil, Composite") +
+autoplot(decomposed_crude_oil) + 
+  ggtitle("Decomposition Plot for Refiner Acquisition Cost of Crude Oil") +
   theme_bw()
 
 ```
+
+
+The decomposition plot for the Cost of Crude Oil offers a comprehensive view of the underlying patterns.
+
+*Trend:* Shows an upward trend until 2008, with fluctuations until 2014, followed by a downward trend, illustrating the market's long-term dynamics.
+
+*Seasonal:* Demonstrates annual seasonal patterns, highlighting how external factors influence oil prices.
+
+*Remainder:* The residuals are relatively stable around zero, suggesting a good model fit with some sporadic spikes in 2020.
+
+
 
 
 ## Natural Gas
@@ -556,11 +658,21 @@ autoplot(decomposed_crude_oil, colour = "#5a3196") +
 decomposed_natural_gas <- decompose(citygate_gas_ts, "multiplicative")
 
 # Plot the decomposed components
-autoplot(decomposed_natural_gas, colour = "#5a3196") + 
-  ggtitle("Decomposition Plot for Natural Gas Price, Citygate") +
+autoplot(decomposed_natural_gas) + 
+  ggtitle("Decomposition Plot for Natural Gas Price") +
   theme_bw()
 
 ```
+
+
+The decomposition plot for the Natural Gas Price offers a comprehensive view of the underlying patterns.
+
+*Trend:* Indicates a stable trend transitioning to volatility, reflecting the market's evolving nature.
+
+*Seasonal:* Exhibits strong annual cycles, likely tied to demand changes with seasons
+
+*Remainder:* Spikes represent unexplained anomalies, possibly due to supply disruptions, especially around 2020.
+
 
 
 ## Electricity
@@ -575,11 +687,21 @@ autoplot(decomposed_natural_gas, colour = "#5a3196") +
 decomposed_electricity <- decompose(total_electricity_ts, "multiplicative")
 
 # Plot the decomposed components
-autoplot(decomposed_electricity, colour = "#5a3196") + 
-  ggtitle("Decomposition Plot for Average Price of Electricity to Ultimate Customers, Total") +
+autoplot(decomposed_electricity) + 
+  ggtitle("Decomposition Plot for Average Price of Electricity to Ultimate Customers") +
   theme_bw()
 
 ```
+
+Electricity price decomposition highlights the stable growth and seasonality in the market.
+
+*Trend:* Shows a consistent rise, pointing to factors like inflation or cost increases in production affecting prices.
+
+*Seasonal:* A clear pattern suggests predictable consumption changes, possibly due to heating and cooling needs.
+
+*Remainder:* Minimal and stable residuals with occasional unexplained fluctuations.
+
+
 
 
 ## GDP
@@ -595,11 +717,22 @@ autoplot(decomposed_electricity, colour = "#5a3196") +
 decomposed_gdp <- decompose(gdp_ts, "multiplicative")
 
 # Plot the decomposed components
-autoplot(decomposed_gdp, colour = "#5a3196") + 
+autoplot(decomposed_gdp) + 
   ggtitle("Decomposition Plot for GDP") +
   theme_bw()
 
 ```
+
+
+GDP decomposition provides insights into economic growth patterns.
+
+
+*Trend:* Reflects steady economic growth with some acceleration, illustrating the economy's long-term health.
+
+*Seasonal:* Negligible seasonality
+
+*Remainder:* Notable deviations, like the spike around 2020, could indicate economic shocks, such as the pandemic.
+
 
 
 
@@ -615,24 +748,40 @@ autoplot(decomposed_gdp, colour = "#5a3196") +
 decomposed_cpi <- decompose(cpi_ts, "multiplicative")
 
 # Plot the decomposed components
-autoplot(decomposed_cpi, colour = "#5a3196") + 
+autoplot(decomposed_cpi) + 
   ggtitle("Decomposition Plot for CPI") +
   theme_bw()
 
 ```
 
+
+The CPI decomposition plot sheds light on inflation trends.
+
+
+*Trend:* The upward trend signifies ongoing inflation, a key economic indicator.
+
+*Seasonal:* Minimal seasonality.
+
+*Remainder:* Small residuals suggest the model captures CPI's main trends, with occasional anomalies.
+
+
+
+For all the data series examined, the decomposition plots provide a detailed confirmation of the preliminary insights highlighted in Part 1. These plots dissect the time series into trend, seasonal, and irregular components, offering a more granular perspective that reinforces our initial analyses. 
+
+##
+
 :::
 
 
 
-Seasonal: The seasonal component reveals a clear, consistent pattern that repeats annually. This suggests that there are predictable fluctuations in nitrate levels that correspond to the time of year, which could be associated with agricultural cycles, weather patterns, or other seasonal factors.
+# ACF & PACF Plots
 
-There seems to be some volatility, suggesting that there might be other factors or perhaps outliers influencing nitrate levels that are not captured by the seasonal or trend components.
+Autocorrelation Function (ACF) and Partial Autocorrelation Function (PACF) plots are crucial tools in time series analysis, helping to identify the type of model that best describes a series. The ACF plot shows the correlation of the series with its own lags, providing insights into the overall correlation structure and potential seasonality. On the other hand, the PACF plot reveals the direct effect of past values on the current value, helping to pinpoint the order of autoregressive models.
 
+By examining the ACF and PACF plots, we can discern patterns that suggest the presence of autoregressive (AR) or moving average (MA) components in our time series models. Significant spikes in the ACF plot indicate potential AR terms, while significant spikes in the PACF plot suggest MA terms. These plots also assist in determining the stationarity of the series, a crucial aspect in time series modeling, where non-stationary data often require differencing to achieve stationarity.
 
+In this section, we'll explore the ACF and PACF plots for our datasets delving into their autocorrelation structures and deriving insights that will inform our model selection and forecasting approach.
 
-
-#### ACF & PACF Plots
 
 ::: panel-tabset
 
@@ -649,21 +798,28 @@ There seems to be some volatility, suggesting that there might be other factors 
 
 # ACF and PACF for Crude Oil
 crude_oil_acf <- ggAcf(composite_crude_oil_ts) + 
-  ggtitle("ACF Plot for Refiner Acquisition Cost of Crude Oil, Composite") + 
+  ggtitle("ACF Plot for Refiner Acquisition Cost of Crude Oil") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#5a3196") +
-  geom_hline(yintercept = 0, color = "#5a3196") 
+  geom_segment(lineend = "butt", color = "turquoise4") +
+  geom_hline(yintercept = 0, color = "turquoise4") 
 
 crude_oil_pacf <- ggPacf(composite_crude_oil_ts) + 
-  ggtitle("PACF Plot for Refiner Acquisition Cost of Crude Oil, Composite") + 
+  ggtitle("PACF Plot for Refiner Acquisition Cost of Crude Oil") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#5a3196") +
-  geom_hline(yintercept = 0, color = "#5a3196") 
+  geom_segment(lineend = "butt", color = "turquoise4") +
+  geom_hline(yintercept = 0, color = "turquoise4") 
 
 grid.arrange(crude_oil_acf, crude_oil_pacf, nrow = 2)
 
 
 ```
+
+The **ACF plot** for crude oil prices demonstrates prolonged significant autocorrelation, suggesting a non-stationary series. The gradual decline in correlation as lags increase indicates a potential long-term dependency or trend in the data. 
+
+The **PACF plot** shows significant spike at lag 1 and 2, followed by non-significant values
+
+The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1 and 2. The slow decay in the ACF implies that differencing (d > 0) may be necessary to achieve stationarity.
+
 
 
 ## Natural Gas
@@ -676,21 +832,29 @@ grid.arrange(crude_oil_acf, crude_oil_pacf, nrow = 2)
 
 # ACF and PACF for Natural Gas
 natural_gas_acf <- ggAcf(citygate_gas_ts) + 
-  ggtitle("ACF Plot for Natural Gas Price, Citygate") + 
+  ggtitle("ACF Plot for Natural Gas Price") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#5a3196") +
-  geom_hline(yintercept = 0, color = "#5a3196") 
+  geom_segment(lineend = "butt", color = "turquoise4") +
+  geom_hline(yintercept = 0, color = "turquoise4") 
 
 natural_gas_pacf <- ggPacf(citygate_gas_ts) + 
-  ggtitle("PACF Plot for Natural Gas Price, Citygate") + 
+  ggtitle("PACF Plot for Natural Gas Price") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#5a3196") +
-  geom_hline(yintercept = 0, color = "#5a3196") 
+  geom_segment(lineend = "butt", color = "turquoise4") +
+  geom_hline(yintercept = 0, color = "turquoise4") 
 
 grid.arrange(natural_gas_acf, natural_gas_pacf, nrow = 2)
 
 
 ```
+
+The **ACF plot** for natural gas prices shows a very slow decay, suggesting non-stationarity and a need for differencing. 
+
+The **PACF plot** shows a significant spike at lag 1, followed by a drop-off.
+
+The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1 and 2. The slow decay in the ACF implies that differencing (d > 0) may be necessary to achieve stationarity.
+
+
 
 
 ## Electricity
@@ -703,21 +867,28 @@ grid.arrange(natural_gas_acf, natural_gas_pacf, nrow = 2)
 
 # ACF and PACF for Electricity
 electricity_acf <- ggAcf(total_electricity_ts) + 
-  ggtitle("ACF Plot for Average Price of Electricity to Ultimate Customers, Total") + 
+  ggtitle("ACF Plot for Average Price of Electricity to Ultimate Customers") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#5a3196") +
-  geom_hline(yintercept = 0, color = "#5a3196") 
+  geom_segment(lineend = "butt", color = "turquoise4") +
+  geom_hline(yintercept = 0, color = "turquoise4") 
 
 electricity_pacf <- ggPacf(total_electricity_ts) + 
-  ggtitle("PACF Plot for Average Price of Electricity to Ultimate Customers, Total") + 
+  ggtitle("PACF Plot for Average Price of Electricity to Ultimate Customers") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#5a3196") +
-  geom_hline(yintercept = 0, color = "#5a3196") 
+  geom_segment(lineend = "butt", color = "turquoise4") +
+  geom_hline(yintercept = 0, color = "turquoise4") 
 
 grid.arrange(electricity_acf, electricity_pacf, nrow = 2)
 
 
 ```
+
+The **ACF plot** for electricity shows a strong positive autocorrelation across all the lags indicating a potential MA term and a need for differencing due to non-stationarity.
+
+The **PACF plot** shows a significant correlations at lag 1. The choice of 'p' could be 1 or 2 based on the first significant spikes.
+
+The consistent autocorrelation in the ACF plot suggests a potential need for a higher-order MA term or differencing, leading to an ARIMA(p,d,q) model consideration.
+
 
 
 ## GDP
@@ -733,19 +904,27 @@ grid.arrange(electricity_acf, electricity_pacf, nrow = 2)
 gdp_acf <- ggAcf(gdp_ts) + 
   ggtitle("ACF Plot for GDP") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#5a3196") +
-  geom_hline(yintercept = 0, color = "#5a3196") 
+  geom_segment(lineend = "butt", color = "turquoise4") +
+  geom_hline(yintercept = 0, color = "turquoise4") 
 
 gdp_pacf <- ggPacf(gdp_ts) + 
   ggtitle("PACF Plot for GDP") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#5a3196") +
-  geom_hline(yintercept = 0, color = "#5a3196") 
+  geom_segment(lineend = "butt", color = "turquoise4") +
+  geom_hline(yintercept = 0, color = "turquoise4") 
 
 grid.arrange(gdp_acf, gdp_pacf, nrow = 2)
 
 
 ```
+
+
+The **ACF plot** for GDP shows a persistent strong autocorrelation across all lags indicates non-stationarity, suggesting that differencing may be necessary.
+
+The **PACF plot** have a sharp cutoff after lag 1 indicating an AR(1) process, suggesting that previous values have a significant impact on current GDP.
+
+Given the strong autocorrelation and the PACF cutoff, an ARIMA(1,1,0) model may be a good starting point for modeling GDP, but  differencing (d > 0) may be necessary.
+
 
 
 
@@ -761,14 +940,14 @@ grid.arrange(gdp_acf, gdp_pacf, nrow = 2)
 cpi_acf <- ggAcf(cpi_ts) + 
   ggtitle("ACF Plot for CPI") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#5a3196") +
-  geom_hline(yintercept = 0, color = "#5a3196") 
+  geom_segment(lineend = "butt", color = "turquoise4") +
+  geom_hline(yintercept = 0, color = "turquoise4") 
 
 cpi_pacf <- ggPacf(cpi_ts) + 
   ggtitle("PACF Plot for CPI") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#5a3196") +
-  geom_hline(yintercept = 0, color = "#5a3196") 
+  geom_segment(lineend = "butt", color = "turquoise4") +
+  geom_hline(yintercept = 0, color = "turquoise4") 
 
 grid.arrange(cpi_acf, cpi_pacf, nrow = 2)
 
@@ -776,6 +955,17 @@ grid.arrange(cpi_acf, cpi_pacf, nrow = 2)
 
 ```
 
+
+
+The **ACF plot** for CPI shows a sustained high autocorrelation across lags suggests a non-stationary time series, indicative of CPI's long memory.
+
+The **PACF plot** have a sharp spike and a cutoff after lag 1 indicating an AR(1) process, suggesting that previous values have a significant impact on current GDP.
+
+The sustained autocorrelation in the ACF plot implies that differencing might be needed. An initial ARIMA(1,1,0) model could be considered.
+
+
+
+## 
 :::
 
 
@@ -783,7 +973,10 @@ grid.arrange(cpi_acf, cpi_pacf, nrow = 2)
 
 
 
-#### Dickey-Fuller Test
+# Dickey-Fuller Test
+
+The Dickey-Fuller test is a statistical test used to determine the presence of unit root in a time series and, consequently, whether the series is non-stationary. The null hypothesis of the test is that the time series is non-stationary. If the p-value is less than the chosen alpha level (usually 0.05), we reject the null hypothesis and infer that the series is stationary.
+
 
 ::: panel-tabset
 
@@ -808,6 +1001,10 @@ adf_test_crude_oil
 ```
 
 
+Since the p-value is greater than 0.05, we do not reject the null hypothesis and conclude that the crude oil price series is non-stationary, indicating that differencing or transformation may be required to achieve stationarity.
+
+
+
 ## Natural Gas
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -824,6 +1021,9 @@ adf_test_natural_gas
 
 
 ```
+
+The p-value suggests that the natural gas price series is non-stationary, reinforcing the need for potential differencing or other transformations to stabilize the series.
+
 
 
 ## Electricity
@@ -843,6 +1043,9 @@ adf_test_electricity
 
 ```
 
+With the p-value well above 0.05, the electricity price series is considered non-stationary, indicating that adjustments are necessary to model the series accurately.
+
+
 
 ## GDP
 
@@ -861,6 +1064,7 @@ adf_test_gdp
 
 ```
 
+The extremely high p-value indicates that the GDP series is strongly non-stationary, suggesting that it would benefit from differencing or other methods to achieve stationarity.
 
 
 ## CPI
@@ -880,13 +1084,25 @@ adf_test_cpi
 
 ```
 
+The CPI series is also non-stationary based on the high p-value, indicating that preprocessing steps are needed before further analysis or modeling.
+
+##
 :::
 
 
 
+These Dickey-Fuller test results across different datasets corroborate our earlier analyses and ACF & PACF plot interpretations, showing a common theme of non-stationarity in the series. 
 
 
-#### Detrend VS Difference
+
+
+# Detrend VS Difference
+
+
+Detrending and differencing are two methods used to make time series data stationary, it involves removing the underlying trend from the data, while differencing focuses on the changes between consecutive observations.
+
+Detrending typically subtracts the estimated trend component from the original series, while differencing transforms the series into the sequence of differences between adjacent values. While detrending addresses the trend, differencing can help eliminate both trend and seasonality, making the series stationary.
+
 
 ::: panel-tabset
 
@@ -927,6 +1143,15 @@ grid.arrange(plot1_crude_oil, plot2_crude_oil, nrow = 2)
 
 ```
 
+**Detrended:**
+
+The residuals after detrending indicate that linear detrending might not fully account for all underlying components, as patterns still emerge.
+
+**First Difference:**
+
+The differenced series shows fluctuations around zero, indicative of improved stationarity. While the mean appears stabilized, examining autocorrelation in the differenced data is crucial to confirm stationarity fully.
+
+
 
 ## Natural Gas
 
@@ -943,14 +1168,14 @@ fit_natural_gas <- lm(Value ~ Date, data = citygate_gas_prices, na.action = NULL
 resid_natural_gas_ts <- ts(resid(fit_natural_gas), start=c(start_year_gas, start_month_gas), frequency=12)
 
 # Now plot the residuals
-plot1_natural_gas <- autoplot(resid_natural_gas_ts, series="Detrended Natural Gas", colour = "#00BA38") + 
+plot1_natural_gas <- autoplot(resid_natural_gas_ts, series="Detrended Natural Gas", colour = "#00BFC4") + 
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
   ggtitle("Detrended Natural Gas")
 
 # Differencing plot remains the same
-plot2_natural_gas <- autoplot(diff(citygate_gas_ts), series = "First Difference Natural Gas", colour = "#619CFF") + 
+plot2_natural_gas <- autoplot(diff(citygate_gas_ts), series = "First Difference Natural Gas", colour = "#F8766D") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
@@ -961,6 +1186,17 @@ grid.arrange(plot1_natural_gas, plot2_natural_gas, nrow = 2)
 
 
 ```
+
+
+**Detrended:**
+
+The detrended series shows periods of volatility, indicating that removing the linear trend doesn't capture all the data's dynamics, remaining fluctuations may reflect other underlying components like seasonality
+
+**First Difference:**
+
+Consistent mean but varying volatility and a spike around 2020, which could be due to the pandemic
+
+
 
 
 ## Electricity
@@ -978,14 +1214,14 @@ fit_electricity <- lm(Value ~ Date, data = total_electricity_prices, na.action =
 resid_electricity_ts <- ts(resid(fit_electricity), start=c(start_year_elec, start_month_elec), frequency=12)
 
 # Plot the residuals
-plot1_electricity <- autoplot(resid_electricity_ts, series="Detrended Electricity", colour = "#C77CFF") + 
+plot1_electricity <- autoplot(resid_electricity_ts, series="Detrended Electricity", colour = "#00BFC4") + 
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
   ggtitle("Detrended Electricity")
 
 # Differencing plot
-plot2_electricity <- autoplot(diff(total_electricity_ts), series = "First Difference Electricity", colour = "#7CAE00") + 
+plot2_electricity <- autoplot(diff(total_electricity_ts), series = "First Difference Electricity", colour = "#F8766D") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
@@ -996,6 +1232,17 @@ grid.arrange(plot1_electricity, plot2_electricity, nrow = 2)
 
 
 ```
+
+
+**Detrended:**
+
+The detrended plot of electricity prices displays clear periodic fluctuations, suggesting the presence of seasonality.
+
+**First Difference:**
+
+The first differenced series oscillates around a central mean, which is indicative of stationarity in the mean of the series. However, the consistent pattern of spikes followed by a return to the mean—indicates a strong seasonal component.
+
+
 
 
 ## GDP
@@ -1034,6 +1281,16 @@ grid.arrange(plot1_gdp, plot2_gdp, nrow = 2)
 ```
 
 
+**Detrended:**
+
+The detrended GDP plot showcases that the residuals seem to have a non-linear component, as evidenced by the gradual decline and subsequent increase over time. The residuals decrease and then slowly begin to rise after the 1980s, accelerating significantly in recent years. GDP growth rate is not constant and a simple linear model may not be sufficient to capture the complexities.
+
+
+**First Difference:**
+
+The differenced series predominantly hovers around the zero line, which indicates that this transformation effectively removes the trend from the data, leading to a stationary series in terms of the mean. The substantial spike observed towards the end is likely due to the recent economic downturn due to the COVID-19 pandemic, which represents a significant economic shock not accounted for by typical GDP growth patterns. 
+
+
 
 ## CPI
 
@@ -1050,14 +1307,14 @@ fit_cpi <- lm(CPIAUCSL ~ DATE, data = cpi_data, na.action = NULL)
 resid_cpi_ts <- ts(resid(fit_cpi), start=c(start_year_cpi, start_quarter_cpi), frequency=4)
 
 # Plot the residuals
-plot1_cpi <- autoplot(resid_cpi_ts, series="Detrended CPI", colour = "#00BA38") + 
+plot1_cpi <- autoplot(resid_cpi_ts, series="Detrended CPI", colour = "#00BFC4") + 
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
   ggtitle("Detrended CPI")
 
 # Differencing plot
-plot2_cpi <- autoplot(diff(cpi_ts), series = "First Difference CPI", colour = "#619CFF") + 
+plot2_cpi <- autoplot(diff(cpi_ts), series = "First Difference CPI", colour = "#F8766D") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
@@ -1069,12 +1326,46 @@ grid.arrange(plot1_cpi, plot2_cpi, nrow = 2)
 
 ```
 
+
+
+
+**Detrended:**
+
+The detrended CPI plot reveals residuals that decline over a prolonged period before stabilizing and then increasing. This pattern suggests that a simple linear trend does not fully capture the complexity of the inflationary trend over time. 
+
+
+**First Difference:**
+
+The first difference plot for CPI demonstrates a series that fluctuates around a central mean value.
+
+
+
+
+
+
+
+##
+
+
 :::
 
 
 
 
-#### Moving Average Smoothing
+# Moving Average Smoothing
+
+
+Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
+
+In our analysis, we employ moving averages as a means to discern and illustrate trends within the energy sector's economic data. By choosing different window lengths for our moving averages, we can examine trends on various time scales:
+
+Short-Term Trends: A 5-period moving average (5-MA) can reveal insights into the short-term direction of the data, helping us to understand recent movements and immediate market responses.
+
+Medium-Term Trends: A 15-period moving average (15-MA) extends the horizon, smoothing out month-to-month volatility to focus on the quarterly or seasonal patterns.
+
+Long-Term Trends: With 20- and 30-period moving averages (20-MA and 30-MA), we delve into the long-term movements that reflect overarching trends and economic cycles.
+
+
 
 ::: panel-tabset
 
@@ -1089,36 +1380,41 @@ grid.arrange(plot1_cpi, plot2_cpi, nrow = 2)
 #| warning: false
 #| output: true
 
-# Put time series into dataframe
-df_crude_oil <- composite_crude_oil_prices
+# Prepare the data frame with the correct start date
+crude_oil_df <- data.frame(
+  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(composite_crude_oil_ts)),
+  Value = as.vector(composite_crude_oil_ts)
+)
 
-# Calculate moving averages
-ma_crude_3 <- zoo::rollapply(df_crude_oil$Value, 3, mean, fill = NA, align = "right")
-ma_crude_12 <- zoo::rollapply(df_crude_oil$Value, 12, mean, fill = NA, align = "right")
-ma_crude_16 <- zoo::rollapply(df_crude_oil$Value, 16, mean, fill = NA, align = "right")
-ma_crude_24 <- zoo::rollapply(df_crude_oil$Value, 24, mean, fill = NA, align = "right")
+# Calculate moving averages with the specified window sizes
+crude_oil_df$ma5 <- zoo::rollmean(crude_oil_df$Value, 5, mean, fill = NA, align = "right")
+crude_oil_df$ma15 <- zoo::rollmean(crude_oil_df$Value, 15, mean, fill = NA, align = "right")
+crude_oil_df$ma20 <- zoo::rollmean(crude_oil_df$Value, 20, mean, fill = NA, align = "right")
+crude_oil_df$ma30 <- zoo::rollmean(crude_oil_df$Value, 30, mean, fill = NA, align = "right")
 
-# Add moving averages to the dataframe
-df_crude_oil$ma3 <- ma_crude_3
-df_crude_oil$ma12 <- ma_crude_12
-df_crude_oil$ma16 <- ma_crude_16
-df_crude_oil$ma24 <- ma_crude_24
-
-
-# Create plot using ggplot2
-ggplot(df_crude_oil, aes(x = Date, y = Value, color = "Data")) +
-  geom_line() +
-  geom_line(aes(y = ma3, color = "3 SMA")) +
-  geom_line(aes(y = ma12, color = "12 SMA")) +
-  geom_line(aes(y = ma16, color = "16 SMA")) +
-  geom_line(aes(y = ma24, color = "24 SMA")) +
-  xlab("Time") +
-  ylab("Value (USD)") +
-  ggtitle("Crude Oil Moving Average Smoothing") +
-  scale_color_manual(name = "Type", values = c("Data" = "gray", "3 SMA" = "blue", "12 SMA" = "orange", "16 SMA" = "green", "24 SMA" = "red")) +
+# Create the ggplot object with a color aesthetic for the legend
+p <- ggplot(crude_oil_df, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Value (USD)") +
+  ggtitle('Crude Oil Price with Moving Averages') +
   theme_bw()
 
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p)
+
+
+
 ```
+
+
+
+
+
+
 
 
 ## Natural Gas
@@ -1129,13 +1425,30 @@ ggplot(df_crude_oil, aes(x = Date, y = Value, color = "Data")) +
 #| warning: false
 #| output: true
 
-# Decompose the time series
-decomposed_natural_gas <- decompose(citygate_gas_ts, "multiplicative")
+natural_gas_df <- data.frame(
+  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(citygate_gas_ts)),
+  Value = as.vector(citygate_gas_ts)
+)
 
-# Plot the decomposed components
-autoplot(decomposed_natural_gas, colour = "#5a3196") + 
-  ggtitle("Decomposition Plot for Natural Gas Price, Citygate") +
+# Calculate moving averages with the specified window sizes
+natural_gas_df$ma5 <- zoo::rollmean(natural_gas_df$Value, 5, mean, fill = NA, align = "right")
+natural_gas_df$ma15 <- zoo::rollmean(natural_gas_df$Value, 15, mean, fill = NA, align = "right")
+natural_gas_df$ma20 <- zoo::rollmean(natural_gas_df$Value, 20, mean, fill = NA, align = "right")
+natural_gas_df$ma30 <- zoo::rollmean(natural_gas_df$Value, 30, mean, fill = NA, align = "right")
+
+# Create the ggplot object with a color aesthetic for the legend
+p_ng <- ggplot(natural_gas_df, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Value (Price)") +
+  ggtitle('Natural Gas Price with Moving Averages') +
   theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_ng)
 
 ```
 
@@ -1148,18 +1461,32 @@ autoplot(decomposed_natural_gas, colour = "#5a3196") +
 #| warning: false
 #| output: true
 
-# Decompose the time series
-decomposed_electricity <- decompose(total_electricity_ts, "multiplicative")
+# Calculate moving averages with the specified window sizes
+total_electricity_prices$ma5 <- zoo::rollmean(total_electricity_prices$Value, 5, mean, fill = NA, align = "right")
+total_electricity_prices$ma15 <- zoo::rollmean(total_electricity_prices$Value, 15, mean, fill = NA, align = "right")
+total_electricity_prices$ma20 <- zoo::rollmean(total_electricity_prices$Value, 20, mean, fill = NA, align = "right")
+total_electricity_prices$ma30 <- zoo::rollmean(total_electricity_prices$Value, 30, mean, fill = NA, align = "right")
 
-# Plot the decomposed components
-autoplot(decomposed_electricity, colour = "#5a3196") + 
-  ggtitle("Decomposition Plot for Average Price of Electricity to Ultimate Customers, Total") +
+# Create the ggplot object with a color aesthetic for the legend
+p_electricity <- ggplot(total_electricity_prices, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Price (Cents per Kilowatthour)") +
+  ggtitle('Electricity Price with Moving Averages') +
   theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_electricity)
 
 ```
 
 
 ## GDP
+
+
 
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -1168,15 +1495,31 @@ autoplot(decomposed_electricity, colour = "#5a3196") +
 #| warning: false
 #| output: true
 
-# Decompose the time series
-decomposed_gdp <- decompose(gdp_ts, "multiplicative")
+# Calculate moving averages with the specified window sizes
+gdp_data$ma5 <- zoo::rollmean(gdp_data$GDP, 5, mean, fill = NA, align = "right", by = 4)  # Considering quarterly data
+gdp_data$ma15 <- zoo::rollmean(gdp_data$GDP, 15, mean, fill = NA, align = "right", by = 4)
+gdp_data$ma20 <- zoo::rollmean(gdp_data$GDP, 20, mean, fill = NA, align = "right", by = 4)
+gdp_data$ma30 <- zoo::rollmean(gdp_data$GDP, 30, mean, fill = NA, align = "right", by = 4)
 
-# Plot the decomposed components
-autoplot(decomposed_gdp, colour = "#5a3196") + 
-  ggtitle("Decomposition Plot for GDP") +
+# Create the ggplot object with a color aesthetic for the legend
+p_gdp <- ggplot(gdp_data, aes(x = DATE)) + 
+  geom_line(aes(y = GDP, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("GDP (in billions)") +
+  ggtitle('GDP with Moving Averages') +
   theme_bw()
 
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_gdp)
+
 ```
+
+
+
+
 
 
 
@@ -1187,16 +1530,31 @@ autoplot(decomposed_gdp, colour = "#5a3196") +
 #| code-summary: 'Importing Libraries'
 #| warning: false
 #| output: true
+#| 
+# Calculate moving averages with the specified window sizes
+# Replace 'fill = NA' with 'fill = ifelse(is.na(.), NA, mean(., na.rm = TRUE))' if you want to avoid NA in your moving averages
+cpi_data$ma5 <- zoo::rollmean(cpi_data$CPIAUCSL, 5, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma15 <- zoo::rollmean(cpi_data$CPIAUCSL, 15, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma20 <- zoo::rollmean(cpi_data$CPIAUCSL, 20, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma30 <- zoo::rollmean(cpi_data$CPIAUCSL, 30, fill = NA, align = "right", by.column = FALSE)
 
-# Decompose the time series
-decomposed_cpi <- decompose(cpi_ts, "multiplicative")
-
-# Plot the decomposed components
-autoplot(decomposed_cpi, colour = "#5a3196") + 
-  ggtitle("Decomposition Plot for CPI") +
+# Create the ggplot object with a color aesthetic for the legend
+p_cpi <- ggplot(cpi_data, aes(x = DATE)) + 
+  geom_line(aes(y = CPIAUCSL, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("CPIAUCSL") +
+  ggtitle('CPI with Moving Averages') +
   theme_bw()
 
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_cpi)
+
 ```
+
+
 
 :::
 
