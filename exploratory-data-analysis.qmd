@@ -962,7 +962,7 @@ The sustained autocorrelation in the ACF plot implies that differencing might be
 
 
 
-#### Dickey-Fuller Test
+# Dickey-Fuller Test
 
 ::: panel-tabset
 
