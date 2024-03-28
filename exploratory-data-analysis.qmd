@@ -678,7 +678,7 @@ The decomposition plot for the Natural Gas Price offers a comprehensive view of 
 decomposed_electricity <- decompose(total_electricity_ts, "multiplicative")
 
 # Plot the decomposed components
-autoplot(decomposed_electricity, colour) + 
+autoplot(decomposed_electricity) + 
   ggtitle("Decomposition Plot for Average Price of Electricity to Ultimate Customers, Total") +
   theme_bw()
 
@@ -757,20 +757,12 @@ The CPI decomposition plot sheds light on inflation trends.
 
 
 
-
-
 :::
 
 
 
-Seasonal: The seasonal component reveals a clear, consistent pattern that repeats annually. This suggests that there are predictable fluctuations in nitrate levels that correspond to the time of year, which could be associated with agricultural cycles, weather patterns, or other seasonal factors.
 
-There seems to be some volatility, suggesting that there might be other factors or perhaps outliers influencing nitrate levels that are not captured by the seasonal or trend components.
-
-
-
-
-#### ACF & PACF Plots
+# ACF & PACF Plots
 
 ::: panel-tabset
 
