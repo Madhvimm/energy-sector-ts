@@ -970,6 +970,9 @@ The sustained autocorrelation in the ACF plot implies that differencing might be
 
 # Dickey-Fuller Test
 
+The Dickey-Fuller test is a statistical test used to determine the presence of unit root in a time series and, consequently, whether the series is non-stationary. The null hypothesis of the test is that the time series is non-stationary. If the p-value is less than the chosen alpha level (usually 0.05), we reject the null hypothesis and infer that the series is stationary.
+
+
 ::: panel-tabset
 
 
@@ -993,6 +996,10 @@ adf_test_crude_oil
 ```
 
 
+Since the p-value is greater than 0.05, we do not reject the null hypothesis and conclude that the crude oil price series is non-stationary, indicating that differencing or transformation may be required to achieve stationarity.
+
+
+
 ## Natural Gas
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -1009,6 +1016,9 @@ adf_test_natural_gas
 
 
 ```
+
+The p-value suggests that the natural gas price series is non-stationary, reinforcing the need for potential differencing or other transformations to stabilize the series.
+
 
 
 ## Electricity
@@ -1028,6 +1038,9 @@ adf_test_electricity
 
 ```
 
+With the p-value well above 0.05, the electricity price series is considered non-stationary, indicating that adjustments are necessary to model the series accurately.
+
+
 
 ## GDP
 
@@ -1046,6 +1059,7 @@ adf_test_gdp
 
 ```
 
+The extremely high p-value indicates that the GDP series is strongly non-stationary, suggesting that it would benefit from differencing or other methods to achieve stationarity.
 
 
 ## CPI
@@ -1065,13 +1079,18 @@ adf_test_cpi
 
 ```
 
+The CPI series is also non-stationary based on the high p-value, indicating that preprocessing steps are needed before further analysis or modeling.
+
 :::
 
 
 
+These Dickey-Fuller test results across different datasets corroborate our earlier analyses and ACF & PACF plot interpretations, showing a common theme of non-stationarity in the series. 
 
 
-#### Detrend VS Difference
+
+
+# Detrend VS Difference
 
 ::: panel-tabset
 
@@ -1128,14 +1147,14 @@ fit_natural_gas <- lm(Value ~ Date, data = citygate_gas_prices, na.action = NULL
 resid_natural_gas_ts <- ts(resid(fit_natural_gas), start=c(start_year_gas, start_month_gas), frequency=12)
 
 # Now plot the residuals
-plot1_natural_gas <- autoplot(resid_natural_gas_ts, series="Detrended Natural Gas", colour = "#00BA38") + 
+plot1_natural_gas <- autoplot(resid_natural_gas_ts, series="Detrended Natural Gas", colour = "#00BFC4") + 
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
   ggtitle("Detrended Natural Gas")
 
 # Differencing plot remains the same
-plot2_natural_gas <- autoplot(diff(citygate_gas_ts), series = "First Difference Natural Gas", colour = "#619CFF") + 
+plot2_natural_gas <- autoplot(diff(citygate_gas_ts), series = "First Difference Natural Gas", colour = "#F8766D") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
@@ -1163,14 +1182,14 @@ fit_electricity <- lm(Value ~ Date, data = total_electricity_prices, na.action =
 resid_electricity_ts <- ts(resid(fit_electricity), start=c(start_year_elec, start_month_elec), frequency=12)
 
 # Plot the residuals
-plot1_electricity <- autoplot(resid_electricity_ts, series="Detrended Electricity", colour = "#C77CFF") + 
+plot1_electricity <- autoplot(resid_electricity_ts, series="Detrended Electricity", colour = "#00BFC4") + 
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
   ggtitle("Detrended Electricity")
 
 # Differencing plot
-plot2_electricity <- autoplot(diff(total_electricity_ts), series = "First Difference Electricity", colour = "#7CAE00") + 
+plot2_electricity <- autoplot(diff(total_electricity_ts), series = "First Difference Electricity", colour = "#F8766D") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
@@ -1235,14 +1254,14 @@ fit_cpi <- lm(CPIAUCSL ~ DATE, data = cpi_data, na.action = NULL)
 resid_cpi_ts <- ts(resid(fit_cpi), start=c(start_year_cpi, start_quarter_cpi), frequency=4)
 
 # Plot the residuals
-plot1_cpi <- autoplot(resid_cpi_ts, series="Detrended CPI", colour = "#00BA38") + 
+plot1_cpi <- autoplot(resid_cpi_ts, series="Detrended CPI", colour = "#00BFC4") + 
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
   ggtitle("Detrended CPI")
 
 # Differencing plot
-plot2_cpi <- autoplot(diff(cpi_ts), series = "First Difference CPI", colour = "#619CFF") + 
+plot2_cpi <- autoplot(diff(cpi_ts), series = "First Difference CPI", colour = "#F8766D") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
