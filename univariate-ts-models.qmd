@@ -1,5 +1,5 @@
 ---
-title: "Exploratory Data Analysis"
+title: "Univariate TS Models (ARIMA/SARIMA)"
 output: distill::distill_article
 
 ---
@@ -24,7 +24,7 @@ library(gridExtra)
 
 
 
-# Time Series Plot
+## Time Series Plot
 
 In this section, we delve into time series data, focusing on the energy sector's economic impact. Time series analysis is pivotal in understanding the temporal patterns and trends within data points collected sequentially over time. By employing time series plots, we gain invaluable insights into the underlying structures of our datasets, such as trends, seasonality, and cyclical fluctuations.
 
@@ -105,13 +105,13 @@ ggplotly(p_composite_crude_oil)
 ```
 
 
-The time series plot for crude oil showcases the historical refiner acquisition costs. Observations include a long-term upward trend, significant volatility, and notable peaks, particularly around 2008 and 2011 and 2015. The recent years exhibit a declining trend post the last peak, highlighting the dynamic nature of crude oil prices.
+The time series plot for crude oil showcases the historical refiner acquisition costs. Observations include a long-term upward trend, significant volatility, and notable peaks, particularly around 2008 and 2011-2014. The recent years exhibit a declining trend post the last peak, highlighting the dynamic nature of crude oil prices.
 
-*Trend:* Increasing over the long term with recent decline.
+Analysis:
 
-*Seasonality:* No clear seasonality observed due to the dominant influence of geopolitical and economic factors on oil prices.
-
-*Nature of Series:* The series seems to be multiplicative, given the percentage changes and volatility patterns.
+Trend: Increasing over the long term with recent decline.
+Seasonality: No clear seasonality observed due to the dominant influence of geopolitical and economic factors on oil prices.
+Nature of Series: The series seems to be multiplicative, given the percentage changes and volatility patterns.
 
 
 
@@ -191,14 +191,8 @@ ggplotly(p_citygate_gas)
 
 
 
-The natural gas price graph, reveals substantial fluctuations, a significant peaks in 2001, 2005, 2008 and around 2021, and recent volatile trends. Unlike crude oil, natural gas prices do not exhibit a clear long-term trend but return closer to the baseline after peaks.
 
 
-*Trend:* Fluctuating without a clear long-term direction.
-
-*Seasonality:* Less evident due to the market's response to short-term supply and demand changes.
-
-*Nature of Series:* Likely multiplicative, reflecting the proportional changes and variability in prices.
 
 
 
@@ -277,16 +271,6 @@ ggplotly(p_total_electricity)
 ```
 
 
-The "Average Price of Electricity to Ultimate Customers" graph offers insights into the pricing trends of electricity, an essential commodity for consumers and industries alike.
-
-*Trend:* There is a upward trend showcasing long-term growth.
-
-*Seasonality:* Periodic oscillations in price could signify seasonal demand changes, driven by heating needs in winter or cooling in summer, impacting production costs and consumption patterns.
-
-*Nature of Series:* Likely additive, characterized by a regular oscillations indicating seasonality.
-
-
-
 
 ## GDP
 
@@ -331,19 +315,6 @@ p_gdp <- ggplot(gdp_data, aes(x = DATE, y = GDP)) +
 ggplotly(p_gdp)
 
 ```
-
-
-
-
-
-GDP growth exhibits an overall upward trend with a notable dip in 2020, possibly due to economic downturns because of the pandemic. The recovery post-dip indicates economic resilience.
-
-
-*Trend:* Increasing with acceleration in recent decades.
-
-*Seasonality:* Not applicable for GDP as it reflects economic trends and we cant see in the graph as well.
-
-*Nature of Series:* Additive, considering the steady growth pattern with occasional dips and recoveries.
 
 
 
@@ -395,28 +366,15 @@ ggplotly(p_cpi)
 
 
 
-
-
-The CPI graph illustrates a continuous upward trend, indicative of inflation. Recent increases suggest a period of higher inflation, potentially influenced by various economic factors.
-
-
-*Trend:* Consistently upward, indicating inflation.
-
-*Seasonality:* Not distinctly observable, as CPI reflects broader economic price changes
-
-*Nature of Series:* Additive, with a steady increase in consumer prices over time.
-
-
-
-
 :::
 
 
 
-# Lag Plots
+## Lag Plots
 
 
-Lag plots are essential tools in time series analysis, offering insights into the temporal dependency within the data. By comparing data points with their previous values (lags), we can uncover patterns, trends, and potential autocorrelation in the series. Each lag in the plot helps us to visualize how past values relate to current values, which is crucial for understanding the dynamics and forecasting future trends. In this section, we explore lag plots for various key economic indicators and energy prices, providing a deeper understanding of their time-dependent structures.
+Lag plot is a visual representation of the nitrate levels for each month, to identify any patterns or relationships in the data over time. Each panel represents a different lag, meaning the number of months between the points in the series. The plot shows data from a public water system (PWS) with the ID CA1910067.
+
 
 
 ::: panel-tabset
@@ -444,12 +402,12 @@ start_year_elec <- as.numeric(format(min(total_electricity_prices$Date), "%Y"))
 start_month_elec <- as.numeric(format(min(total_electricity_prices$Date), "%m"))
 total_electricity_ts <- ts(total_electricity_prices$Value, start=c(start_year_elec, start_month_elec), frequency=12)
 
-# For GDP (it's quarterly)
+# For GDP (assuming it's quarterly, replace with actual data if different)
 start_year_gdp <- as.numeric(format(min(gdp_data$DATE), "%Y"))
 start_quarter_gdp <- quarter(min(gdp_data$DATE))
 gdp_ts <- ts(gdp_data$GDP, start=c(start_year_gdp, start_quarter_gdp), frequency=4)
 
-# For CPI (it's quarterly)
+# For CPI (assuming it's quarterly, replace with actual data if different)
 start_year_cpi <- as.numeric(format(min(cpi_data$DATE), "%Y"))
 start_quarter_cpi <- quarter(min(cpi_data$DATE))
 cpi_ts <- ts(cpi_data$CPIAUCSL, start=c(start_year_cpi, start_quarter_cpi), frequency=4)
@@ -477,14 +435,6 @@ gglagplot(composite_crude_oil_ts, do.lines=FALSE) +
 ```
 
 
-The lag plots for the Cost of Crude Oil reveal a positive autocorrelation. The presence of color-coded months suggests seasonal trends, though they are not starkly evident. As lags increase, the correlation weakens, diminishing predictive power over longer time lags.
-
-- Positive Autocorrelation evident across the lags, suggesting that past prices influence future prices.
-
-- The strength of autocorrelation decreases with higher lags.
-
-
-
 ## Natural Gas
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -501,14 +451,6 @@ gglagplot(citygate_gas_ts, do.lines=FALSE) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
   theme_bw()
 ```
-
-Natural Gas Price lag plots display a positive autocorrelation, especially evident in the initial lags. With increasing lags, the data points become more dispersed, indicating a reduction in autocorrelation strength.
-
-- Strong Autocorrelation in the initial lags, indicating past prices are good predictors for the near future.
-
-- As the lag increases, the correlation diminishes, which is common in time series data.
-
-
 
 
 ## Electricity
@@ -527,15 +469,6 @@ gglagplot(total_electricity_ts, do.lines=FALSE) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
   theme_bw()
 ```
-
-Electricity price lag plots show a strong and consistent positive autocorrelation across all lags, suggesting stable and predictable price trends. The seasonal effect is visible, with certain months consistently clustering together.
-
-- Strong positive auto-correlation is maintained across various lags.
-
-- Clear month-to-month price consistency suggests significant seasonality.
-
-- The strong correlation at higher lags implies underlying factors affecting electricity prices.
-
 
 
 ## GDP
@@ -557,13 +490,6 @@ gglagplot(gdp_ts, do.lines=FALSE) +
 ```
 
 
-GDP's lag plots exhibit a very strong linear relationship across all lags, reflecting the steady economic growth.
-
-- Persistent growth indicates steady economic progression.
-
-- No distinct seasonal patterns are visible, suggesting uniform economic growth across quarters.
-
-
 
 ## CPI
 
@@ -583,24 +509,16 @@ gglagplot(cpi_ts, do.lines=FALSE) +
 ```
 
 
-The CPI lag plots show a strong positive autocorrelation, indicating consistent inflation trends. 
-
-- Reflects a steady inflation rate over the years.
-
-- The consistent distribution of quarterly colors across lags indicates an even inflation rate across all quarters.
-
-
-
 :::
 
 
 
+We can observe clusters of similarly colored points at lag 1 do indicate some level of autocorrelation in the nitrate levels. This means that the nitrate level from the previous month has some degree of influence on the current month's level. For time series modeling, such as ARIMA (Autoregressive Integrated Moving Average), this suggests that an autoregressive term would indeed be significant, meaning that the model would use previous data points to predict future ones.
+
+The fact that this autocorrelation weakens at higher lags, implies that older data points have less predictive power. This would be important when determining the order of the AR term in an ARIMA model; a smaller order may be sufficient, as incorporating too many past values might not improve the model. The presence of seasonality, suggested by the clustering of the same months' colors, might also imply that a seasonal component should be considered in the modeling process, which could lead to the use of a Seasonal ARIMA (SARIMA) model.
 
 
-# Decomposition Plots
-
-Decomposition plots are powerful tools in time series analysis, allowing us to dissect a series into its core components: trend, seasonality, and irregular (residual) components. This breakdown provides a clearer understanding of the underlying patterns and behaviors in the data. For instance, the trend component shows the long-term direction of the series, while the seasonal component highlights repeating patterns over fixed periods. The irregular component captures random fluctuations that are not part of the trend or seasonality. Here, we explore the decomposition plots for various key datasets, unveiling the distinct dynamics of each.
-
+#### Decomposition Plot
 
 ::: panel-tabset
 
@@ -619,22 +537,11 @@ Decomposition plots are powerful tools in time series analysis, allowing us to d
 decomposed_crude_oil <- decompose(composite_crude_oil_ts, "multiplicative")
 
 # Plot the decomposed components
-autoplot(decomposed_crude_oil) + 
+autoplot(decomposed_crude_oil, colour = "#5a3196") + 
   ggtitle("Decomposition Plot for Refiner Acquisition Cost of Crude Oil, Composite") +
   theme_bw()
 
 ```
-
-
-The decomposition plot for the Cost of Crude Oil offers a comprehensive view of the underlying patterns.
-
-*Trend:* Shows an upward trend until 2008, with fluctuations until 2014, followed by a downward trend, illustrating the market's long-term dynamics.
-
-*Seasonal:* Demonstrates annual seasonal patterns, highlighting how external factors influence oil prices.
-
-*Remainder:* The residuals are relatively stable around zero, suggesting a good model fit with some sporadic spikes in 2020.
-
-
 
 
 ## Natural Gas
@@ -649,21 +556,11 @@ The decomposition plot for the Cost of Crude Oil offers a comprehensive view of 
 decomposed_natural_gas <- decompose(citygate_gas_ts, "multiplicative")
 
 # Plot the decomposed components
-autoplot(decomposed_natural_gas) + 
+autoplot(decomposed_natural_gas, colour = "#5a3196") + 
   ggtitle("Decomposition Plot for Natural Gas Price, Citygate") +
   theme_bw()
 
 ```
-
-
-The decomposition plot for the Natural Gas Price offers a comprehensive view of the underlying patterns.
-
-*Trend:* Indicates a stable trend transitioning to volatility, reflecting the market's evolving nature.
-
-*Seasonal:* Exhibits strong annual cycles, likely tied to demand changes with seasons
-
-*Remainder:* Spikes represent unexplained anomalies, possibly due to supply disruptions, especially around 2020.
-
 
 
 ## Electricity
@@ -678,21 +575,11 @@ The decomposition plot for the Natural Gas Price offers a comprehensive view of 
 decomposed_electricity <- decompose(total_electricity_ts, "multiplicative")
 
 # Plot the decomposed components
-autoplot(decomposed_electricity, colour) + 
+autoplot(decomposed_electricity, colour = "#5a3196") + 
   ggtitle("Decomposition Plot for Average Price of Electricity to Ultimate Customers, Total") +
   theme_bw()
 
 ```
-
-Electricity price decomposition highlights the stable growth and seasonality in the market.
-
-*Trend:* Shows a consistent rise, pointing to factors like inflation or cost increases in production affecting prices.
-
-*Seasonal:* A clear pattern suggests predictable consumption changes, possibly due to heating and cooling needs.
-
-*Remainder:* Minimal and stable residuals with occasional unexplained fluctuations.
-
-
 
 
 ## GDP
@@ -708,22 +595,11 @@ Electricity price decomposition highlights the stable growth and seasonality in 
 decomposed_gdp <- decompose(gdp_ts, "multiplicative")
 
 # Plot the decomposed components
-autoplot(decomposed_gdp) + 
+autoplot(decomposed_gdp, colour = "#5a3196") + 
   ggtitle("Decomposition Plot for GDP") +
   theme_bw()
 
 ```
-
-
-GDP decomposition provides insights into economic growth patterns.
-
-
-*Trend:* Reflects steady economic growth with some acceleration, illustrating the economy's long-term health.
-
-*Seasonal:* Negligible seasonality
-
-*Remainder:* Notable deviations, like the spike around 2020, could indicate economic shocks, such as the pandemic.
-
 
 
 
@@ -739,25 +615,11 @@ GDP decomposition provides insights into economic growth patterns.
 decomposed_cpi <- decompose(cpi_ts, "multiplicative")
 
 # Plot the decomposed components
-autoplot(decomposed_cpi) + 
+autoplot(decomposed_cpi, colour = "#5a3196") + 
   ggtitle("Decomposition Plot for CPI") +
   theme_bw()
 
 ```
-
-
-The CPI decomposition plot sheds light on inflation trends.
-
-
-*Trend:* The upward trend signifies ongoing inflation, a key economic indicator.
-
-*Seasonal:* Minimal seasonality.
-
-*Remainder:* Small residuals suggest the model captures CPI's main trends, with occasional anomalies.
-
-
-
-
 
 :::
 

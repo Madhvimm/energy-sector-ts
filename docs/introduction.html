@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Powering Change - Data Sources</title>
+<title>Powering Change - Introduction</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -89,11 +89,11 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./introduction.html"> 
+    <a class="nav-link active" href="./introduction.html" aria-current="page"> 
 <span class="menu-text">Introduction</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./data-sources.html" aria-current="page"> 
+    <a class="nav-link" href="./data-sources.html"> 
 <span class="menu-text">Data Sources</span></a>
   </li>  
   <li class="nav-item">
@@ -144,10 +144,21 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#crude-oil-price-summary" id="toc-crude-oil-price-summary" class="nav-link active" data-scroll-target="#crude-oil-price-summary"><strong>Crude Oil Price Summary</strong></a></li>
-  <li><a href="#natural-gas-prices" id="toc-natural-gas-prices" class="nav-link" data-scroll-target="#natural-gas-prices"><strong>Natural Gas Prices</strong></a></li>
-  <li><a href="#average-prices-of-electricity-to-ultimate-customers" id="toc-average-prices-of-electricity-to-ultimate-customers" class="nav-link" data-scroll-target="#average-prices-of-electricity-to-ultimate-customers"><strong>Average Prices of Electricity to Ultimate Customers</strong></a></li>
-  <li><a href="#external-economic-indicators" id="toc-external-economic-indicators" class="nav-link" data-scroll-target="#external-economic-indicators"><strong>External Economic Indicators</strong></a></li>
+  <li><a href="#powering-change-the-economic-impact-of-the-energy-sector" id="toc-powering-change-the-economic-impact-of-the-energy-sector" class="nav-link active" data-scroll-target="#powering-change-the-economic-impact-of-the-energy-sector"><strong>Powering Change: The Economic Impact of the Energy Sector</strong></a>
+  <ul class="collapse">
+  <li><a href="#bigger-picture" id="toc-bigger-picture" class="nav-link" data-scroll-target="#bigger-picture"><strong>Bigger Picture</strong></a></li>
+  <li><a href="#analytical-angles" id="toc-analytical-angles" class="nav-link" data-scroll-target="#analytical-angles"><strong>Analytical Angles</strong></a>
+  <ul class="collapse">
+  <li><a href="#energy-market-dynamics" id="toc-energy-market-dynamics" class="nav-link" data-scroll-target="#energy-market-dynamics">1. <strong>Energy Market Dynamics</strong>:</a></li>
+  <li><a href="#economic-indicators-interplay" id="toc-economic-indicators-interplay" class="nav-link" data-scroll-target="#economic-indicators-interplay">2. <strong>Economic Indicators Interplay</strong>:</a></li>
+  <li><a href="#renewable-energy-integration" id="toc-renewable-energy-integration" class="nav-link" data-scroll-target="#renewable-energy-integration">3. <strong>Renewable Energy Integration</strong>:</a></li>
+  <li><a href="#sector-specific-effects" id="toc-sector-specific-effects" class="nav-link" data-scroll-target="#sector-specific-effects">4. <strong>Sector-Specific Effects</strong>:</a></li>
+  <li><a href="#policy-influence" id="toc-policy-influence" class="nav-link" data-scroll-target="#policy-influence">5. <strong>Policy Influence</strong>:</a></li>
+  </ul></li>
+  <li><a href="#literature-review" id="toc-literature-review" class="nav-link" data-scroll-target="#literature-review"><strong>Literature Review</strong></a></li>
+  <li><a href="#guiding-questions" id="toc-guiding-questions" class="nav-link" data-scroll-target="#guiding-questions"><strong>Guiding Questions:</strong></a></li>
+  <li><a href="#reference" id="toc-reference" class="nav-link" data-scroll-target="#reference"><strong>Reference</strong></a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -156,7 +167,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><strong>Data Sources</strong></h1>
+<h1 class="title">Introduction</h1>
 </div>
 
 
@@ -173,35 +184,78 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<p>To investigate the economic impact of the energy sector, this project utilizes a series of datasets focusing on crude oil and natural gas prices, electricity costs, and key economic indicators. These datasets serve as the foundation for our analysis, enabling us to explore the intricate dynamics between energy market fluctuations and economic performance.</p>
-<section id="crude-oil-price-summary" class="level3">
-<h3 class="anchored" data-anchor-id="crude-oil-price-summary"><strong><a href="https://www.eia.gov/totalenergy/data/browser/?tbl=T09.01#/?f=A">Crude Oil Price Summary</a></strong></h3>
-<p><strong>Source:</strong> U.S. Energy Information Administration (EIA)</p>
-<p>We will leverage this dataset to analyze how crude oil price fluctuations correlate with economic indicators such as GDP and CPI, providing insights into the broader economic implications of oil price movements.</p>
+<section id="powering-change-the-economic-impact-of-the-energy-sector" class="level1">
+<h1><strong>Powering Change: The Economic Impact of the Energy Sector</strong></h1>
+<p><em>“To truly transform our economy, protect our security, and save our planet from the ravages of climate change, we need to ultimately make clean, renewable energy the profitable kind of energy.”</em> – Barack Obama</p>
+<p>In an era when the imperative of sustainability intersects with the dynamics of global energy markets, understanding the economic impact of the energy sector becomes crucial, and the statement by former President Barack Obama encapsulates the urgent need to transition towards a sustainable energy future, one that harmonizes economic growth, energy security, and environmental preservation. As the world grapples with the pressing challenges of climate change, energy production and consumption dynamics have emerged as a pivotal force shaping our economic landscapes.</p>
+<p>In this project, I aim to delve deeper into the economic impact of different energy sources, exploring the intricate relationship between energy prices, specifically crude oil, and natural gas, and their production and shedding light on the growing role of renewable energy and its impact on traditional energy markets. Additionally, investigating the relationship between energy prices and major economic indicators such as the Gross Domestic Product (GDP) and the Consumer Price Index (CPI), uncovering their ripple effects, if any, in the economy.</p>
+<p>By meticulously analyzing data from various sectors, including historical energy prices, electricity costs, economic indicators, and renewable energy production, this project aims to uncover valuable insights that could inform policy decisions, business strategies, and future research endeavors.</p>
+<section id="bigger-picture" class="level2">
+<h2 class="anchored" data-anchor-id="bigger-picture"><strong>Bigger Picture</strong></h2>
+<p>Before diving into the intricate details, it is essential to understand the broader landscape. This project aims to link the price dynamics of crude oil and natural gas with their effects on the economy, providing a comprehensive analysis within the global context. Understanding this bigger picture is crucial for grasping the multi-layered relationships between the energy sector and economic development.</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="Economic Impact of the Energy Sector.png" class="img-fluid figure-img"></p>
+<figcaption><em>Figure 1: This blueprint represents the project’s scope.</em></figcaption>
+</figure>
+</div>
+<p>This visual representation will serve as a guide through the thematic explorations of the project, setting the stage for a deep dive into the complex interplay between energy dynamics and economic indicators.</p>
 </section>
-<section id="natural-gas-prices" class="level3">
-<h3 class="anchored" data-anchor-id="natural-gas-prices"><strong><a href="https://www.eia.gov/totalenergy/data/browser/?tbl=T09.10#/?f=A">Natural Gas Prices</a></strong></h3>
-<p><strong>Source:</strong> U.S. Energy Information Administration (EIA)</p>
-<p>We will leverage this dataset to examine the trends in natural gas prices and their impact on the economy, particularly focusing on their influence on electricity pricing and economic indicators.</p>
+<section id="analytical-angles" class="level2">
+<h2 class="anchored" data-anchor-id="analytical-angles"><strong>Analytical Angles</strong></h2>
+<p>To navigate the complexities of how energy prices influence the U.S. economy, this project will dissect the data through multiple lenses, each offering a unique insight into the dynamics at play. The following analytical angles will structure our exploration:</p>
+<section id="energy-market-dynamics" class="level3">
+<h3 class="anchored" data-anchor-id="energy-market-dynamics">1. <strong>Energy Market Dynamics</strong>:</h3>
+<p>We will examine the historical trends and volatility in crude oil and natural gas markets. Understanding these patterns is critical in comprehending how energy costs affect the broader economy and predicting future trends.</p>
 </section>
-<section id="average-prices-of-electricity-to-ultimate-customers" class="level3">
-<h3 class="anchored" data-anchor-id="average-prices-of-electricity-to-ultimate-customers"><strong><a href="https://www.eia.gov/totalenergy/data/browser/?tbl=T09.08#/?f=M&amp;start=197601&amp;end=202311&amp;charted=0-1-2-3-4">Average Prices of Electricity to Ultimate Customers</a></strong></h3>
-<p><strong>Source:</strong> U.S. Energy Information Administration (EIA)</p>
-<p>We will leverage this dataset to explore how fluctuations in energy prices affect electricity costs across different sectors, shedding light on the sector-specific economic impacts of energy price changes.</p>
+<section id="economic-indicators-interplay" class="level3">
+<h3 class="anchored" data-anchor-id="economic-indicators-interplay">2. <strong>Economic Indicators Interplay</strong>:</h3>
+<p>A critical angle is the relationship between energy prices and primary economic indicators, like GDP and CPI. This perspective will allow us to measure the real impact of energy market fluctuations on financial health and consumer purchasing power.</p>
 </section>
-<section id="external-economic-indicators" class="level3">
-<h3 class="anchored" data-anchor-id="external-economic-indicators"><strong>External Economic Indicators</strong></h3>
-<section id="gdp-data" class="level5">
-<h5 class="anchored" data-anchor-id="gdp-data"><strong><a href="https://fred.stlouisfed.org/series/GDP">GDP Data</a></strong></h5>
-<p><strong>Source:</strong> Federal Reserve Economic Data (FRED), (Federal Reserve Bank of St.&nbsp;Louis)</p>
-<p>We will leverage this dataset to find patterns and correlate them with energy and electricity price trends to assess the broader economic impacts of energy market dynamics</p>
+<section id="renewable-energy-integration" class="level3">
+<h3 class="anchored" data-anchor-id="renewable-energy-integration">3. <strong>Renewable Energy Integration</strong>:</h3>
+<p>As the energy sector evolves, so too does its economic impact. We’ll assess how the increasing presence of renewable energy in the national energy portfolio influences the traditional energy market and what that means for the future economy.</p>
 </section>
-<section id="consumer-price-index-cpi" class="level5">
-<h5 class="anchored" data-anchor-id="consumer-price-index-cpi"><strong><a href="https://fred.stlouisfed.org/series/CPIAUCSL">Consumer Price Index (CPI)</a></strong></h5>
-<p><strong>Source:</strong> Federal Reserve Economic Data (FRED), (Federal Reserve Bank of St.&nbsp;Louis)</p>
-<p>We will leverage this dataset to analyze CPI data and understand the relationship between energy prices, inflation, and the overall economic condition, offering insights into how fluctuations in the energy sector influence consumer price levels.</p>
-<p>By integrating these datasets, our analysis will provide a comprehensive view of the interconnections between the energy sector’s fluctuations and the U.S. economy’s health, contributing to the broader discourse on energy economics and policy-making.</p>
-<p><a href="https://www.eia.gov/totalenergy/data/monthly/"> <img src="eia logo.png" style="display: inline; margin-right: 10px;"> </a> <a href="https://fred.stlouisfed.org/series/GDP"> <img src="fred_logo.png" style="display: inline; margin-right: 10px;"> </a></p>
+<section id="sector-specific-effects" class="level3">
+<h3 class="anchored" data-anchor-id="sector-specific-effects">4. <strong>Sector-Specific Effects</strong>:</h3>
+<p>Different sectors respond to energy price changes in various ways. We’ll delve into sector-specific data, mainly focusing on how underlying energy prices shape electricity costs for residential, commercial, industrial, and transportation sectors.</p>
+</section>
+<section id="policy-influence" class="level3">
+<h3 class="anchored" data-anchor-id="policy-influence">5. <strong>Policy Influence</strong>:</h3>
+<p>Energy policies can have a profound impact on prices and market stability. We will analyze the effects of past and present energy policies on market behavior and economic outcomes, offering insights into effective policy frameworks.</p>
+<p>Each of these angles will be explored through rigorous data analysis, employing time series methodologies to unpack the intricate relationship between energy markets and economic performance. By examining these perspectives, we aim to build a holistic understanding of the energy-economy nexus and provide actionable insights for policymakers, businesses, and consumers.</p>
+<p><img src="energy.jpeg" class="img-fluid"></p>
+</section>
+</section>
+<section id="literature-review" class="level2">
+<h2 class="anchored" data-anchor-id="literature-review"><strong>Literature Review</strong></h2>
+<p>The interplay between energy market fluctuations and economic indicators is a focal point of numerous studies, shedding light on how changes in energy prices influence economic growth, inflation, and regional development. This section integrates existing literature that provides the backdrop for our exploration of energy price impacts on the U.S. economy, with a particular focus on studies from the United States and China.</p>
+<p>The report by the <strong>Congressional Budget Office</strong> titled <a href="https://www.cbo.gov/system/files?file=2018-10/07-21-energy-dist.pdf">The Economic Effects of Recent Increases in Energy Prices</a> examines the response of the U.S. economy to significant energy price shifts from 2004 to 2006. Despite notable increases in crude oil and natural gas prices, the report finds that the overall U.S. economy exhibited resilience, with moderate impacts on GDP, employment, and inflation. This resilience is attributed to robust economic conditions, effective monetary policies, and increased economic flexibility and stability over the years. This study provides a crucial understanding of how the U.S. economy adapts to energy price fluctuations, offering a valuable perspective for our analysis. The graph below from this report illustrates U.S. spending on petroleum as a percentage of the Gross Domestic Product (GDP), showing that, despite fluctuations in energy prices, the overall economic impact has been moderate. However, certain periods have seen significant spikes in energy spending relative to the nation’s economic output.</p>
+<p><img src="CBO Graph.png" alt="CBO Graph" style="width: 500px; height: 400px;"></p>
+<p>In contrast, <strong>Liping Wang’s</strong> study on <a href="https://doi.org/10.1016/j.resourpol.2021.102484">The impact of energy price fluctuations on regional economic development based on a panel data model</a> focuses on China, revealing the differential regional impacts of energy price changes on economic growth. Using data from 30 provinces and employing the FMOLS co-integration estimation method, Wang’s findings indicate that energy price variations, particularly in coal, electricity, and oil, have a tangible yet varying impact on China’s regional economies. The study underscores the significance of understanding regional disparities in energy price impacts, which could provide insightful comparisons for analyzing the U.S. context in our project.</p>
+<p>These studies collectively enrich our investigation, offering comparative insights and methodological approaches to understanding the nuanced relationships between energy prices and economic indicators. By drawing on these studies, our project aims to dissect the specific dynamics within the U.S. energy market and its economic ramifications, enhancing our understanding and contributing to the broader discourse on energy economics.</p>
+</section>
+<section id="guiding-questions" class="level2">
+<h2 class="anchored" data-anchor-id="guiding-questions"><strong>Guiding Questions:</strong></h2>
+<p>Here are the guiding questions that will guide the research by shedding light on the multifaceted nature of the relationship between the energy sector and the economy:</p>
+<ol type="1">
+<li><p><strong>How have crude oil price fluctuations correlated with changes in the U.S. Gross Domestic Product (GDP)?</strong></p></li>
+<li><p><strong>What trends can be identified in natural gas prices, and how have they historically impacted the cost of electricity for various consumer sectors?</strong></p></li>
+<li><p><strong>In periods of significant oil price changes, how has the Consumer Price Index (CPI) reacted, particularly with respect to energy-intensive goods and services?</strong></p></li>
+<li><p><strong>How do increases in natural gas prices affect the industrial sector’s energy expenses compared to the residential and commercial sectors?</strong></p></li>
+<li><p><strong>What is the relationship between crude oil prices and transportation sector electricity costs, and how does this relationship affect broader transportation industry economics?</strong></p></li>
+<li><p><strong>Can we identify a lag effect between changes in crude oil and natural gas prices and subsequent adjustments in electricity pricing across different sectors?</strong></p></li>
+<li><p><strong>To what extent do variations in crude oil and natural gas prices explain the year-to-year variability in the U.S. inflation rate?</strong></p></li>
+<li><p><strong>How have renewable energy production trends influenced the electricity pricing strategies of utility companies in the residential sector?</strong></p></li>
+<li><p><strong>During times of high volatility in energy prices, how resilient has the U.S. economy been in terms of maintaining growth and managing inflation?</strong></p></li>
+<li><p><strong>What patterns emerge when comparing the energy prices with the economic growth cycles, and what might this imply for future economic planning and energy policy?</strong></p></li>
+</ol>
+</section>
+<section id="reference" class="level2">
+<h2 class="anchored" data-anchor-id="reference"><strong>Reference</strong></h2>
+<p>[1] Wang, L. (2022). Research on the impact of energy price fluctuations on regional economic development based on panel data model. Resources Policy, 75, 102484. https://doi.org/10.1016/j.resourpol.2021.102484</p>
+<p>[2] Congressional Budget Office. (2006, July). The economic effects of recent increases in energy prices (Pub. No.&nbsp;2835). The Congress of the United States, Congressional Budget Office. https://www.cbo.gov/system/files?file=2018-10/07-21-energy-dist.pdf</p>
+<p>[3] https://www.eia.gov/totalenergy/data/monthly/</p>
 
 
 </section>
