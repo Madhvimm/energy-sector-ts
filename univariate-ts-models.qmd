@@ -662,9 +662,9 @@ grid.arrange(plot1_cpi, plot2_cpi, nrow = 2)
 
 :::
 
-# Dickey-Fuller Test
+# Adjusted Dickey-Fuller Test
 
-The Dickey-Fuller test is a statistical test used to determine the presence of unit root in a time series and, consequently, whether the series is non-stationary. The null hypothesis of the test is that the time series is non-stationary. If the p-value is less than the chosen alpha level (usually 0.05), we reject the null hypothesis and infer that the series is stationary.
+After applying various transformations to address the non-stationarity in our time series data, our next step is to conduct the Adjusted Dickey-Fuller Test on the differenced data. This test is crucial for confirming that the adjustments we've made have effectively rendered the series stationary. Stationarity is a key assumption for many time series forecasting methods, as it implies that the statistical properties of the series are consistent over time. By applying the Adjusted Dickey-Fuller Test to our transformed data, we aim to validate that the mean, variance, and autocorrelation structure of the series do not change over time.
 
 ::: panel-tabset
 
@@ -676,16 +676,20 @@ The Dickey-Fuller test is a statistical test used to determine the presence of u
 #| warning: false
 #| output: true
 
-# Dickey-Fuller Test for Crude Oil
-adf_test_crude_oil <- tseries::adf.test(composite_crude_oil_ts)
+# First, we take the first difference of the time series to make it stationary
+diff_crude_oil_ts <- diff(composite_crude_oil_ts, differences = 1)
+
+# Applying the ADF test to the differenced time series
+adf_test_diff_crude_oil <- adf.test(diff_crude_oil_ts, alternative = "stationary")
 
 # Display the test results
-adf_test_crude_oil
-
+print(adf_test_diff_crude_oil)
 
 ```
 
-Since the p-value is greater than 0.05, we do not reject the null hypothesis and conclude that the crude oil price series is non-stationary, indicating that differencing or transformation may be required to achieve stationarity.
+In the adjusted test we can clearly see the p-value is significantly less than 0.05, we reject the null hypothesis and conclude that the differenced series is stationary. The fact that the differenced series is stationary (but the original was not) suggests that the crude oil prices exhibit a trend or a form of non-stationarity that can be removed by differencing. 
+
+
 
 ## Natural Gas
 
@@ -695,16 +699,24 @@ Since the p-value is greater than 0.05, we do not reject the null hypothesis and
 #| warning: false
 #| output: true
 
-# Dickey-Fuller Test for Natural Gas
-adf_test_natural_gas <- tseries::adf.test(citygate_gas_ts)
+# First, take the first difference of the time series to make it stationary
+diff_citygate_gas_ts <- diff(citygate_gas_ts, differences = 1)
+
+# Make sure to remove any NA values that might have been introduced by differencing
+diff_citygate_gas_ts <- na.omit(diff_citygate_gas_ts)
+
+# Now, apply the ADF test to the differenced time series
+adf_test_diff_natural_gas <- adf.test(diff_citygate_gas_ts, alternative = "stationary")
 
 # Display the test results
-adf_test_natural_gas
+print(adf_test_diff_natural_gas)
 
 
 ```
 
-The p-value suggests that the natural gas price series is non-stationary, reinforcing the need for potential differencing or other transformations to stabilize the series.
+In the adjusted test we can clearly see the p-value is significantly less than 0.05, leading us to reject the null hypothesis, concluding that the differenced natural gas price series is stationary. This indicates that the series, once differenced, does not have a unit root, and its mean and variance are constant over time.
+
+
 
 ## Electricity
 
@@ -714,16 +726,23 @@ The p-value suggests that the natural gas price series is non-stationary, reinfo
 #| warning: false
 #| output: true
 
-# Dickey-Fuller Test for Electricity
-adf_test_electricity <- tseries::adf.test(total_electricity_ts)
+diff_total_electricity_ts <- diff(total_electricity_ts, differences = 1)
+
+# Remove any NA values that might have been introduced by differencing
+diff_total_electricity_ts <- na.omit(diff_total_electricity_ts)
+
+# Apply the ADF test to the differenced time series
+adf_test_diff_electricity <- adf.test(diff_total_electricity_ts, alternative = "stationary")
 
 # Display the test results
-adf_test_electricity
+print(adf_test_diff_electricity)
 
 
 ```
 
-With the p-value well above 0.05, the electricity price series is considered non-stationary, indicating that adjustments are necessary to model the series accurately.
+With the p-value now below 0.05, we can reject the null hypothesis, concluding that the differenced electricity price series is stationary. This means that after differencing, the series doesn't exhibit a unit root, and its properties like mean and variance are consistent over time.
+
+
 
 ## GDP
 
@@ -733,15 +752,22 @@ With the p-value well above 0.05, the electricity price series is considered non
 #| warning: false
 #| output: true
 
-# Dickey-Fuller Test for GDP
-adf_test_gdp <- tseries::adf.test(gdp_ts)
+# First, take the first difference of the time series to make it stationary
+diff_gdp_ts <- diff(gdp_ts, differences = 1)
+
+# Remove any NA values that might have been introduced by differencing
+diff_gdp_ts <- na.omit(diff_gdp_ts)
+
+# Apply the ADF test to the differenced time series
+adf_test_diff_gdp <- adf.test(diff_gdp_ts, alternative = "stationary")
 
 # Display the test results
-adf_test_gdp
+print(adf_test_diff_gdp)
 
 ```
 
-The extremely high p-value indicates that the GDP series is strongly non-stationary, suggesting that it would benefit from differencing or other methods to achieve stationarity.
+The p-value below 0.05 allows us to reject the null hypothesis, concluding that the differenced GDP series is stationary. This suggests that the original GDP series had a trend or other non-stationary components that were effectively removed by differencing.
+
 
 ## CPI
 
@@ -751,22 +777,31 @@ The extremely high p-value indicates that the GDP series is strongly non-station
 #| warning: false
 #| output: true
 
-# Dickey-Fuller Test for CPI
-adf_test_cpi <- tseries::adf.test(cpi_ts)
+# First, take the first difference of the time series to make it stationary
+diff_cpi_ts <- diff(cpi_ts, differences = 1)
+
+# Remove any NA values that might have been introduced by differencing
+diff_cpi_ts <- na.omit(diff_cpi_ts)
+
+# Apply the ADF test to the differenced time series
+adf_test_diff_cpi <- adf.test(diff_cpi_ts, alternative = "stationary")
 
 # Display the test results
-adf_test_cpi
-
+print(adf_test_diff_cpi)
 
 ```
 
-The CPI series is also non-stationary based on the high p-value, indicating that preprocessing steps are needed before further analysis or modeling.
+Since the p-value is now below 0.05, we can reject the null hypothesis, concluding that the differenced CPI series is stationary. 
+
 
 ## 
 
 :::
 
-These Dickey-Fuller test results across different datasets corroborate our earlier analyses and ACF & PACF plot interpretations, showing a common theme of non-stationarity in the series.
+After implementing the Adjusted Dickey-Fuller Test on our differenced data sets, we observed a significant reduction in the p-values for all the data sets. This result strongly suggests that the differencing process has effectively induced stationarity in these series, as indicated by the absence of a unit root. However, to ensure the robustness of our findings and to precisely model and forecast these series, a subsequent examination of the ACF and PACF plots for the differenced data is imperative. These plots will provide further insights into the autocorrelation structure of the data, guiding us in the selection of appropriate ARIMA model parameters.
+
+
+
 
 # First vs Second Differencing
 
@@ -881,6 +916,7 @@ In time series analysis, choosing the right model is paramount for accurate fore
 -   BIC extends the logic of AIC by incorporating sample size into the penalty for complexity. This adjustment makes BIC more stringent with complex models when dealing with larger datasets. As with AIC, a lower BIC suggests a better model.
 
 ::: panel-tabset
+
 ## Crude Oil
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
