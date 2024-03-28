@@ -1,10 +1,7 @@
 ---
 title: "Univariate TS Models (ARIMA/SARIMA)"
 output: distill::distill_article
-
 ---
-
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -27,9 +24,6 @@ library(plotly)
 
 ```
 
-
-
-
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
 #| code-summary: 'Read data'
@@ -43,9 +37,6 @@ gdp_data <- read.csv("data/gdp_data.csv")
 cpi_data <- read.csv("data/cpi_data.csv")
 
 ```
-
-
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -87,13 +78,6 @@ start_month_cpi <- as.numeric(format(min(cpi_data$DATE), "%m"))
 cpi_ts <- ts(cpi_data$CPIAUCSL, start = c(start_year_cpi, start_month_cpi), frequency = 12)
 ```
 
-
-
-
-
-
-
-
 # ACF & PACF Plots
 
 Autocorrelation Function (ACF) and Partial Autocorrelation Function (PACF) plots are crucial tools in time series analysis, helping to identify the type of model that best describes a series. The ACF plot shows the correlation of the series with its own lags, providing insights into the overall correlation structure and potential seasonality. On the other hand, the PACF plot reveals the direct effect of past values on the current value, helping to pinpoint the order of autoregressive models.
@@ -102,13 +86,8 @@ By examining the ACF and PACF plots, we can discern patterns that suggest the pr
 
 In this section, we'll explore the ACF and PACF plots for our datasets delving into their autocorrelation structures and deriving insights that will inform our model selection and forecasting approach.
 
-
 ::: panel-tabset
-
-
-
 ## Crude Oil
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -134,13 +113,11 @@ grid.arrange(crude_oil_acf, crude_oil_pacf, nrow = 2)
 
 ```
 
-The **ACF plot** for crude oil prices demonstrates prolonged significant autocorrelation, suggesting a non-stationary series. The gradual decline in correlation as lags increase indicates a potential long-term dependency or trend in the data. 
+The **ACF plot** for crude oil prices demonstrates prolonged significant autocorrelation, suggesting a non-stationary series. The gradual decline in correlation as lags increase indicates a potential long-term dependency or trend in the data.
 
 The **PACF plot** shows significant spike at lag 1 and 2, followed by non-significant values
 
-The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1 and 2. The slow decay in the ACF implies that differencing (d > 0) may be necessary to achieve stationarity.
-
-
+The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1 and 2. The slow decay in the ACF implies that differencing (d \> 0) may be necessary to achieve stationarity.
 
 ## Natural Gas
 
@@ -168,14 +145,11 @@ grid.arrange(natural_gas_acf, natural_gas_pacf, nrow = 2)
 
 ```
 
-The **ACF plot** for natural gas prices shows a very slow decay, suggesting non-stationarity and a need for differencing. 
+The **ACF plot** for natural gas prices shows a very slow decay, suggesting non-stationarity and a need for differencing.
 
 The **PACF plot** shows a significant spike at lag 1, followed by a drop-off.
 
-The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1 and 2. The slow decay in the ACF implies that differencing (d > 0) may be necessary to achieve stationarity.
-
-
-
+The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1 and 2. The slow decay in the ACF implies that differencing (d \> 0) may be necessary to achieve stationarity.
 
 ## Electricity
 
@@ -209,10 +183,7 @@ The **PACF plot** shows a significant correlations at lag 1. The choice of 'p' c
 
 The consistent autocorrelation in the ACF plot suggests a potential need for a higher-order MA term or differencing, leading to an ARIMA(p,d,q) model consideration.
 
-
-
 ## GDP
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -238,15 +209,11 @@ grid.arrange(gdp_acf, gdp_pacf, nrow = 2)
 
 ```
 
-
 The **ACF plot** for GDP shows a persistent strong autocorrelation across all lags indicates non-stationarity, suggesting that differencing may be necessary.
 
 The **PACF plot** have a sharp cutoff after lag 1 indicating an AR(1) process, suggesting that previous values have a significant impact on current GDP.
 
-Given the strong autocorrelation and the PACF cutoff, an ARIMA(1,1,0) model may be a good starting point for modeling GDP, but  differencing (d > 0) may be necessary.
-
-
-
+Given the strong autocorrelation and the PACF cutoff, an ARIMA(1,1,0) model may be a good starting point for modeling GDP, but differencing (d \> 0) may be necessary.
 
 ## CPI
 
@@ -275,34 +242,23 @@ grid.arrange(cpi_acf, cpi_pacf, nrow = 2)
 
 ```
 
-
-
 The **ACF plot** for CPI shows a sustained high autocorrelation across lags suggests a non-stationary time series, indicative of CPI's long memory.
 
 The **PACF plot** have a sharp spike and a cutoff after lag 1 indicating an AR(1) process, suggesting that previous values have a significant impact on current GDP.
 
 The sustained autocorrelation in the ACF plot implies that differencing might be needed. An initial ARIMA(1,1,0) model could be considered.
 
-
-
 ## 
 :::
 
-
 # Detrend VS Difference
-
 
 Detrending and differencing are two methods used to make time series data stationary, it involves removing the underlying trend from the data, while differencing focuses on the changes between consecutive observations.
 
 Detrending typically subtracts the estimated trend component from the original series, while differencing transforms the series into the sequence of differences between adjacent values. While detrending addresses the trend, differencing can help eliminate both trend and seasonality, making the series stationary.
 
-
 ::: panel-tabset
-
-
-
 ## Crude Oil
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -344,8 +300,6 @@ The residuals after detrending indicate that linear detrending might not fully a
 
 The differenced series shows fluctuations around zero, indicative of improved stationarity. While the mean appears stabilized, examining autocorrelation in the differenced data is crucial to confirm stationarity fully.
 
-
-
 ## Natural Gas
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -380,7 +334,6 @@ grid.arrange(plot1_natural_gas, plot2_natural_gas, nrow = 2)
 
 ```
 
-
 **Detrended:**
 
 The detrended series shows periods of volatility, indicating that removing the linear trend doesn't capture all the data's dynamics, remaining fluctuations may reflect other underlying components like seasonality
@@ -388,9 +341,6 @@ The detrended series shows periods of volatility, indicating that removing the l
 **First Difference:**
 
 Consistent mean but varying volatility and a spike around 2020, which could be due to the pandemic
-
-
-
 
 ## Electricity
 
@@ -426,20 +376,15 @@ grid.arrange(plot1_electricity, plot2_electricity, nrow = 2)
 
 ```
 
-
 **Detrended:**
 
 The detrended plot of electricity prices displays clear periodic fluctuations, suggesting the presence of seasonality.
 
 **First Difference:**
 
-The first differenced series oscillates around a central mean, which is indicative of stationarity in the mean of the series. However, the consistent pattern of spikes followed by a return to the mean—indicates a strong seasonal component.
-
-
-
+The first differenced series oscillates around a central mean, which is indicative of stationarity in the mean of the series. However, the consistent pattern of spikes followed by a return to the mean---indicates a strong seasonal component.
 
 ## GDP
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -473,17 +418,13 @@ grid.arrange(plot1_gdp, plot2_gdp, nrow = 2)
 
 ```
 
-
 **Detrended:**
 
 The detrended GDP plot showcases that the residuals seem to have a non-linear component, as evidenced by the gradual decline and subsequent increase over time. The residuals decrease and then slowly begin to rise after the 1980s, accelerating significantly in recent years. GDP growth rate is not constant and a simple linear model may not be sufficient to capture the complexities.
 
-
 **First Difference:**
 
-The differenced series predominantly hovers around the zero line, which indicates that this transformation effectively removes the trend from the data, leading to a stationary series in terms of the mean. The substantial spike observed towards the end is likely due to the recent economic downturn due to the COVID-19 pandemic, which represents a significant economic shock not accounted for by typical GDP growth patterns. 
-
-
+The differenced series predominantly hovers around the zero line, which indicates that this transformation effectively removes the trend from the data, leading to a stationary series in terms of the mean. The substantial spike observed towards the end is likely due to the recent economic downturn due to the COVID-19 pandemic, which represents a significant economic shock not accounted for by typical GDP growth patterns.
 
 ## CPI
 
@@ -519,36 +460,25 @@ grid.arrange(plot1_cpi, plot2_cpi, nrow = 2)
 
 ```
 
-
-
-
 **Detrended:**
 
-The detrended CPI plot reveals residuals that decline over a prolonged period before stabilizing and then increasing. This pattern suggests that a simple linear trend does not fully capture the complexity of the inflationary trend over time. 
-
+The detrended CPI plot reveals residuals that decline over a prolonged period before stabilizing and then increasing. This pattern suggests that a simple linear trend does not fully capture the complexity of the inflationary trend over time.
 
 **First Difference:**
 
 The first difference plot for CPI demonstrates a series that fluctuates around a central mean value.
 
-
-
-
-
-
-
-##
-
-
+## 
 :::
-
 
 # Original Vs First Difference
 
+Time series data often embody intrinsic trends and seasonality, which can confound analyses if not properly addressed. Two techniques to transform such data into a stationary are detrending and differencing.
 
-Detrending and differencing are two methods used to make time series data stationary, it involves removing the underlying trend from the data, while differencing focuses on the changes between consecutive observations.
+Detrending involves the removal of a trend line from the time series, thus flattening the data into a horizontal line around the mean. 
 
-Detrending typically subtracts the estimated trend component from the original series, while differencing transforms the series into the sequence of differences between adjacent values. While detrending addresses the trend, differencing can help eliminate both trend and seasonality, making the series stationary.
+Differencing, on the other hand, involves computing the difference between consecutive observations. This method is effective in eliminating both trend and seasonality, transforming the series into one where the mean level does not change over time. Differencing is a critical step in preparing data for ARIMA (AutoRegressive Integrated Moving Average) modeling.
+
 
 
 ::: panel-tabset
@@ -557,46 +487,36 @@ Detrending typically subtracts the estimated trend component from the original s
 
 ## Crude Oil
 
-
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
 #| code-summary: 'Importing Libraries'
 #| warning: false
 #| output: true
 
-# Convert residuals to a ts object
-fit_crude_oil <- lm(Value ~ Date, data = composite_crude_oil_prices, na.action = NULL)
-
-resid_crude_oil_ts <- ts(resid(fit_crude_oil), start=c(start_year, start_month), frequency=12)
-
-# Now plot the residuals
-plot1_crude_oil <- autoplot(resid_crude_oil_ts, series="Detrended Crude Oil", colour = "#00BFC4") + 
+# Create the time series plot for the original CPI data
+plot1 <- ggplot(cpi_data, aes(x = DATE, y = CPIAUCSL)) + 
+  geom_line(colour = "turquoise4") + 
   theme_bw() +
-  xlab("Time") +
-  ylab("Residuals") +
-  ggtitle("Detrended Crude Oil")
+  xlab("Time") + 
+  ylab("CPI") +
+  ggtitle("Original CPI Data")
 
-# Differencing plot remains the same
-plot2_crude_oil <- autoplot(diff(composite_crude_oil_ts), series = "First Difference Crude Oil", colour = "#F8766D") + 
+# Create the time series plot for the first-differenced CPI data
+# Calculate the first differences
+cpi_data$Diff_CPIAUCSL <- c(NA, diff(cpi_data$CPIAUCSL))
+
+# Plot the first differences
+plot2 <- ggplot(cpi_data, aes(x = DATE, y = Diff_CPIAUCSL)) + 
+  geom_line(colour = "#c65e57") + 
   theme_bw() +
-  xlab("Time") +
-  ylab("Differences") +
-  ggtitle("First Difference Crude Oil")
+  xlab("Time") + 
+  ylab("First Differences") +
+  ggtitle("First Differenced CPI Data")
 
-# Arrange plots
-grid.arrange(plot1_crude_oil, plot2_crude_oil, nrow = 2)
-
-
+# Arrange the two plots side by side
+grid.arrange(plot1, plot2, nrow = 2)
 
 ```
-
-**Detrended:**
-
-The residuals after detrending indicate that linear detrending might not fully account for all underlying components, as patterns still emerge.
-
-**First Difference:**
-
-The differenced series shows fluctuations around zero, indicative of improved stationarity. While the mean appears stabilized, examining autocorrelation in the differenced data is crucial to confirm stationarity fully.
 
 
 
@@ -608,41 +528,29 @@ The differenced series shows fluctuations around zero, indicative of improved st
 #| warning: false
 #| output: true
 
-# Detrending using the original data frame
-fit_natural_gas <- lm(Value ~ Date, data = citygate_gas_prices, na.action = NULL)
-
-# Convert residuals to a ts object for plotting
-resid_natural_gas_ts <- ts(resid(fit_natural_gas), start=c(start_year_gas, start_month_gas), frequency=12)
-
-# Now plot the residuals
-plot1_natural_gas <- autoplot(resid_natural_gas_ts, series="Detrended Natural Gas", colour = "#00BFC4") + 
+# Create the time series plot for the original Natural Gas data
+plot1_ng <- ggplot(citygate_gas_prices, aes(x = Date, y = Value)) + 
+  geom_line(colour = "turquoise4") + 
   theme_bw() +
-  xlab("Time") +
-  ylab("Residuals") +
-  ggtitle("Detrended Natural Gas")
+  xlab("Time") + 
+  ylab("Natural Gas Prices") +
+  ggtitle("Original Natural Gas Data")
 
-# Differencing plot remains the same
-plot2_natural_gas <- autoplot(diff(citygate_gas_ts), series = "First Difference Natural Gas", colour = "#F8766D") + 
+# Create the time series plot for the first-differenced Natural Gas data
+# Calculate the first differences
+citygate_gas_prices$Diff_Value <- c(NA, diff(citygate_gas_prices$Value))
+
+# Plot the first differences
+plot2_ng <- ggplot(citygate_gas_prices, aes(x = Date, y = Diff_Value)) + 
+  geom_line(colour = "#c65e57") + 
   theme_bw() +
-  xlab("Time") +
-  ylab("Differences") +
-  ggtitle("First Difference Natural Gas")
+  xlab("Time") + 
+  ylab("First Differences") +
+  ggtitle("First Differenced Natural Gas Data")
 
-# Arrange plots
-grid.arrange(plot1_natural_gas, plot2_natural_gas, nrow = 2)
-
-
+# Arrange the two plots one above the other
+grid.arrange(plot1_ng, plot2_ng, nrow = 2)
 ```
-
-
-**Detrended:**
-
-The detrended series shows periods of volatility, indicating that removing the linear trend doesn't capture all the data's dynamics, remaining fluctuations may reflect other underlying components like seasonality
-
-**First Difference:**
-
-Consistent mean but varying volatility and a spike around 2020, which could be due to the pandemic
-
 
 
 
@@ -654,46 +562,34 @@ Consistent mean but varying volatility and a spike around 2020, which could be d
 #| warning: false
 #| output: true
 
-# Detrending using the original data frame
-fit_electricity <- lm(Value ~ Date, data = total_electricity_prices, na.action = NULL)
-
-# Convert residuals to a ts object for plotting
-resid_electricity_ts <- ts(resid(fit_electricity), start=c(start_year_elec, start_month_elec), frequency=12)
-
-# Plot the residuals
-plot1_electricity <- autoplot(resid_electricity_ts, series="Detrended Electricity", colour = "#00BFC4") + 
+# Create the time series plot for the original Electricity data
+plot1_elec <- ggplot(total_electricity_prices, aes(x = Date, y = Value)) + 
+  geom_line(colour = "turquoise4") + 
   theme_bw() +
-  xlab("Time") +
-  ylab("Residuals") +
-  ggtitle("Detrended Electricity")
+  xlab("Time") + 
+  ylab("Electricity Prices") +
+  ggtitle("Original Electricity Data")
 
-# Differencing plot
-plot2_electricity <- autoplot(diff(total_electricity_ts), series = "First Difference Electricity", colour = "#F8766D") + 
+# Create the time series plot for the first-differenced Electricity data
+# Calculate the first differences
+total_electricity_prices$Diff_Value <- c(NA, diff(total_electricity_prices$Value))
+
+# Plot the first differences
+plot2_elec <- ggplot(total_electricity_prices, aes(x = Date, y = Diff_Value)) + 
+  geom_line(colour = "#c65e57") + 
   theme_bw() +
-  xlab("Time") +
-  ylab("Differences") +
-  ggtitle("First Difference Electricity")
+  xlab("Time") + 
+  ylab("First Differences") +
+  ggtitle("First Differenced Electricity Data")
 
-# Arrange plots
-grid.arrange(plot1_electricity, plot2_electricity, nrow = 2)
+# Arrange the two plots one above the other
+grid.arrange(plot1_elec, plot2_elec, nrow = 2)
 
 
 ```
 
 
-**Detrended:**
-
-The detrended plot of electricity prices displays clear periodic fluctuations, suggesting the presence of seasonality.
-
-**First Difference:**
-
-The first differenced series oscillates around a central mean, which is indicative of stationarity in the mean of the series. However, the consistent pattern of spikes followed by a return to the mean—indicates a strong seasonal component.
-
-
-
-
 ## GDP
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -701,42 +597,31 @@ The first differenced series oscillates around a central mean, which is indicati
 #| warning: false
 #| output: true
 
-# Detrending using the original data frame
-fit_gdp <- lm(GDP ~ DATE, data = gdp_data, na.action = NULL)
-
-# Convert residuals to a ts object for plotting
-resid_gdp_ts <- ts(resid(fit_gdp), start=c(start_year_gdp, start_quarter_gdp), frequency=4)
-
-# Plot the residuals
-plot1_gdp <- autoplot(resid_gdp_ts, series="Detrended GDP", colour = "#00BFC4") + 
+# Create the time series plot for the original GDP data
+plot1_gdp <- ggplot(gdp_data, aes(x = DATE, y = GDP)) + 
+  geom_line(colour = "turquoise4") + 
   theme_bw() +
-  xlab("Time") +
-  ylab("Residuals") +
-  ggtitle("Detrended GDP")
+  xlab("Time") + 
+  ylab("GDP (in billions)") +
+  ggtitle("Original GDP Data")
 
-# Differencing plot
-plot2_gdp <- autoplot(diff(gdp_ts), series = "First Difference GDP", colour = "#F8766D") + 
+# Create the time series plot for the first-differenced GDP data
+# Calculate the first differences
+gdp_data$Diff_GDP <- c(NA, diff(gdp_data$GDP))
+
+# Plot the first differences
+plot2_gdp <- ggplot(gdp_data, aes(x = DATE, y = Diff_GDP)) + 
+  geom_line(colour = "#c65e57") + 
   theme_bw() +
-  xlab("Time") +
-  ylab("Differences") +
-  ggtitle("First Difference GDP")
+  xlab("Time") + 
+  ylab("First Differences") +
+  ggtitle("First Differenced GDP Data")
 
-# Arrange plots
+# Arrange the two plots one above the other
 grid.arrange(plot1_gdp, plot2_gdp, nrow = 2)
 
 
 ```
-
-
-**Detrended:**
-
-The detrended GDP plot showcases that the residuals seem to have a non-linear component, as evidenced by the gradual decline and subsequent increase over time. The residuals decrease and then slowly begin to rise after the 1980s, accelerating significantly in recent years. GDP growth rate is not constant and a simple linear model may not be sufficient to capture the complexities.
-
-
-**First Difference:**
-
-The differenced series predominantly hovers around the zero line, which indicates that this transformation effectively removes the trend from the data, leading to a stationary series in terms of the mean. The substantial spike observed towards the end is likely due to the recent economic downturn due to the COVID-19 pandemic, which represents a significant economic shock not accounted for by typical GDP growth patterns. 
-
 
 
 ## CPI
@@ -747,68 +632,43 @@ The differenced series predominantly hovers around the zero line, which indicate
 #| warning: false
 #| output: true
 
-# Detrending using the original data frame
-fit_cpi <- lm(CPIAUCSL ~ DATE, data = cpi_data, na.action = NULL)
-
-# Convert residuals to a ts object for plotting
-resid_cpi_ts <- ts(resid(fit_cpi), start=c(start_year_cpi, start_month_cpi), frequency=4)
-
-# Plot the residuals
-plot1_cpi <- autoplot(resid_cpi_ts, series="Detrended CPI", colour = "#00BFC4") + 
+# Plot the original CPI data
+plot1_cpi <- ggplot(cpi_data, aes(x = DATE, y = CPIAUCSL)) + 
+  geom_line(colour = "turquoise4") + 
   theme_bw() +
-  xlab("Time") +
-  ylab("Residuals") +
-  ggtitle("Detrended CPI")
+  xlab("Time") + 
+  ylab("CPI") +
+  ggtitle("Original CPI Data")
 
-# Differencing plot
-plot2_cpi <- autoplot(diff(cpi_ts), series = "First Difference CPI", colour = "#F8766D") + 
+# Create the time series plot for the first-differenced CPI data
+# Calculate the first differences
+cpi_data$Diff_CPIAUCSL <- c(NA, diff(cpi_data$CPIAUCSL))
+
+# Plot the first differences
+plot2_cpi <- ggplot(cpi_data, aes(x = DATE, y = Diff_CPIAUCSL)) + 
+  geom_line(colour = "#c65e57") + 
   theme_bw() +
-  xlab("Time") +
-  ylab("Differences") +
-  ggtitle("First Difference CPI")
+  xlab("Time") + 
+  ylab("First Differences") +
+  ggtitle("First Differenced CPI Data")
 
-# Arrange plots
+# Arrange the two plots vertically
 grid.arrange(plot1_cpi, plot2_cpi, nrow = 2)
-
 
 ```
 
 
-
-
-**Detrended:**
-
-The detrended CPI plot reveals residuals that decline over a prolonged period before stabilizing and then increasing. This pattern suggests that a simple linear trend does not fully capture the complexity of the inflationary trend over time. 
-
-
-**First Difference:**
-
-The first difference plot for CPI demonstrates a series that fluctuates around a central mean value.
-
-
-
-
-
-
-
-##
-
+## 
 
 :::
-
-
 
 # Dickey-Fuller Test
 
 The Dickey-Fuller test is a statistical test used to determine the presence of unit root in a time series and, consequently, whether the series is non-stationary. The null hypothesis of the test is that the time series is non-stationary. If the p-value is less than the chosen alpha level (usually 0.05), we reject the null hypothesis and infer that the series is stationary.
 
-
 ::: panel-tabset
 
-
-
 ## Crude Oil
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -825,10 +685,7 @@ adf_test_crude_oil
 
 ```
 
-
 Since the p-value is greater than 0.05, we do not reject the null hypothesis and conclude that the crude oil price series is non-stationary, indicating that differencing or transformation may be required to achieve stationarity.
-
-
 
 ## Natural Gas
 
@@ -849,8 +706,6 @@ adf_test_natural_gas
 
 The p-value suggests that the natural gas price series is non-stationary, reinforcing the need for potential differencing or other transformations to stabilize the series.
 
-
-
 ## Electricity
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -870,10 +725,7 @@ adf_test_electricity
 
 With the p-value well above 0.05, the electricity price series is considered non-stationary, indicating that adjustments are necessary to model the series accurately.
 
-
-
 ## GDP
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -890,7 +742,6 @@ adf_test_gdp
 ```
 
 The extremely high p-value indicates that the GDP series is strongly non-stationary, suggesting that it would benefit from differencing or other methods to achieve stationarity.
-
 
 ## CPI
 
@@ -911,36 +762,24 @@ adf_test_cpi
 
 The CPI series is also non-stationary based on the high p-value, indicating that preprocessing steps are needed before further analysis or modeling.
 
-##
+## 
+
 :::
 
-
-
-These Dickey-Fuller test results across different datasets corroborate our earlier analyses and ACF & PACF plot interpretations, showing a common theme of non-stationarity in the series. 
-
-
-
-
+These Dickey-Fuller test results across different datasets corroborate our earlier analyses and ACF & PACF plot interpretations, showing a common theme of non-stationarity in the series.
 
 # First vs Second Differencing
-
 
 In time series analysis, differencing is a technique used to stabilize the mean of a series and make it stationary. When trends and seasonality are present in a time series, they can affect the predictive models. Differencing helps to mitigate these influences by focusing on the changes in the data rather than the actual values.
 
 Differencing operates under the principle of transformation. It is designed to remove specific types of patterns:
 
-- First Differencing: This method subtracts the current observation from the previous one. It is a powerful tool to eliminate trends and some types of seasonality in the data, providing a clearer view of the underlying cyclical components and irregularities.
+-   First Differencing: This method subtracts the current observation from the previous one. It is a powerful tool to eliminate trends and some types of seasonality in the data, providing a clearer view of the underlying cyclical components and irregularities.
 
-- Second Differencing: When first differencing is not enough to achieve stationarity, or when the time series exhibits a more complex pattern such as a trend within a trend, second differencing can be employed. This involves applying the differencing operation twice, which can further simplify the predictive structure by reducing more complex serial correlations.
-
-
+-   Second Differencing: When first differencing is not enough to achieve stationarity, or when the time series exhibits a more complex pattern such as a trend within a trend, second differencing can be employed. This involves applying the differencing operation twice, which can further simplify the predictive structure by reducing more complex serial correlations.
 
 ::: panel-tabset
-
-
-
 ## Crude Oil
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -956,7 +795,6 @@ ggtsdisplay(first_diff_crude_oil, main = "First Differencing of Crude Oil Prices
 second_diff_crude_oil <- diff(first_diff_crude_oil)
 ggtsdisplay(second_diff_crude_oil, main = "Second Differencing of Crude Oil Prices")
 ```
-
 
 ## Natural Gas
 
@@ -976,7 +814,6 @@ ggtsdisplay(second_diff_natural_gas, main = "Second Differencing of Natural Gas 
 
 ```
 
-
 ## Electricity
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -995,11 +832,7 @@ ggtsdisplay(second_diff_electricity, main = "Second Differencing of Electricity 
 
 ```
 
-
 ## GDP
-
-
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -1016,12 +849,6 @@ second_diff_gdp <- diff(first_diff_gdp)
 ggtsdisplay(second_diff_gdp, main = "Second Differencing of GDP")
 
 ```
-
-
-
-
-
-
 
 ## CPI
 
@@ -1042,34 +869,19 @@ ggtsdisplay(second_diff_cpi, main = "Second Differencing of CPI")
 
 ```
 
-##
-
+## 
 :::
-
-
-
-
 
 # AIC & BIC
 
-
 In time series analysis, choosing the right model is paramount for accurate forecasting. Two of the most critical metrics for model selection are the Akaike Information Criterion (AIC) and the Bayesian Information Criterion (BIC). Both criteria are grounded in information theory and provide a means to balance model fit with model complexity.
 
+-   AIC is a tool for model selection that quantifies the trade-offs between model complexity (the number of parameters in the model) and the goodness of fit. AIC rewards models that achieve a high goodness of fit but penalizes those that become overly complex. A lower AIC value often indicates a preferable model.
 
-
-- AIC is a tool for model selection that quantifies the trade-offs between model complexity (the number of parameters in the model) and the goodness of fit. AIC rewards models that achieve a high goodness of fit but penalizes those that become overly complex. A lower AIC value often indicates a preferable model.
-
-- BIC extends the logic of AIC by incorporating sample size into the penalty for complexity. This adjustment makes BIC more stringent with complex models when dealing with larger datasets. As with AIC, a lower BIC suggests a better model.
-
-
-
+-   BIC extends the logic of AIC by incorporating sample size into the penalty for complexity. This adjustment makes BIC more stringent with complex models when dealing with larger datasets. As with AIC, a lower BIC suggests a better model.
 
 ::: panel-tabset
-
-
-
 ## Crude Oil
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -1111,7 +923,6 @@ temp[which.min(temp$AIC),]
 temp[which.min(temp$BIC),]
 temp[which.min(temp$AICc),]
 ```
-
 
 ## Natural Gas
 
@@ -1156,7 +967,6 @@ temp[which.min(temp$AICc),]
 
 ```
 
-
 ## Electricity
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -1200,11 +1010,7 @@ temp[which.min(temp$AICc),]
 
 ```
 
-
 ## GDP
-
-
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -1246,12 +1052,6 @@ temp[which.min(temp$BIC),]
 temp[which.min(temp$AICc),]
 
 ```
-
-
-
-
-
-
 
 ## CPI
 
@@ -1296,24 +1096,15 @@ temp[which.min(temp$AICc),]
 
 ```
 
-##
-
+## 
 :::
-
-
 
 # Fitting ARIMA
 
-
 Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
 
-
 ::: panel-tabset
-
-
-
 ## Crude Oil
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -1351,7 +1142,6 @@ plotly::ggplotly(p)
 
 ```
 
-
 ## Natural Gas
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -1387,7 +1177,6 @@ plotly::ggplotly(p_ng)
 
 ```
 
-
 ## Electricity
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -1418,11 +1207,7 @@ plotly::ggplotly(p_electricity)
 
 ```
 
-
 ## GDP
-
-
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -1451,12 +1236,6 @@ p_gdp <- ggplot(gdp_data, aes(x = DATE)) +
 plotly::ggplotly(p_gdp)
 
 ```
-
-
-
-
-
-
 
 ## CPI
 
@@ -1489,25 +1268,15 @@ plotly::ggplotly(p_cpi)
 
 ```
 
-##
-
+## 
 :::
-
-
-
 
 # Model Diagnostics
 
-
 Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
 
-
 ::: panel-tabset
-
-
-
 ## Crude Oil
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -1545,7 +1314,6 @@ plotly::ggplotly(p)
 
 ```
 
-
 ## Natural Gas
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -1581,7 +1349,6 @@ plotly::ggplotly(p_ng)
 
 ```
 
-
 ## Electricity
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -1612,11 +1379,7 @@ plotly::ggplotly(p_electricity)
 
 ```
 
-
 ## GDP
-
-
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -1645,12 +1408,6 @@ p_gdp <- ggplot(gdp_data, aes(x = DATE)) +
 plotly::ggplotly(p_gdp)
 
 ```
-
-
-
-
-
-
 
 ## CPI
 
@@ -1683,24 +1440,15 @@ plotly::ggplotly(p_cpi)
 
 ```
 
-##
-
+## 
 :::
-
-
 
 # Auto.Arima()
 
-
 Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
 
-
 ::: panel-tabset
-
-
-
 ## Crude Oil
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -1738,7 +1486,6 @@ plotly::ggplotly(p)
 
 ```
 
-
 ## Natural Gas
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -1774,7 +1521,6 @@ plotly::ggplotly(p_ng)
 
 ```
 
-
 ## Electricity
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -1805,11 +1551,7 @@ plotly::ggplotly(p_electricity)
 
 ```
 
-
 ## GDP
-
-
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -1838,12 +1580,6 @@ p_gdp <- ggplot(gdp_data, aes(x = DATE)) +
 plotly::ggplotly(p_gdp)
 
 ```
-
-
-
-
-
-
 
 ## CPI
 
@@ -1876,24 +1612,15 @@ plotly::ggplotly(p_cpi)
 
 ```
 
-##
-
+## 
 :::
-
-
 
 # Forecasting
 
-
 Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
 
-
 ::: panel-tabset
-
-
-
 ## Crude Oil
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -1931,7 +1658,6 @@ plotly::ggplotly(p)
 
 ```
 
-
 ## Natural Gas
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -1967,7 +1693,6 @@ plotly::ggplotly(p_ng)
 
 ```
 
-
 ## Electricity
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -1998,11 +1723,7 @@ plotly::ggplotly(p_electricity)
 
 ```
 
-
 ## GDP
-
-
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -2031,12 +1752,6 @@ p_gdp <- ggplot(gdp_data, aes(x = DATE)) +
 plotly::ggplotly(p_gdp)
 
 ```
-
-
-
-
-
-
 
 ## CPI
 
@@ -2069,25 +1784,15 @@ plotly::ggplotly(p_cpi)
 
 ```
 
-##
-
+## 
 :::
-
-
-
 
 # Comparing with Benchmark Methods
 
-
 Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
 
-
 ::: panel-tabset
-
-
-
 ## Crude Oil
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -2125,7 +1830,6 @@ plotly::ggplotly(p)
 
 ```
 
-
 ## Natural Gas
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -2161,7 +1865,6 @@ plotly::ggplotly(p_ng)
 
 ```
 
-
 ## Electricity
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -2192,11 +1895,7 @@ plotly::ggplotly(p_electricity)
 
 ```
 
-
 ## GDP
-
-
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -2225,12 +1924,6 @@ p_gdp <- ggplot(gdp_data, aes(x = DATE)) +
 plotly::ggplotly(p_gdp)
 
 ```
-
-
-
-
-
-
 
 ## CPI
 
@@ -2263,15 +1956,5 @@ plotly::ggplotly(p_cpi)
 
 ```
 
-##
-
+## 
 :::
-
-
-
-
-
-
-
-
-
