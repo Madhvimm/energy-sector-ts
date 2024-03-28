@@ -4,7 +4,28 @@
     "href": "data-visualization.html",
     "title": "Time Series Data Visualization",
     "section": "",
-    "text": "Warning in RColorBrewer::brewer.pal(N, \"Set2\"): minimal value for n is 3, returning requested palette with 3 different levels\n\nWarning in RColorBrewer::brewer.pal(N, \"Set2\"): minimal value for n is 3, returning requested palette with 3 different levels\n\n\n\n\n\n\nThe chart presented illustrates the fluctuations in electricity and natural gas prices from the early 1980s. The lines track the changes in average prices for electricity prices denoted by the green line and natural gas by the blue line. The graph reveals that natural gas prices have experienced significant volatility, characterized by sharp peaks and troughs, suggesting a market responsive to supply, demand, and regulatory changes over the years. Electricity prices, on the other hand, show a more gradual and steady increase over time, with less pronounced volatility but a consistent upward trend.\nUnderstanding these trends is essential for both consumers and policymakers. For consumers, it reflects the changing costs of utilities and can influence decisions around energy usage and conservation. For policymakers and industry stakeholders, the data can inform energy policy, investment in infrastructure, and the development of strategies for price stabilization.\n\nTableau Dashboard\n\nInteractive state-wise GDP\nThe Tableau dashboard below provides an interactive exploration of GDP data for each state in the United States. It features a map that allows you to view the GDP of each state. Additionally, there is a line graph that shows the GDP trends over various years for each state. This dashboard enables users to easily compare and analyze economic trends across different states over time."
+    "text": "The chart presented illustrates the fluctuations in electricity and natural gas prices from the early 1980s. The graph reveals that natural gas prices have experienced significant volatility, characterized by sharp peaks and troughs, suggesting a market responsive to supply, demand, and regulatory changes over the years. Electricity prices, on the other hand, show a more gradual and steady increase over time, with less pronounced volatility but a consistent upward trend.\nUnderstanding these trends is essential for both consumers and policymakers. For consumers, it reflects the changing costs of utilities and can influence decisions around energy usage and conservation. For policymakers and industry stakeholders, the data can inform energy policy, investment in infrastructure, and the development of strategies for price stabilization."
+  },
+  {
+    "objectID": "data-visualization.html#price-patterns-of-electricity-and-natural-gas",
+    "href": "data-visualization.html#price-patterns-of-electricity-and-natural-gas",
+    "title": "Time Series Data Visualization",
+    "section": "",
+    "text": "The chart presented illustrates the fluctuations in electricity and natural gas prices from the early 1980s. The graph reveals that natural gas prices have experienced significant volatility, characterized by sharp peaks and troughs, suggesting a market responsive to supply, demand, and regulatory changes over the years. Electricity prices, on the other hand, show a more gradual and steady increase over time, with less pronounced volatility but a consistent upward trend.\nUnderstanding these trends is essential for both consumers and policymakers. For consumers, it reflects the changing costs of utilities and can influence decisions around energy usage and conservation. For policymakers and industry stakeholders, the data can inform energy policy, investment in infrastructure, and the development of strategies for price stabilization."
+  },
+  {
+    "objectID": "data-visualization.html#interactive-crude-oil-prices-and-the-consumer-price-index-cpi-over-time",
+    "href": "data-visualization.html#interactive-crude-oil-prices-and-the-consumer-price-index-cpi-over-time",
+    "title": "Time Series Data Visualization",
+    "section": "Interactive Crude Oil Prices and the Consumer Price Index (CPI) over time",
+    "text": "Interactive Crude Oil Prices and the Consumer Price Index (CPI) over time\nThe interactive visualization below look at the correlation between Crude Oil Prices and the Consumer Price Index (CPI) in the United States. The dashboard traces the trajectory of crude oil prices alongside CPI fluctuations from 1986 to 2023. The dynamic chart enables users to hover over any point in time to reveal detailed data on both crude oil prices and CPI values, providing an understanding of how energy prices impact the overall cost of living."
+  },
+  {
+    "objectID": "data-visualization.html#interactive-state-wise-gdp",
+    "href": "data-visualization.html#interactive-state-wise-gdp",
+    "title": "Time Series Data Visualization",
+    "section": "Interactive state-wise GDP",
+    "text": "Interactive state-wise GDP\nThe Tableau dashboard below provides an interactive exploration of GDP data for each state in the United States. It features a map that allows you to view the GDP of each state. Additionally, there is a line graph that shows the GDP trends over various years for each state. This dashboard enables users to easily compare and analyze economic trends across different states over time."
   },
   {
     "objectID": "exploratory-data-analysis.html",

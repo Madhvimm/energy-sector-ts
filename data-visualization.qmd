@@ -1,5 +1,5 @@
 ---
-title: "Time Series Data Visualization"
+title: ""
 ---
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -34,43 +34,16 @@ library(dplyr)
 ```
 
 
+# Time Series Data Visualization
+
+
+## Price Patterns of Electricity and Natural Gas
+
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
 #| code-summary: 'Importing Libraries'
 #| warning: false
 #| output: false
-
-# Load the Crude Oil Price dataset
-crude_oil_prices <- read.csv("MER_T09_01_CRUDE_OIL_PRICE.csv")
-
-# Convert YYYYMM to Date format
-crude_oil_prices <- crude_oil_prices[substr(crude_oil_prices$YYYYMM, 5, 6) <= 12, ]
-# After filtering, attempt to convert 'YYYYMM' to Date format again
-crude_oil_prices$Date <- as.Date(paste0(substr(crude_oil_prices$YYYYMM, 1, 4), 
-                                         substr(crude_oil_prices$YYYYMM, 5, 6), 
-                                         "01"), format="%Y%m%d")
-
-
-head(crude_oil_prices$Date)
-
-
-sum(is.na(crude_oil_prices$Value))
-
-
-
-crude_oil_prices$Value[crude_oil_prices$Value == "Not Available"] <- NA
-
-# Convert the 'Value' column to numeric, since it might be a character because of the "Not Available" strings
-crude_oil_prices$Value <- as.numeric(crude_oil_prices$Value)
-
-# Check for NA values again
-sum(is.na(crude_oil_prices$Value))
-
-#Remove rows with NA values
-crude_oil_prices <- na.omit(crude_oil_prices)
-
-composite_crude_oil_prices <- subset(crude_oil_prices, Description == "Refiner Acquisition Cost of Crude Oil, Composite")
-
 
 # Set the working directory
 setwd("/Users/madhvimalhotra/Downloads/Spring 2024/Energy Time Series Poject/energy-sector")
@@ -135,10 +108,6 @@ total_electricity_prices <- subset(avg_prices_electricity, Description == "Avera
 #| warning: false
 #| output: false
 
-# Ensure your individual datasets have a 'Type' column and a 'Price' column
-crude_oil_prices <- composite_crude_oil_prices %>% 
-  mutate(Type = "Crude Oil", Price = Value) %>%
-  select(Date, Type, Price)
 
 natural_gas_prices <- citygate_gas_prices %>% 
   mutate(Type = "Natural Gas", Price = Value) %>%
@@ -155,8 +124,6 @@ combined_data <- bind_rows( natural_gas_prices, avg_prices_electricity)
 combined_data <- combined_data %>% distinct(Date, Type, Price, .keep_all = TRUE)
 
 
-
-
 ```
 
 
@@ -164,12 +131,14 @@ combined_data <- combined_data %>% distinct(Date, Type, Price, .keep_all = TRUE)
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Visualization'
 #| warning: false
 #| output: true
 
-#
-p <- plot_ly(data = combined_data, x = ~Date, y = ~Price, color = ~Type, type = 'scatter', mode = 'lines') %>%
+## Define custom colors for the two types
+colors <- c("Electricity" = "dodgerblue2", "Natural Gas" = "orange3")
+
+p <- plot_ly(data = combined_data, x = ~Date, y = ~Price, color = ~Type, colors = colors, type = 'scatter', mode = 'lines') %>%
   layout(title = "Energy Price Trends Over Time",
          xaxis = list(title = "Date"),
          yaxis = list(title = "Price"))
@@ -182,8 +151,7 @@ p
 
 
 
-
-The chart presented illustrates the fluctuations in electricity and natural gas prices from the early 1980s. The lines track the changes in average prices for electricity prices denoted by the green line and natural gas by the blue line. The graph reveals that natural gas prices have experienced significant volatility, characterized by sharp peaks and troughs, suggesting a market responsive to supply, demand, and regulatory changes over the years. Electricity prices, on the other hand, show a more gradual and steady increase over time, with less pronounced volatility but a consistent upward trend.
+The chart presented illustrates the fluctuations in electricity and natural gas prices from the early 1980s. The graph reveals that natural gas prices have experienced significant volatility, characterized by sharp peaks and troughs, suggesting a market responsive to supply, demand, and regulatory changes over the years. Electricity prices, on the other hand, show a more gradual and steady increase over time, with less pronounced volatility but a consistent upward trend.
 
 Understanding these trends is essential for both consumers and policymakers. For consumers, it reflects the changing costs of utilities and can influence decisions around energy usage and conservation. For policymakers and industry stakeholders, the data can inform energy policy, investment in infrastructure, and the development of strategies for price stabilization.
 
@@ -191,12 +159,23 @@ Understanding these trends is essential for both consumers and policymakers. For
 
 # Tableau Dashboard
 
-#### Interactive state-wise GDP
+## Interactive Crude Oil Prices and the Consumer Price Index (CPI) over time
+
+
+The interactive visualization below look at the correlation between Crude Oil Prices and the Consumer Price Index (CPI) in the United States. The dashboard traces the trajectory of crude oil prices alongside CPI fluctuations from 1986 to 2023. The dynamic chart enables users to hover over any point in time to reveal detailed data on both crude oil prices and CPI values, providing an understanding of how energy prices impact the overall cost of living. 
+
+
+<iframe src="https://public.tableau.com/views/CRUDEoil-cpi/oil-CPi?:embed=y&:showVizHome=no" width="100%" height="700" frameborder="0"></iframe>
+
+
+
+
+## Interactive state-wise GDP
 
 The Tableau dashboard below provides an interactive exploration of GDP data for each state in the United States. It features a map that allows you to view the GDP of each state. Additionally, there is a line graph that shows the GDP trends over various years for each state. This dashboard enables users to easily compare and analyze economic trends across different states over time.
 
 
-<iframe src="https://public.tableau.com/views/ProjectTableau_17115959999840/Dashboard1?:embed=y&:showVizHome=no" width="100%" height="1200" frameborder="0"></iframe>
+<iframe src="https://public.tableau.com/views/ProjectTableau_17115959999840/Dashboard1?:embed=y&:showVizHome=no" width="100%" height="800" frameborder="0"></iframe>
 
 
 

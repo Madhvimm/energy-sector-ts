@@ -394,6 +394,12 @@ ggplotly(p_cpi)
 
 
 
+
+
+
+
+
+
 The CPI graph illustrates a continuous upward trend, indicative of inflation. Recent increases suggest a period of higher inflation, potentially influenced by various economic factors.
 
 
