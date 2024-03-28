@@ -2,11 +2,12 @@
 title: "Time Series Data Visualization"
 ---
 
-```{r}
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
 #| code-summary: 'Importing Libraries'
 #| warning: false
 #| output: false
+
 library(tidyverse)
 library(ggplot2)
 library(forecast)
@@ -26,41 +27,182 @@ library(imputeTS)
 library(gridExtra)
 library(reticulate)
 library(readxl)
+library(plotly)
+library(ggplot2)
+library(dplyr)
+
 ```
 
-# Time Series Data Visualization
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
-# Read the data from the CSV file
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: false
+
+# Load the Crude Oil Price dataset
+crude_oil_prices <- read.csv("MER_T09_01_CRUDE_OIL_PRICE.csv")
+
+# Convert YYYYMM to Date format
+crude_oil_prices <- crude_oil_prices[substr(crude_oil_prices$YYYYMM, 5, 6) <= 12, ]
+# After filtering, attempt to convert 'YYYYMM' to Date format again
+crude_oil_prices$Date <- as.Date(paste0(substr(crude_oil_prices$YYYYMM, 1, 4), 
+                                         substr(crude_oil_prices$YYYYMM, 5, 6), 
+                                         "01"), format="%Y%m%d")
+
+
+head(crude_oil_prices$Date)
+
+
+sum(is.na(crude_oil_prices$Value))
+
+
+
+crude_oil_prices$Value[crude_oil_prices$Value == "Not Available"] <- NA
+
+# Convert the 'Value' column to numeric, since it might be a character because of the "Not Available" strings
+crude_oil_prices$Value <- as.numeric(crude_oil_prices$Value)
+
+# Check for NA values again
+sum(is.na(crude_oil_prices$Value))
+
+#Remove rows with NA values
+crude_oil_prices <- na.omit(crude_oil_prices)
+
+composite_crude_oil_prices <- subset(crude_oil_prices, Description == "Refiner Acquisition Cost of Crude Oil, Composite")
+
+
+# Set the working directory
+setwd("/Users/madhvimalhotra/Downloads/Spring 2024/Energy Time Series Poject/energy-sector")
+
+# Construct the file path
+file_path <- file.path(getwd(), "MER_T09_10_NATURAL GAS PRICES.csv")
+
+# Load the Natural Gas Prices dataset
+natural_gas_prices <- read.csv(file_path)
+
+
+# Filter out invalid months (assuming the same structure as the crude oil prices dataset)
+natural_gas_prices <- natural_gas_prices[substr(natural_gas_prices$YYYYMM, 5, 6) <= 12, ]
+
+# Convert YYYYMM to Date format
+natural_gas_prices$Date <- as.Date(paste0(substr(natural_gas_prices$YYYYMM, 1, 4), 
+                                          substr(natural_gas_prices$YYYYMM, 5, 6), 
+                                          "01"), format="%Y%m%d")
+
+# Replace "Not Available" with NA
+natural_gas_prices$Value[natural_gas_prices$Value == "Not Available"] <- NA
+
+# Convert the 'Value' column to numeric
+natural_gas_prices$Value <- as.numeric(natural_gas_prices$Value)
+
+# Handle NA values by removing rows with NA
+natural_gas_prices <- na.omit(natural_gas_prices)
+
+# Filter for 'Natural Gas Price'
+citygate_gas_prices <- subset(natural_gas_prices, Description == "Natural Gas Price, Citygate")
+
+# Load the Average Prices Electricity dataset
+avg_prices_electricity <- read.csv("MER_T09_08_AVG_PRICES_ELECTRICITY.csv")
+
+# Convert YYYYMM to Date format for the first three datasets
+avg_prices_electricity$Date <- as.Date(paste0(substr(avg_prices_electricity$YYYYMM, 1, 4),
+                                               substr(avg_prices_electricity$YYYYMM, 5, 6),
+                                               "01"), format="%Y%m%d")
+
+# Filter out invalid months if necessary (adjust if the structure is different from the natural gas dataset)
+avg_prices_electricity <- avg_prices_electricity[substr(avg_prices_electricity$YYYYMM, 5, 6) <= 12, ]
+
+# Replace "Not Available" with NA
+avg_prices_electricity$Value[avg_prices_electricity$Value == "Not Available"] <- NA
+
+# Convert the 'Value' column to numeric
+avg_prices_electricity$Value <- as.numeric(avg_prices_electricity$Value)
+
+# Handle NA values by removing rows with NA
+avg_prices_electricity <- na.omit(avg_prices_electricity)
+
+
+total_electricity_prices <- subset(avg_prices_electricity, Description == "Average Price of Electricity to Ultimate Customers, Total")
+
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: false
+
+# Ensure your individual datasets have a 'Type' column and a 'Price' column
+crude_oil_prices <- composite_crude_oil_prices %>% 
+  mutate(Type = "Crude Oil", Price = Value) %>%
+  select(Date, Type, Price)
+
+natural_gas_prices <- citygate_gas_prices %>% 
+  mutate(Type = "Natural Gas", Price = Value) %>%
+  select(Date, Type, Price)
+
+avg_prices_electricity <- total_electricity_prices %>% 
+  mutate(Type = "Electricity", Price = Value) %>%
+  select(Date, Type, Price)
+
+# Combine the datasets
+combined_data <- bind_rows( natural_gas_prices, avg_prices_electricity)
+
+# Check for duplicates or any potential issues
+combined_data <- combined_data %>% distinct(Date, Type, Price, .keep_all = TRUE)
+
+
+
 
 ```
 
 
 
-```{r, warning=FALSE, message=FALSE}
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
-#| code-summary: 'Average Nitrate Levels'
+#| code-summary: 'Importing Libraries'
 #| warning: false
 #| output: true
 
+#
+p <- plot_ly(data = combined_data, x = ~Date, y = ~Price, color = ~Type, type = 'scatter', mode = 'lines') %>%
+  layout(title = "Energy Price Trends Over Time",
+         xaxis = list(title = "Date"),
+         yaxis = list(title = "Price"))
+
+# To display the plot in your R environment
+p
 
 ```
 
 
-The yearly graph above shows the average nitrate levels in California's drinking water from 1998 to 2011. The points represent annual average nitrate concentrations, the red dashed line, representing a linear regression model, has been added to indicate the overall trend within the observed period. 
 
-This helps us identify potential patterns, trends, or anomalies in nitrate levels over the years. Notably, it's crucial to observe how these levels fluctuate and consider external factors that might influence these changes, such as environmental regulations or significant events affecting water quality.
+
+
+The chart presented illustrates the fluctuations in electricity and natural gas prices from the early 1980s. The lines track the changes in average prices for electricity prices denoted by the green line and natural gas by the blue line. The graph reveals that natural gas prices have experienced significant volatility, characterized by sharp peaks and troughs, suggesting a market responsive to supply, demand, and regulatory changes over the years. Electricity prices, on the other hand, show a more gradual and steady increase over time, with less pronounced volatility but a consistent upward trend.
+
+Understanding these trends is essential for both consumers and policymakers. For consumers, it reflects the changing costs of utilities and can influence decisions around energy usage and conservation. For policymakers and industry stakeholders, the data can inform energy policy, investment in infrastructure, and the development of strategies for price stabilization.
 
 
 
 # Tableau Dashboard
 
-#### Interactive County-level Nitrate Level Map
+#### Interactive state-wise GDP
 
-The Tableau dashboard below is an interactive exploration of nitrate levels across various counties in California. This map helps in providing insights into regional disparities or areas of particular concern. There is time slider feature where you can see how nitrate levels in each county have evolved from 1998 to 2011.
+The Tableau dashboard below provides an interactive exploration of GDP data for each state in the United States. It features a map that allows you to view the GDP of each state. Additionally, there is a line graph that shows the GDP trends over various years for each state. This dashboard enables users to easily compare and analyze economic trends across different states over time.
 
 
-<iframe src="https://public.tableau.com/views/california_17104055601850/Dashboard1?:embed=y&:display_count=yes&:showVizHome=no" width="100%" height="1200"></iframe>
+<iframe src="https://public.tableau.com/views/ProjectTableau_17115959999840/Dashboard1?:embed=y&:showVizHome=no" width="100%" height="1200" frameborder="0"></iframe>
+
+
+
+
+
+
 
 
 
