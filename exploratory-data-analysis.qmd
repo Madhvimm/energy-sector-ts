@@ -422,6 +422,32 @@ The CPI graph illustrates a continuous upward trend, indicative of inflation. Re
 
 
 
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: false
+
+# Save composite_crude_oil_prices as CSV
+write.csv(composite_crude_oil_prices, "data/composite_crude_oil_prices.csv", row.names = FALSE)
+
+# Save citygate_gas_prices as CSV
+write.csv(citygate_gas_prices, "data/citygate_gas_prices.csv", row.names = FALSE)
+
+# Save total_electricity_prices as CSV
+write.csv(total_electricity_prices, "data/total_electricity_prices.csv", row.names = FALSE)
+
+# Save gdp_data as CSV
+write.csv(gdp_data, "data/gdp_data.csv", row.names = FALSE)
+
+# Save cpi_data as CSV
+write.csv(cpi_data, "data/cpi_data.csv", row.names = FALSE)
+
+```
+
+
+
+
 # Lag Plots
 
 
@@ -458,10 +484,11 @@ start_year_gdp <- as.numeric(format(min(gdp_data$DATE), "%Y"))
 start_quarter_gdp <- quarter(min(gdp_data$DATE))
 gdp_ts <- ts(gdp_data$GDP, start=c(start_year_gdp, start_quarter_gdp), frequency=4)
 
-# For CPI (it's quarterly)
-start_year_cpi <- as.numeric(format(min(cpi_data$DATE), "%Y"))
-start_quarter_cpi <- quarter(min(cpi_data$DATE))
-cpi_ts <- ts(cpi_data$CPIAUCSL, start=c(start_year_cpi, start_quarter_cpi), frequency=4)
+# For CPI (it's monthly)
+cpi_data$Date <- as.Date(cpi_data$DATE, format = "%m/%d/%y")
+start_year_cpi <- as.numeric(format(min(cpi_data$Date), "%Y"))
+start_month_cpi <- as.numeric(format(min(cpi_data$Date), "%m"))
+cpi_ts <- ts(cpi_data$CPIAUCSL, start = c(start_year_cpi, start_month_cpi), frequency = 12)
 
 ```
 
@@ -596,7 +623,7 @@ The CPI lag plots show a strong positive autocorrelation, indicating consistent 
 
 - Reflects a steady inflation rate over the years.
 
-- The consistent distribution of quarterly colors across lags indicates an even inflation rate across all quarters.
+- The consistent distribution of quarterly colors across lags indicates an even inflation rate across all months.
 
 
 
@@ -1304,7 +1331,7 @@ The differenced series predominantly hovers around the zero line, which indicate
 fit_cpi <- lm(CPIAUCSL ~ DATE, data = cpi_data, na.action = NULL)
 
 # Convert residuals to a ts object for plotting
-resid_cpi_ts <- ts(resid(fit_cpi), start=c(start_year_cpi, start_quarter_cpi), frequency=4)
+resid_cpi_ts <- ts(resid(fit_cpi), start=c(start_year_cpi, start_month_cpi), frequency=12)
 
 # Plot the residuals
 plot1_cpi <- autoplot(resid_cpi_ts, series="Detrended CPI", colour = "#00BFC4") + 
@@ -1557,6 +1584,8 @@ plotly::ggplotly(p_cpi)
 
 
 :::
+
+
 
 
 

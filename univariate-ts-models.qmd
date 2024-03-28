@@ -29,748 +29,68 @@ library(plotly)
 
 
 
-# Time Series Plot
-
-In this section, we delve into time series data, focusing on the energy sector's economic impact. Time series analysis is pivotal in understanding the temporal patterns and trends within data points collected sequentially over time. By employing time series plots, we gain invaluable insights into the underlying structures of our datasets, such as trends, seasonality, and cyclical fluctuations.
-
-The visualizations will present a detailed examination of several key data sets: Crude Oil Prices, Natural Gas Prices, Electricity Prices, GDP, and CPI. Each plot is designed to elucidate the temporal progression of these variables, providing a foundation for deeper analytical exploration. Through these visualizations, we aim to identify significant patterns, anomalies, and correlations within the data, enabling us to draw meaningful conclusions about the economic interplay between energy prices and broader economic indicators.
-
-
-::: panel-tabset
-
-## Crude Oil
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Read data'
 #| warning: false
 #| output: false
 
-# Load the Crude Oil Price dataset
-crude_oil_prices <- read.csv("MER_T09_01_CRUDE_OIL_PRICE.csv")
-
-# Convert YYYYMM to Date format
-crude_oil_prices <- crude_oil_prices[substr(crude_oil_prices$YYYYMM, 5, 6) <= 12, ]
-# After filtering, attempt to convert 'YYYYMM' to Date format again
-crude_oil_prices$Date <- as.Date(paste0(substr(crude_oil_prices$YYYYMM, 1, 4), 
-                                         substr(crude_oil_prices$YYYYMM, 5, 6), 
-                                         "01"), format="%Y%m%d")
-
-
-head(crude_oil_prices$Date)
-
-
-sum(is.na(crude_oil_prices$Value))
-
-
-
-crude_oil_prices$Value[crude_oil_prices$Value == "Not Available"] <- NA
-
-# Convert the 'Value' column to numeric, since it might be a character because of the "Not Available" strings
-crude_oil_prices$Value <- as.numeric(crude_oil_prices$Value)
-
-# Check for NA values again
-sum(is.na(crude_oil_prices$Value))
-
-#Remove rows with NA values
-crude_oil_prices <- na.omit(crude_oil_prices)
-
-description_counts <- table(crude_oil_prices$Description)
-description_counts
+composite_crude_oil_prices <- read.csv("data/composite_crude_oil_prices.csv")
+citygate_gas_prices <- read.csv("data/citygate_gas_prices.csv")
+total_electricity_prices <- read.csv("data/total_electricity_prices.csv")
+gdp_data <- read.csv("data/gdp_data.csv")
+cpi_data <- read.csv("data/cpi_data.csv")
 
 ```
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: false
-
-composite_crude_oil_prices <- subset(crude_oil_prices, Description == "Refiner Acquisition Cost of Crude Oil, Composite")
-```
-
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: true
-# Plotting with ggplot2
-p_composite_crude_oil <- ggplot(composite_crude_oil_prices, aes(x = Date, y = Value)) +
-  geom_line() + # Add a line geometry
-  theme_minimal() + # Use a minimal theme for a cleaner look
-  labs(title = "Cost of Crude Oil Over Time",
-       x = "Date",
-       y = "Value (USD)")
-
-# Convert ggplot object to plotly for interactivity
-ggplotly(p_composite_crude_oil)
-
-```
-
-
-The time series plot for crude oil showcases the historical refiner acquisition costs. Observations include a long-term upward trend, significant volatility, and notable peaks, particularly around 2008 and 2011 and 2015. The recent years exhibit a declining trend post the last peak, highlighting the dynamic nature of crude oil prices.
-
-*Trend:* Increasing over the long term with recent decline.
-
-*Seasonality:* No clear seasonality observed due to the dominant influence of geopolitical and economic factors on oil prices.
-
-*Nature of Series:* The series seems to be multiplicative, given the percentage changes and volatility patterns.
-
-
-
-
-## Natural Gas
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: false
-
-
-# Set the working directory
-setwd("/Users/madhvimalhotra/Downloads/Spring 2024/Energy Time Series Poject/energy-sector")
-
-# Construct the file path
-file_path <- file.path(getwd(), "MER_T09_10_NATURAL GAS PRICES.csv")
-
-# Load the Natural Gas Prices dataset
-natural_gas_prices <- read.csv(file_path)
-
-
-# Filter out invalid months (assuming the same structure as the crude oil prices dataset)
-natural_gas_prices <- natural_gas_prices[substr(natural_gas_prices$YYYYMM, 5, 6) <= 12, ]
-
-# Convert YYYYMM to Date format
-natural_gas_prices$Date <- as.Date(paste0(substr(natural_gas_prices$YYYYMM, 1, 4), 
-                                          substr(natural_gas_prices$YYYYMM, 5, 6), 
-                                          "01"), format="%Y%m%d")
-
-# Replace "Not Available" with NA
-natural_gas_prices$Value[natural_gas_prices$Value == "Not Available"] <- NA
-
-# Convert the 'Value' column to numeric
-natural_gas_prices$Value <- as.numeric(natural_gas_prices$Value)
-
-# Handle NA values by removing rows with NA
-natural_gas_prices <- na.omit(natural_gas_prices)
-
-description_counts <- table(natural_gas_prices$Description)
-description_counts
-
-```
-
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: false
-
-# Filter for 'Natural Gas Price'
-citygate_gas_prices <- subset(natural_gas_prices, Description == "Natural Gas Price, Citygate")
-
-```
-
-
-
-```{r}
-#| code-fold: true
-#| code-summary: 'Plot Natural Gas Prices'
-#| warning: false
-#| output: true
-
-# Plotting with ggplot2
-p_citygate_gas <- ggplot(citygate_gas_prices, aes(x = Date, y = Value)) +
-  geom_line() + # Add a line geometry
-  theme_minimal() + # Use a minimal theme for a cleaner look
-  labs(title = "Natural Gas Price Over Time",
-       x = "Date",
-       y = "Price (USD)")
-
-# Convert ggplot object to plotly for interactivity
-ggplotly(p_citygate_gas)
-```
-
-
-
-The natural gas price graph, reveals substantial fluctuations, a significant peaks in 2001, 2005, 2008 and around 2021, and recent volatile trends. Unlike crude oil, natural gas prices do not exhibit a clear long-term trend but return closer to the baseline after peaks.
-
-
-*Trend:* Fluctuating without a clear long-term direction.
-
-*Seasonality:* Less evident due to the market's response to short-term supply and demand changes.
-
-*Nature of Series:* Likely multiplicative, reflecting the proportional changes and variability in prices.
-
-
-
-
-## Electricity
-
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: false
-
-# Load the Average Prices Electricity dataset
-avg_prices_electricity <- read.csv("MER_T09_08_AVG_PRICES_ELECTRICITY.csv")
-
-# Convert YYYYMM to Date format for the first three datasets
-avg_prices_electricity$Date <- as.Date(paste0(substr(avg_prices_electricity$YYYYMM, 1, 4),
-                                               substr(avg_prices_electricity$YYYYMM, 5, 6),
-                                               "01"), format="%Y%m%d")
-
-# Filter out invalid months if necessary (adjust if the structure is different from the natural gas dataset)
-avg_prices_electricity <- avg_prices_electricity[substr(avg_prices_electricity$YYYYMM, 5, 6) <= 12, ]
-
-# Replace "Not Available" with NA
-avg_prices_electricity$Value[avg_prices_electricity$Value == "Not Available"] <- NA
-
-# Convert the 'Value' column to numeric
-avg_prices_electricity$Value <- as.numeric(avg_prices_electricity$Value)
-
-# Handle NA values by removing rows with NA
-avg_prices_electricity <- na.omit(avg_prices_electricity)
-
-# Get the description counts
-description_counts_electricity <- table(avg_prices_electricity$Description)
-print(description_counts_electricity)
-
-
-colnames(avg_prices_electricity)
-```
 
 
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: false
-
-total_electricity_prices <- subset(avg_prices_electricity, Description == "Average Price of Electricity to Ultimate Customers, Total")
-
-```
-
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: true
-
-# Plotting with ggplot2
-p_total_electricity <- ggplot(total_electricity_prices, aes(x = Date, y = Value)) +
-  geom_line() + # Add a line geometry
-  theme_minimal() + # Use a minimal theme for a cleaner look
-  labs(title = "Average Price of Electricity to Ultimate Customers",
-       x = "Date",
-       y = "Price (Cents per Kilowatthour)")
-
-# Convert ggplot object to plotly for interactivity
-ggplotly(p_total_electricity)
-
-
-```
-
-
-The "Average Price of Electricity to Ultimate Customers" graph offers insights into the pricing trends of electricity, an essential commodity for consumers and industries alike.
-
-*Trend:* There is a upward trend showcasing long-term growth.
-
-*Seasonality:* Periodic oscillations in price could signify seasonal demand changes, driven by heating needs in winter or cooling in summer, impacting production costs and consumption patterns.
-
-*Nature of Series:* Likely additive, characterized by a regular oscillations indicating seasonality.
-
-
-
-
-## GDP
-
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: false
-
-
-# Load the GDP dataset
-gdp_data <- read.csv("GDP.csv")
-
-
-colnames(gdp_data)
-
-
-# Convert DATE column to Date format if necessary
-gdp_data$DATE <- as.Date(gdp_data$DATE)
-
-# Handle NA values by removing rows with NA if you haven't done it already
-gdp_data <- na.omit(gdp_data)
-```
-
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: true
-
-# Plotting with ggplot2
-p_gdp <- ggplot(gdp_data, aes(x = DATE, y = GDP)) +
-  geom_line() +
-  theme_minimal() +
-  labs(title = "Gross Domestic Product Over Time",
-       x = "Date",
-       y = "GDP (Billion USD)")
-
-# Convert ggplot object to plotly for interactivity
-ggplotly(p_gdp)
-
-```
-
-
-
-
-
-GDP growth exhibits an overall upward trend with a notable dip in 2020, possibly due to economic downturns because of the pandemic. The recovery post-dip indicates economic resilience.
-
-
-*Trend:* Increasing with acceleration in recent decades.
-
-*Seasonality:* Not applicable for GDP as it reflects economic trends and we cant see in the graph as well.
-
-*Nature of Series:* Additive, considering the steady growth pattern with occasional dips and recoveries.
-
-
-
-
-
-## CPI
-
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: false
-
-
-# Load the CPI dataset
-cpi_data <- read.csv("CPIAUCSL.csv")
-
-colnames(cpi_data)
-
-# Convert DATE column to Date format if necessary
-cpi_data$DATE <- as.Date(cpi_data$DATE)
-
-# Handle NA values by removing rows with NA if you haven't done it already
-cpi_data <- na.omit(cpi_data)
-
-```
-
-
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: true
-
-# Plotting with ggplot2
-p_cpi <- ggplot(cpi_data, aes(x = DATE, y = CPIAUCSL)) +
-  geom_line() +
-  theme_minimal() +
-  labs(title = "Consumer Price Index Over Time",
-       x = "Date",
-       y = "CPI")
-
-# Convert ggplot object to plotly for interactivity
-ggplotly(p_cpi)
-
-```
-
-
-
-
-
-
-
-
-
-
-
-The CPI graph illustrates a continuous upward trend, indicative of inflation. Recent increases suggest a period of higher inflation, potentially influenced by various economic factors.
-
-
-*Trend:* Consistently upward, indicating inflation.
-
-*Seasonality:* Not distinctly observable, as CPI reflects broader economic price changes
-
-*Nature of Series:* Additive, with a steady increase in consumer prices over time.
-
-
-##
-
-
-:::
-
-
-
-# Lag Plots
-
-
-Lag plots are essential tools in time series analysis, offering insights into the temporal dependency within the data. By comparing data points with their previous values (lags), we can uncover patterns, trends, and potential autocorrelation in the series. Each lag in the plot helps us to visualize how past values relate to current values, which is crucial for understanding the dynamics and forecasting future trends. In this section, we explore lag plots for various key economic indicators and energy prices, providing a deeper understanding of their time-dependent structures.
-
-
-::: panel-tabset
-
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'convert to ts'
 #| warning: false
 #| output: false
 
 
 # For Crude Oil
+composite_crude_oil_prices$Date <- as.Date(composite_crude_oil_prices$Date)
 start_year <- as.numeric(format(min(composite_crude_oil_prices$Date), "%Y"))
 start_month <- as.numeric(format(min(composite_crude_oil_prices$Date), "%m"))
 composite_crude_oil_ts <- ts(composite_crude_oil_prices$Value, start=c(start_year, start_month), frequency=12)
 
+
 # For Natural Gas
+citygate_gas_prices$Date <- as.Date(citygate_gas_prices$Date)
 start_year_gas <- as.numeric(format(min(citygate_gas_prices$Date), "%Y"))
 start_month_gas <- as.numeric(format(min(citygate_gas_prices$Date), "%m"))
 citygate_gas_ts <- ts(citygate_gas_prices$Value, start=c(start_year_gas, start_month_gas), frequency=12)
 
 # For Electricity
+total_electricity_prices$Date <- as.Date(total_electricity_prices$Date, format = "%Y-%m-%d")
 start_year_elec <- as.numeric(format(min(total_electricity_prices$Date), "%Y"))
 start_month_elec <- as.numeric(format(min(total_electricity_prices$Date), "%m"))
-total_electricity_ts <- ts(total_electricity_prices$Value, start=c(start_year_elec, start_month_elec), frequency=12)
+total_electricity_ts <- ts(total_electricity_prices$Value, start = c(start_year_elec, start_month_elec), frequency = 12)
 
 # For GDP (it's quarterly)
+gdp_data$DATE <- as.Date(gdp_data$DATE, format = "%Y-%m-%d")
 start_year_gdp <- as.numeric(format(min(gdp_data$DATE), "%Y"))
 start_quarter_gdp <- quarter(min(gdp_data$DATE))
-gdp_ts <- ts(gdp_data$GDP, start=c(start_year_gdp, start_quarter_gdp), frequency=4)
+gdp_ts <- ts(gdp_data$GDP, start = c(start_year_gdp, start_quarter_gdp), frequency = 4)
 
-# For CPI (it's quarterly)
+
+# For CPI (it's monthly)
+cpi_data$DATE <- as.Date(cpi_data$DATE, format = "%Y-%m-%d")
 start_year_cpi <- as.numeric(format(min(cpi_data$DATE), "%Y"))
-start_quarter_cpi <- quarter(min(cpi_data$DATE))
-cpi_ts <- ts(cpi_data$CPIAUCSL, start=c(start_year_cpi, start_quarter_cpi), frequency=4)
-
+start_month_cpi <- as.numeric(format(min(cpi_data$DATE), "%m"))
+cpi_ts <- ts(cpi_data$CPIAUCSL, start = c(start_year_cpi, start_month_cpi), frequency = 12)
 ```
 
 
-## Crude Oil
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: true
 
-# Create lag plot
-library(forecast)
-gglagplot(composite_crude_oil_ts, do.lines=FALSE) + 
-  xlab("Lags") + 
-  ylab("Value (USD)") + 
-  ggtitle("Lag Plot for Refiner Acquisition Cost of Crude Oil") + 
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
-  theme_bw()
-```
-
-
-The lag plots for the Cost of Crude Oil reveal a positive autocorrelation. The presence of color-coded months suggests seasonal trends, though they are not starkly evident. As lags increase, the correlation weakens, diminishing predictive power over longer time lags.
-
-- Positive Autocorrelation evident across the lags, suggesting that past prices influence future prices.
-
-- The strength of autocorrelation decreases with higher lags.
-
-
-
-## Natural Gas
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: true
-
-# Create lag plot
-gglagplot(citygate_gas_ts, do.lines=FALSE) + 
-  xlab("Lags") + 
-  ylab("Price (USD)") + 
-  ggtitle("Lag Plot for Natural Gas Price") + 
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
-  theme_bw()
-```
-
-Natural Gas Price lag plots display a positive autocorrelation, especially evident in the initial lags. With increasing lags, the data points become more dispersed, indicating a reduction in autocorrelation strength.
-
-- Strong Autocorrelation in the initial lags, indicating past prices are good predictors for the near future.
-
-- As the lag increases, the correlation diminishes, which is common in time series data.
-
-
-
-
-## Electricity
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: true
-
-# Create lag plot
-gglagplot(total_electricity_ts, do.lines=FALSE) + 
-  xlab("Lags") + 
-  ylab("Price (Cents per Kilowatthour)") + 
-  ggtitle("Lag Plot for Average Price of Electricity to Ultimate Customers") + 
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
-  theme_bw()
-```
-
-Electricity price lag plots show a strong and consistent positive autocorrelation across all lags, suggesting stable and predictable price trends. The seasonal effect is visible, with certain months consistently clustering together.
-
-- Strong positive auto-correlation is maintained across various lags.
-
-- Clear month-to-month price consistency suggests significant seasonality.
-
-- The strong correlation at higher lags implies underlying factors affecting electricity prices.
-
-
-
-## GDP
-
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: true
-
-# Create lag plot
-gglagplot(gdp_ts, do.lines=FALSE) + 
-  xlab("Lags") + 
-  ylab("GDP (Billion USD)") + 
-  ggtitle("Lag Plot for GDP") + 
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
-  theme_bw()
-```
-
-
-GDP's lag plots exhibit a very strong linear relationship across all lags, reflecting the steady economic growth.
-
-- Persistent growth indicates steady economic progression.
-
-- No distinct seasonal patterns are visible, suggesting uniform economic growth across quarters.
-
-
-
-## CPI
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: true
-
-# Create lag plot
-gglagplot(cpi_ts, do.lines=FALSE) + 
-  xlab("Lags") + 
-  ylab("CPI") + 
-  ggtitle("Lag Plot for CPI") + 
-  theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
-  theme_bw()
-```
-
-
-The CPI lag plots show a strong positive autocorrelation, indicating consistent inflation trends. 
-
-- Reflects a steady inflation rate over the years.
-
-- The consistent distribution of quarterly colors across lags indicates an even inflation rate across all quarters.
-
-
-
-##
-
-:::
-
-
-
-# Decomposition Plots
-
-Decomposition plots are powerful tools in time series analysis, allowing us to dissect a series into its core components: trend, seasonality, and irregular (residual) components. This breakdown provides a clearer understanding of the underlying patterns and behaviors in the data. For instance, the trend component shows the long-term direction of the series, while the seasonal component highlights repeating patterns over fixed periods. The irregular component captures random fluctuations that are not part of the trend or seasonality. Here, we explore the decomposition plots for various key datasets, unveiling the distinct dynamics of each.
-
-
-::: panel-tabset
-
-
-
-## Crude Oil
-
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: true
-
-# Decompose the time series
-decomposed_crude_oil <- decompose(composite_crude_oil_ts, "multiplicative")
-
-# Plot the decomposed components
-autoplot(decomposed_crude_oil) + 
-  ggtitle("Decomposition Plot for Refiner Acquisition Cost of Crude Oil") +
-  theme_bw()
-
-```
-
-
-The decomposition plot for the Cost of Crude Oil offers a comprehensive view of the underlying patterns.
-
-*Trend:* Shows an upward trend until 2008, with fluctuations until 2014, followed by a downward trend, illustrating the market's long-term dynamics.
-
-*Seasonal:* Demonstrates annual seasonal patterns, highlighting how external factors influence oil prices.
-
-*Remainder:* The residuals are relatively stable around zero, suggesting a good model fit with some sporadic spikes in 2020.
-
-
-
-
-## Natural Gas
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: true
-
-# Decompose the time series
-decomposed_natural_gas <- decompose(citygate_gas_ts, "multiplicative")
-
-# Plot the decomposed components
-autoplot(decomposed_natural_gas) + 
-  ggtitle("Decomposition Plot for Natural Gas Price") +
-  theme_bw()
-
-```
-
-
-The decomposition plot for the Natural Gas Price offers a comprehensive view of the underlying patterns.
-
-*Trend:* Indicates a stable trend transitioning to volatility, reflecting the market's evolving nature.
-
-*Seasonal:* Exhibits strong annual cycles, likely tied to demand changes with seasons
-
-*Remainder:* Spikes represent unexplained anomalies, possibly due to supply disruptions, especially around 2020.
-
-
-
-## Electricity
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: true
-
-# Decompose the time series
-decomposed_electricity <- decompose(total_electricity_ts, "multiplicative")
-
-# Plot the decomposed components
-autoplot(decomposed_electricity) + 
-  ggtitle("Decomposition Plot for Average Price of Electricity to Ultimate Customers") +
-  theme_bw()
-
-```
-
-Electricity price decomposition highlights the stable growth and seasonality in the market.
-
-*Trend:* Shows a consistent rise, pointing to factors like inflation or cost increases in production affecting prices.
-
-*Seasonal:* A clear pattern suggests predictable consumption changes, possibly due to heating and cooling needs.
-
-*Remainder:* Minimal and stable residuals with occasional unexplained fluctuations.
-
-
-
-
-## GDP
-
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: true
-
-# Decompose the time series
-decomposed_gdp <- decompose(gdp_ts, "multiplicative")
-
-# Plot the decomposed components
-autoplot(decomposed_gdp) + 
-  ggtitle("Decomposition Plot for GDP") +
-  theme_bw()
-
-```
-
-
-GDP decomposition provides insights into economic growth patterns.
-
-
-*Trend:* Reflects steady economic growth with some acceleration, illustrating the economy's long-term health.
-
-*Seasonal:* Negligible seasonality
-
-*Remainder:* Notable deviations, like the spike around 2020, could indicate economic shocks, such as the pandemic.
-
-
-
-
-## CPI
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: true
-
-# Decompose the time series
-decomposed_cpi <- decompose(cpi_ts, "multiplicative")
-
-# Plot the decomposed components
-autoplot(decomposed_cpi) + 
-  ggtitle("Decomposition Plot for CPI") +
-  theme_bw()
-
-```
-
-
-The CPI decomposition plot sheds light on inflation trends.
-
-
-*Trend:* The upward trend signifies ongoing inflation, a key economic indicator.
-
-*Seasonal:* Minimal seasonality.
-
-*Remainder:* Small residuals suggest the model captures CPI's main trends, with occasional anomalies.
-
-
-
-For all the data series examined, the decomposition plots provide a detailed confirmation of the preliminary insights highlighted in Part 1. These plots dissect the time series into trend, seasonal, and irregular components, offering a more granular perspective that reinforces our initial analyses. 
-
-##
-
-:::
 
 
 
@@ -967,133 +287,6 @@ The sustained autocorrelation in the ACF plot implies that differencing might be
 
 ## 
 :::
-
-
-
-
-
-
-# Dickey-Fuller Test
-
-The Dickey-Fuller test is a statistical test used to determine the presence of unit root in a time series and, consequently, whether the series is non-stationary. The null hypothesis of the test is that the time series is non-stationary. If the p-value is less than the chosen alpha level (usually 0.05), we reject the null hypothesis and infer that the series is stationary.
-
-
-::: panel-tabset
-
-
-
-## Crude Oil
-
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: true
-
-# Dickey-Fuller Test for Crude Oil
-adf_test_crude_oil <- tseries::adf.test(composite_crude_oil_ts)
-
-# Display the test results
-adf_test_crude_oil
-
-
-```
-
-
-Since the p-value is greater than 0.05, we do not reject the null hypothesis and conclude that the crude oil price series is non-stationary, indicating that differencing or transformation may be required to achieve stationarity.
-
-
-
-## Natural Gas
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: true
-
-# Dickey-Fuller Test for Natural Gas
-adf_test_natural_gas <- tseries::adf.test(citygate_gas_ts)
-
-# Display the test results
-adf_test_natural_gas
-
-
-```
-
-The p-value suggests that the natural gas price series is non-stationary, reinforcing the need for potential differencing or other transformations to stabilize the series.
-
-
-
-## Electricity
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: true
-
-# Dickey-Fuller Test for Electricity
-adf_test_electricity <- tseries::adf.test(total_electricity_ts)
-
-# Display the test results
-adf_test_electricity
-
-
-```
-
-With the p-value well above 0.05, the electricity price series is considered non-stationary, indicating that adjustments are necessary to model the series accurately.
-
-
-
-## GDP
-
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: true
-
-# Dickey-Fuller Test for GDP
-adf_test_gdp <- tseries::adf.test(gdp_ts)
-
-# Display the test results
-adf_test_gdp
-
-```
-
-The extremely high p-value indicates that the GDP series is strongly non-stationary, suggesting that it would benefit from differencing or other methods to achieve stationarity.
-
-
-## CPI
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: true
-
-# Dickey-Fuller Test for CPI
-adf_test_cpi <- tseries::adf.test(cpi_ts)
-
-# Display the test results
-adf_test_cpi
-
-
-```
-
-The CPI series is also non-stationary based on the high p-value, indicating that preprocessing steps are needed before further analysis or modeling.
-
-##
-:::
-
-
-
-These Dickey-Fuller test results across different datasets corroborate our earlier analyses and ACF & PACF plot interpretations, showing a common theme of non-stationarity in the series. 
-
-
 
 
 # Detrend VS Difference
@@ -1304,7 +497,7 @@ The differenced series predominantly hovers around the zero line, which indicate
 fit_cpi <- lm(CPIAUCSL ~ DATE, data = cpi_data, na.action = NULL)
 
 # Convert residuals to a ts object for plotting
-resid_cpi_ts <- ts(resid(fit_cpi), start=c(start_year_cpi, start_quarter_cpi), frequency=4)
+resid_cpi_ts <- ts(resid(fit_cpi), start=c(start_year_cpi, start_month_cpi), frequency=12)
 
 # Plot the residuals
 plot1_cpi <- autoplot(resid_cpi_ts, series="Detrended CPI", colour = "#00BFC4") + 
@@ -1348,6 +541,387 @@ The first difference plot for CPI demonstrates a series that fluctuates around a
 
 
 :::
+
+
+# Original Vs First Difference
+
+
+Detrending and differencing are two methods used to make time series data stationary, it involves removing the underlying trend from the data, while differencing focuses on the changes between consecutive observations.
+
+Detrending typically subtracts the estimated trend component from the original series, while differencing transforms the series into the sequence of differences between adjacent values. While detrending addresses the trend, differencing can help eliminate both trend and seasonality, making the series stationary.
+
+
+::: panel-tabset
+
+
+
+## Crude Oil
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Convert residuals to a ts object
+fit_crude_oil <- lm(Value ~ Date, data = composite_crude_oil_prices, na.action = NULL)
+
+resid_crude_oil_ts <- ts(resid(fit_crude_oil), start=c(start_year, start_month), frequency=12)
+
+# Now plot the residuals
+plot1_crude_oil <- autoplot(resid_crude_oil_ts, series="Detrended Crude Oil", colour = "#00BFC4") + 
+  theme_bw() +
+  xlab("Time") +
+  ylab("Residuals") +
+  ggtitle("Detrended Crude Oil")
+
+# Differencing plot remains the same
+plot2_crude_oil <- autoplot(diff(composite_crude_oil_ts), series = "First Difference Crude Oil", colour = "#F8766D") + 
+  theme_bw() +
+  xlab("Time") +
+  ylab("Differences") +
+  ggtitle("First Difference Crude Oil")
+
+# Arrange plots
+grid.arrange(plot1_crude_oil, plot2_crude_oil, nrow = 2)
+
+
+
+```
+
+**Detrended:**
+
+The residuals after detrending indicate that linear detrending might not fully account for all underlying components, as patterns still emerge.
+
+**First Difference:**
+
+The differenced series shows fluctuations around zero, indicative of improved stationarity. While the mean appears stabilized, examining autocorrelation in the differenced data is crucial to confirm stationarity fully.
+
+
+
+## Natural Gas
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Detrending using the original data frame
+fit_natural_gas <- lm(Value ~ Date, data = citygate_gas_prices, na.action = NULL)
+
+# Convert residuals to a ts object for plotting
+resid_natural_gas_ts <- ts(resid(fit_natural_gas), start=c(start_year_gas, start_month_gas), frequency=12)
+
+# Now plot the residuals
+plot1_natural_gas <- autoplot(resid_natural_gas_ts, series="Detrended Natural Gas", colour = "#00BFC4") + 
+  theme_bw() +
+  xlab("Time") +
+  ylab("Residuals") +
+  ggtitle("Detrended Natural Gas")
+
+# Differencing plot remains the same
+plot2_natural_gas <- autoplot(diff(citygate_gas_ts), series = "First Difference Natural Gas", colour = "#F8766D") + 
+  theme_bw() +
+  xlab("Time") +
+  ylab("Differences") +
+  ggtitle("First Difference Natural Gas")
+
+# Arrange plots
+grid.arrange(plot1_natural_gas, plot2_natural_gas, nrow = 2)
+
+
+```
+
+
+**Detrended:**
+
+The detrended series shows periods of volatility, indicating that removing the linear trend doesn't capture all the data's dynamics, remaining fluctuations may reflect other underlying components like seasonality
+
+**First Difference:**
+
+Consistent mean but varying volatility and a spike around 2020, which could be due to the pandemic
+
+
+
+
+## Electricity
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Detrending using the original data frame
+fit_electricity <- lm(Value ~ Date, data = total_electricity_prices, na.action = NULL)
+
+# Convert residuals to a ts object for plotting
+resid_electricity_ts <- ts(resid(fit_electricity), start=c(start_year_elec, start_month_elec), frequency=12)
+
+# Plot the residuals
+plot1_electricity <- autoplot(resid_electricity_ts, series="Detrended Electricity", colour = "#00BFC4") + 
+  theme_bw() +
+  xlab("Time") +
+  ylab("Residuals") +
+  ggtitle("Detrended Electricity")
+
+# Differencing plot
+plot2_electricity <- autoplot(diff(total_electricity_ts), series = "First Difference Electricity", colour = "#F8766D") + 
+  theme_bw() +
+  xlab("Time") +
+  ylab("Differences") +
+  ggtitle("First Difference Electricity")
+
+# Arrange plots
+grid.arrange(plot1_electricity, plot2_electricity, nrow = 2)
+
+
+```
+
+
+**Detrended:**
+
+The detrended plot of electricity prices displays clear periodic fluctuations, suggesting the presence of seasonality.
+
+**First Difference:**
+
+The first differenced series oscillates around a central mean, which is indicative of stationarity in the mean of the series. However, the consistent pattern of spikes followed by a return to the mean—indicates a strong seasonal component.
+
+
+
+
+## GDP
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Detrending using the original data frame
+fit_gdp <- lm(GDP ~ DATE, data = gdp_data, na.action = NULL)
+
+# Convert residuals to a ts object for plotting
+resid_gdp_ts <- ts(resid(fit_gdp), start=c(start_year_gdp, start_quarter_gdp), frequency=4)
+
+# Plot the residuals
+plot1_gdp <- autoplot(resid_gdp_ts, series="Detrended GDP", colour = "#00BFC4") + 
+  theme_bw() +
+  xlab("Time") +
+  ylab("Residuals") +
+  ggtitle("Detrended GDP")
+
+# Differencing plot
+plot2_gdp <- autoplot(diff(gdp_ts), series = "First Difference GDP", colour = "#F8766D") + 
+  theme_bw() +
+  xlab("Time") +
+  ylab("Differences") +
+  ggtitle("First Difference GDP")
+
+# Arrange plots
+grid.arrange(plot1_gdp, plot2_gdp, nrow = 2)
+
+
+```
+
+
+**Detrended:**
+
+The detrended GDP plot showcases that the residuals seem to have a non-linear component, as evidenced by the gradual decline and subsequent increase over time. The residuals decrease and then slowly begin to rise after the 1980s, accelerating significantly in recent years. GDP growth rate is not constant and a simple linear model may not be sufficient to capture the complexities.
+
+
+**First Difference:**
+
+The differenced series predominantly hovers around the zero line, which indicates that this transformation effectively removes the trend from the data, leading to a stationary series in terms of the mean. The substantial spike observed towards the end is likely due to the recent economic downturn due to the COVID-19 pandemic, which represents a significant economic shock not accounted for by typical GDP growth patterns. 
+
+
+
+## CPI
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Detrending using the original data frame
+fit_cpi <- lm(CPIAUCSL ~ DATE, data = cpi_data, na.action = NULL)
+
+# Convert residuals to a ts object for plotting
+resid_cpi_ts <- ts(resid(fit_cpi), start=c(start_year_cpi, start_month_cpi), frequency=4)
+
+# Plot the residuals
+plot1_cpi <- autoplot(resid_cpi_ts, series="Detrended CPI", colour = "#00BFC4") + 
+  theme_bw() +
+  xlab("Time") +
+  ylab("Residuals") +
+  ggtitle("Detrended CPI")
+
+# Differencing plot
+plot2_cpi <- autoplot(diff(cpi_ts), series = "First Difference CPI", colour = "#F8766D") + 
+  theme_bw() +
+  xlab("Time") +
+  ylab("Differences") +
+  ggtitle("First Difference CPI")
+
+# Arrange plots
+grid.arrange(plot1_cpi, plot2_cpi, nrow = 2)
+
+
+```
+
+
+
+
+**Detrended:**
+
+The detrended CPI plot reveals residuals that decline over a prolonged period before stabilizing and then increasing. This pattern suggests that a simple linear trend does not fully capture the complexity of the inflationary trend over time. 
+
+
+**First Difference:**
+
+The first difference plot for CPI demonstrates a series that fluctuates around a central mean value.
+
+
+
+
+
+
+
+##
+
+
+:::
+
+
+
+# Dickey-Fuller Test
+
+The Dickey-Fuller test is a statistical test used to determine the presence of unit root in a time series and, consequently, whether the series is non-stationary. The null hypothesis of the test is that the time series is non-stationary. If the p-value is less than the chosen alpha level (usually 0.05), we reject the null hypothesis and infer that the series is stationary.
+
+
+::: panel-tabset
+
+
+
+## Crude Oil
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Dickey-Fuller Test for Crude Oil
+adf_test_crude_oil <- tseries::adf.test(composite_crude_oil_ts)
+
+# Display the test results
+adf_test_crude_oil
+
+
+```
+
+
+Since the p-value is greater than 0.05, we do not reject the null hypothesis and conclude that the crude oil price series is non-stationary, indicating that differencing or transformation may be required to achieve stationarity.
+
+
+
+## Natural Gas
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Dickey-Fuller Test for Natural Gas
+adf_test_natural_gas <- tseries::adf.test(citygate_gas_ts)
+
+# Display the test results
+adf_test_natural_gas
+
+
+```
+
+The p-value suggests that the natural gas price series is non-stationary, reinforcing the need for potential differencing or other transformations to stabilize the series.
+
+
+
+## Electricity
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Dickey-Fuller Test for Electricity
+adf_test_electricity <- tseries::adf.test(total_electricity_ts)
+
+# Display the test results
+adf_test_electricity
+
+
+```
+
+With the p-value well above 0.05, the electricity price series is considered non-stationary, indicating that adjustments are necessary to model the series accurately.
+
+
+
+## GDP
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Dickey-Fuller Test for GDP
+adf_test_gdp <- tseries::adf.test(gdp_ts)
+
+# Display the test results
+adf_test_gdp
+
+```
+
+The extremely high p-value indicates that the GDP series is strongly non-stationary, suggesting that it would benefit from differencing or other methods to achieve stationarity.
+
+
+## CPI
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Dickey-Fuller Test for CPI
+adf_test_cpi <- tseries::adf.test(cpi_ts)
+
+# Display the test results
+adf_test_cpi
+
+
+```
+
+The CPI series is also non-stationary based on the high p-value, indicating that preprocessing steps are needed before further analysis or modeling.
+
+##
+:::
+
+
+
+These Dickey-Fuller test results across different datasets corroborate our earlier analyses and ACF & PACF plot interpretations, showing a common theme of non-stationarity in the series. 
+
+
+
+
+
 
 
 
