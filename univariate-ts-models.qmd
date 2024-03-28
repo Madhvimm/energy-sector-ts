@@ -924,9 +924,7 @@ These Dickey-Fuller test results across different datasets corroborate our earli
 
 
 
-
-
-# Moving Average Smoothing
+# First vs Second Differencing
 
 
 Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
@@ -983,12 +981,6 @@ plotly::ggplotly(p)
 
 
 ```
-
-
-
-
-
-
 
 
 ## Natural Gas
@@ -1128,7 +1120,7 @@ plotly::ggplotly(p_cpi)
 
 ```
 
-
+##
 
 :::
 
@@ -1136,6 +1128,1169 @@ plotly::ggplotly(p_cpi)
 
 
 
+
+
+
+# AIC & BIC
+
+
+Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
+
+
+
+
+
+::: panel-tabset
+
+
+
+## Crude Oil
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Prepare the data frame with the correct start date
+crude_oil_df <- data.frame(
+  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(composite_crude_oil_ts)),
+  Value = as.vector(composite_crude_oil_ts)
+)
+
+# Calculate moving averages with the specified window sizes
+crude_oil_df$ma5 <- zoo::rollmean(crude_oil_df$Value, 5, mean, fill = NA, align = "right")
+crude_oil_df$ma15 <- zoo::rollmean(crude_oil_df$Value, 15, mean, fill = NA, align = "right")
+crude_oil_df$ma20 <- zoo::rollmean(crude_oil_df$Value, 20, mean, fill = NA, align = "right")
+crude_oil_df$ma30 <- zoo::rollmean(crude_oil_df$Value, 30, mean, fill = NA, align = "right")
+
+# Create the ggplot object with a color aesthetic for the legend
+p <- ggplot(crude_oil_df, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Value (USD)") +
+  ggtitle('Crude Oil Price with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p)
+
+
+
+```
+
+
+## Natural Gas
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+natural_gas_df <- data.frame(
+  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(citygate_gas_ts)),
+  Value = as.vector(citygate_gas_ts)
+)
+
+# Calculate moving averages with the specified window sizes
+natural_gas_df$ma5 <- zoo::rollmean(natural_gas_df$Value, 5, mean, fill = NA, align = "right")
+natural_gas_df$ma15 <- zoo::rollmean(natural_gas_df$Value, 15, mean, fill = NA, align = "right")
+natural_gas_df$ma20 <- zoo::rollmean(natural_gas_df$Value, 20, mean, fill = NA, align = "right")
+natural_gas_df$ma30 <- zoo::rollmean(natural_gas_df$Value, 30, mean, fill = NA, align = "right")
+
+# Create the ggplot object with a color aesthetic for the legend
+p_ng <- ggplot(natural_gas_df, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Value (Price)") +
+  ggtitle('Natural Gas Price with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_ng)
+
+```
+
+
+## Electricity
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Calculate moving averages with the specified window sizes
+total_electricity_prices$ma5 <- zoo::rollmean(total_electricity_prices$Value, 5, mean, fill = NA, align = "right")
+total_electricity_prices$ma15 <- zoo::rollmean(total_electricity_prices$Value, 15, mean, fill = NA, align = "right")
+total_electricity_prices$ma20 <- zoo::rollmean(total_electricity_prices$Value, 20, mean, fill = NA, align = "right")
+total_electricity_prices$ma30 <- zoo::rollmean(total_electricity_prices$Value, 30, mean, fill = NA, align = "right")
+
+# Create the ggplot object with a color aesthetic for the legend
+p_electricity <- ggplot(total_electricity_prices, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Price (Cents per Kilowatthour)") +
+  ggtitle('Electricity Price with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_electricity)
+
+```
+
+
+## GDP
+
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Calculate moving averages with the specified window sizes
+gdp_data$ma5 <- zoo::rollmean(gdp_data$GDP, 5, mean, fill = NA, align = "right", by = 4)  # Considering quarterly data
+gdp_data$ma15 <- zoo::rollmean(gdp_data$GDP, 15, mean, fill = NA, align = "right", by = 4)
+gdp_data$ma20 <- zoo::rollmean(gdp_data$GDP, 20, mean, fill = NA, align = "right", by = 4)
+gdp_data$ma30 <- zoo::rollmean(gdp_data$GDP, 30, mean, fill = NA, align = "right", by = 4)
+
+# Create the ggplot object with a color aesthetic for the legend
+p_gdp <- ggplot(gdp_data, aes(x = DATE)) + 
+  geom_line(aes(y = GDP, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("GDP (in billions)") +
+  ggtitle('GDP with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_gdp)
+
+```
+
+
+
+
+
+
+
+## CPI
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+#| 
+# Calculate moving averages with the specified window sizes
+# Replace 'fill = NA' with 'fill = ifelse(is.na(.), NA, mean(., na.rm = TRUE))' if you want to avoid NA in your moving averages
+cpi_data$ma5 <- zoo::rollmean(cpi_data$CPIAUCSL, 5, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma15 <- zoo::rollmean(cpi_data$CPIAUCSL, 15, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma20 <- zoo::rollmean(cpi_data$CPIAUCSL, 20, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma30 <- zoo::rollmean(cpi_data$CPIAUCSL, 30, fill = NA, align = "right", by.column = FALSE)
+
+# Create the ggplot object with a color aesthetic for the legend
+p_cpi <- ggplot(cpi_data, aes(x = DATE)) + 
+  geom_line(aes(y = CPIAUCSL, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("CPIAUCSL") +
+  ggtitle('CPI with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_cpi)
+
+```
+
+##
+
+:::
+
+
+
+# Fitting ARIMA
+
+
+Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
+
+
+::: panel-tabset
+
+
+
+## Crude Oil
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Prepare the data frame with the correct start date
+crude_oil_df <- data.frame(
+  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(composite_crude_oil_ts)),
+  Value = as.vector(composite_crude_oil_ts)
+)
+
+# Calculate moving averages with the specified window sizes
+crude_oil_df$ma5 <- zoo::rollmean(crude_oil_df$Value, 5, mean, fill = NA, align = "right")
+crude_oil_df$ma15 <- zoo::rollmean(crude_oil_df$Value, 15, mean, fill = NA, align = "right")
+crude_oil_df$ma20 <- zoo::rollmean(crude_oil_df$Value, 20, mean, fill = NA, align = "right")
+crude_oil_df$ma30 <- zoo::rollmean(crude_oil_df$Value, 30, mean, fill = NA, align = "right")
+
+# Create the ggplot object with a color aesthetic for the legend
+p <- ggplot(crude_oil_df, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Value (USD)") +
+  ggtitle('Crude Oil Price with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p)
+
+
+
+```
+
+
+## Natural Gas
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+natural_gas_df <- data.frame(
+  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(citygate_gas_ts)),
+  Value = as.vector(citygate_gas_ts)
+)
+
+# Calculate moving averages with the specified window sizes
+natural_gas_df$ma5 <- zoo::rollmean(natural_gas_df$Value, 5, mean, fill = NA, align = "right")
+natural_gas_df$ma15 <- zoo::rollmean(natural_gas_df$Value, 15, mean, fill = NA, align = "right")
+natural_gas_df$ma20 <- zoo::rollmean(natural_gas_df$Value, 20, mean, fill = NA, align = "right")
+natural_gas_df$ma30 <- zoo::rollmean(natural_gas_df$Value, 30, mean, fill = NA, align = "right")
+
+# Create the ggplot object with a color aesthetic for the legend
+p_ng <- ggplot(natural_gas_df, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Value (Price)") +
+  ggtitle('Natural Gas Price with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_ng)
+
+```
+
+
+## Electricity
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Calculate moving averages with the specified window sizes
+total_electricity_prices$ma5 <- zoo::rollmean(total_electricity_prices$Value, 5, mean, fill = NA, align = "right")
+total_electricity_prices$ma15 <- zoo::rollmean(total_electricity_prices$Value, 15, mean, fill = NA, align = "right")
+total_electricity_prices$ma20 <- zoo::rollmean(total_electricity_prices$Value, 20, mean, fill = NA, align = "right")
+total_electricity_prices$ma30 <- zoo::rollmean(total_electricity_prices$Value, 30, mean, fill = NA, align = "right")
+
+# Create the ggplot object with a color aesthetic for the legend
+p_electricity <- ggplot(total_electricity_prices, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Price (Cents per Kilowatthour)") +
+  ggtitle('Electricity Price with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_electricity)
+
+```
+
+
+## GDP
+
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Calculate moving averages with the specified window sizes
+gdp_data$ma5 <- zoo::rollmean(gdp_data$GDP, 5, mean, fill = NA, align = "right", by = 4)  # Considering quarterly data
+gdp_data$ma15 <- zoo::rollmean(gdp_data$GDP, 15, mean, fill = NA, align = "right", by = 4)
+gdp_data$ma20 <- zoo::rollmean(gdp_data$GDP, 20, mean, fill = NA, align = "right", by = 4)
+gdp_data$ma30 <- zoo::rollmean(gdp_data$GDP, 30, mean, fill = NA, align = "right", by = 4)
+
+# Create the ggplot object with a color aesthetic for the legend
+p_gdp <- ggplot(gdp_data, aes(x = DATE)) + 
+  geom_line(aes(y = GDP, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("GDP (in billions)") +
+  ggtitle('GDP with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_gdp)
+
+```
+
+
+
+
+
+
+
+## CPI
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+#| 
+# Calculate moving averages with the specified window sizes
+# Replace 'fill = NA' with 'fill = ifelse(is.na(.), NA, mean(., na.rm = TRUE))' if you want to avoid NA in your moving averages
+cpi_data$ma5 <- zoo::rollmean(cpi_data$CPIAUCSL, 5, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma15 <- zoo::rollmean(cpi_data$CPIAUCSL, 15, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma20 <- zoo::rollmean(cpi_data$CPIAUCSL, 20, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma30 <- zoo::rollmean(cpi_data$CPIAUCSL, 30, fill = NA, align = "right", by.column = FALSE)
+
+# Create the ggplot object with a color aesthetic for the legend
+p_cpi <- ggplot(cpi_data, aes(x = DATE)) + 
+  geom_line(aes(y = CPIAUCSL, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("CPIAUCSL") +
+  ggtitle('CPI with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_cpi)
+
+```
+
+##
+
+:::
+
+
+
+
+# Model Diagnostics
+
+
+Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
+
+
+::: panel-tabset
+
+
+
+## Crude Oil
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Prepare the data frame with the correct start date
+crude_oil_df <- data.frame(
+  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(composite_crude_oil_ts)),
+  Value = as.vector(composite_crude_oil_ts)
+)
+
+# Calculate moving averages with the specified window sizes
+crude_oil_df$ma5 <- zoo::rollmean(crude_oil_df$Value, 5, mean, fill = NA, align = "right")
+crude_oil_df$ma15 <- zoo::rollmean(crude_oil_df$Value, 15, mean, fill = NA, align = "right")
+crude_oil_df$ma20 <- zoo::rollmean(crude_oil_df$Value, 20, mean, fill = NA, align = "right")
+crude_oil_df$ma30 <- zoo::rollmean(crude_oil_df$Value, 30, mean, fill = NA, align = "right")
+
+# Create the ggplot object with a color aesthetic for the legend
+p <- ggplot(crude_oil_df, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Value (USD)") +
+  ggtitle('Crude Oil Price with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p)
+
+
+
+```
+
+
+## Natural Gas
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+natural_gas_df <- data.frame(
+  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(citygate_gas_ts)),
+  Value = as.vector(citygate_gas_ts)
+)
+
+# Calculate moving averages with the specified window sizes
+natural_gas_df$ma5 <- zoo::rollmean(natural_gas_df$Value, 5, mean, fill = NA, align = "right")
+natural_gas_df$ma15 <- zoo::rollmean(natural_gas_df$Value, 15, mean, fill = NA, align = "right")
+natural_gas_df$ma20 <- zoo::rollmean(natural_gas_df$Value, 20, mean, fill = NA, align = "right")
+natural_gas_df$ma30 <- zoo::rollmean(natural_gas_df$Value, 30, mean, fill = NA, align = "right")
+
+# Create the ggplot object with a color aesthetic for the legend
+p_ng <- ggplot(natural_gas_df, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Value (Price)") +
+  ggtitle('Natural Gas Price with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_ng)
+
+```
+
+
+## Electricity
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Calculate moving averages with the specified window sizes
+total_electricity_prices$ma5 <- zoo::rollmean(total_electricity_prices$Value, 5, mean, fill = NA, align = "right")
+total_electricity_prices$ma15 <- zoo::rollmean(total_electricity_prices$Value, 15, mean, fill = NA, align = "right")
+total_electricity_prices$ma20 <- zoo::rollmean(total_electricity_prices$Value, 20, mean, fill = NA, align = "right")
+total_electricity_prices$ma30 <- zoo::rollmean(total_electricity_prices$Value, 30, mean, fill = NA, align = "right")
+
+# Create the ggplot object with a color aesthetic for the legend
+p_electricity <- ggplot(total_electricity_prices, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Price (Cents per Kilowatthour)") +
+  ggtitle('Electricity Price with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_electricity)
+
+```
+
+
+## GDP
+
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Calculate moving averages with the specified window sizes
+gdp_data$ma5 <- zoo::rollmean(gdp_data$GDP, 5, mean, fill = NA, align = "right", by = 4)  # Considering quarterly data
+gdp_data$ma15 <- zoo::rollmean(gdp_data$GDP, 15, mean, fill = NA, align = "right", by = 4)
+gdp_data$ma20 <- zoo::rollmean(gdp_data$GDP, 20, mean, fill = NA, align = "right", by = 4)
+gdp_data$ma30 <- zoo::rollmean(gdp_data$GDP, 30, mean, fill = NA, align = "right", by = 4)
+
+# Create the ggplot object with a color aesthetic for the legend
+p_gdp <- ggplot(gdp_data, aes(x = DATE)) + 
+  geom_line(aes(y = GDP, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("GDP (in billions)") +
+  ggtitle('GDP with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_gdp)
+
+```
+
+
+
+
+
+
+
+## CPI
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+#| 
+# Calculate moving averages with the specified window sizes
+# Replace 'fill = NA' with 'fill = ifelse(is.na(.), NA, mean(., na.rm = TRUE))' if you want to avoid NA in your moving averages
+cpi_data$ma5 <- zoo::rollmean(cpi_data$CPIAUCSL, 5, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma15 <- zoo::rollmean(cpi_data$CPIAUCSL, 15, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma20 <- zoo::rollmean(cpi_data$CPIAUCSL, 20, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma30 <- zoo::rollmean(cpi_data$CPIAUCSL, 30, fill = NA, align = "right", by.column = FALSE)
+
+# Create the ggplot object with a color aesthetic for the legend
+p_cpi <- ggplot(cpi_data, aes(x = DATE)) + 
+  geom_line(aes(y = CPIAUCSL, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("CPIAUCSL") +
+  ggtitle('CPI with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_cpi)
+
+```
+
+##
+
+:::
+
+
+
+# Auto.Arima()
+
+
+Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
+
+
+::: panel-tabset
+
+
+
+## Crude Oil
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Prepare the data frame with the correct start date
+crude_oil_df <- data.frame(
+  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(composite_crude_oil_ts)),
+  Value = as.vector(composite_crude_oil_ts)
+)
+
+# Calculate moving averages with the specified window sizes
+crude_oil_df$ma5 <- zoo::rollmean(crude_oil_df$Value, 5, mean, fill = NA, align = "right")
+crude_oil_df$ma15 <- zoo::rollmean(crude_oil_df$Value, 15, mean, fill = NA, align = "right")
+crude_oil_df$ma20 <- zoo::rollmean(crude_oil_df$Value, 20, mean, fill = NA, align = "right")
+crude_oil_df$ma30 <- zoo::rollmean(crude_oil_df$Value, 30, mean, fill = NA, align = "right")
+
+# Create the ggplot object with a color aesthetic for the legend
+p <- ggplot(crude_oil_df, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Value (USD)") +
+  ggtitle('Crude Oil Price with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p)
+
+
+
+```
+
+
+## Natural Gas
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+natural_gas_df <- data.frame(
+  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(citygate_gas_ts)),
+  Value = as.vector(citygate_gas_ts)
+)
+
+# Calculate moving averages with the specified window sizes
+natural_gas_df$ma5 <- zoo::rollmean(natural_gas_df$Value, 5, mean, fill = NA, align = "right")
+natural_gas_df$ma15 <- zoo::rollmean(natural_gas_df$Value, 15, mean, fill = NA, align = "right")
+natural_gas_df$ma20 <- zoo::rollmean(natural_gas_df$Value, 20, mean, fill = NA, align = "right")
+natural_gas_df$ma30 <- zoo::rollmean(natural_gas_df$Value, 30, mean, fill = NA, align = "right")
+
+# Create the ggplot object with a color aesthetic for the legend
+p_ng <- ggplot(natural_gas_df, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Value (Price)") +
+  ggtitle('Natural Gas Price with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_ng)
+
+```
+
+
+## Electricity
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Calculate moving averages with the specified window sizes
+total_electricity_prices$ma5 <- zoo::rollmean(total_electricity_prices$Value, 5, mean, fill = NA, align = "right")
+total_electricity_prices$ma15 <- zoo::rollmean(total_electricity_prices$Value, 15, mean, fill = NA, align = "right")
+total_electricity_prices$ma20 <- zoo::rollmean(total_electricity_prices$Value, 20, mean, fill = NA, align = "right")
+total_electricity_prices$ma30 <- zoo::rollmean(total_electricity_prices$Value, 30, mean, fill = NA, align = "right")
+
+# Create the ggplot object with a color aesthetic for the legend
+p_electricity <- ggplot(total_electricity_prices, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Price (Cents per Kilowatthour)") +
+  ggtitle('Electricity Price with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_electricity)
+
+```
+
+
+## GDP
+
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Calculate moving averages with the specified window sizes
+gdp_data$ma5 <- zoo::rollmean(gdp_data$GDP, 5, mean, fill = NA, align = "right", by = 4)  # Considering quarterly data
+gdp_data$ma15 <- zoo::rollmean(gdp_data$GDP, 15, mean, fill = NA, align = "right", by = 4)
+gdp_data$ma20 <- zoo::rollmean(gdp_data$GDP, 20, mean, fill = NA, align = "right", by = 4)
+gdp_data$ma30 <- zoo::rollmean(gdp_data$GDP, 30, mean, fill = NA, align = "right", by = 4)
+
+# Create the ggplot object with a color aesthetic for the legend
+p_gdp <- ggplot(gdp_data, aes(x = DATE)) + 
+  geom_line(aes(y = GDP, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("GDP (in billions)") +
+  ggtitle('GDP with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_gdp)
+
+```
+
+
+
+
+
+
+
+## CPI
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+#| 
+# Calculate moving averages with the specified window sizes
+# Replace 'fill = NA' with 'fill = ifelse(is.na(.), NA, mean(., na.rm = TRUE))' if you want to avoid NA in your moving averages
+cpi_data$ma5 <- zoo::rollmean(cpi_data$CPIAUCSL, 5, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma15 <- zoo::rollmean(cpi_data$CPIAUCSL, 15, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma20 <- zoo::rollmean(cpi_data$CPIAUCSL, 20, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma30 <- zoo::rollmean(cpi_data$CPIAUCSL, 30, fill = NA, align = "right", by.column = FALSE)
+
+# Create the ggplot object with a color aesthetic for the legend
+p_cpi <- ggplot(cpi_data, aes(x = DATE)) + 
+  geom_line(aes(y = CPIAUCSL, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("CPIAUCSL") +
+  ggtitle('CPI with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_cpi)
+
+```
+
+##
+
+:::
+
+
+
+# Forecasting
+
+
+Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
+
+
+::: panel-tabset
+
+
+
+## Crude Oil
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Prepare the data frame with the correct start date
+crude_oil_df <- data.frame(
+  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(composite_crude_oil_ts)),
+  Value = as.vector(composite_crude_oil_ts)
+)
+
+# Calculate moving averages with the specified window sizes
+crude_oil_df$ma5 <- zoo::rollmean(crude_oil_df$Value, 5, mean, fill = NA, align = "right")
+crude_oil_df$ma15 <- zoo::rollmean(crude_oil_df$Value, 15, mean, fill = NA, align = "right")
+crude_oil_df$ma20 <- zoo::rollmean(crude_oil_df$Value, 20, mean, fill = NA, align = "right")
+crude_oil_df$ma30 <- zoo::rollmean(crude_oil_df$Value, 30, mean, fill = NA, align = "right")
+
+# Create the ggplot object with a color aesthetic for the legend
+p <- ggplot(crude_oil_df, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Value (USD)") +
+  ggtitle('Crude Oil Price with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p)
+
+
+
+```
+
+
+## Natural Gas
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+natural_gas_df <- data.frame(
+  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(citygate_gas_ts)),
+  Value = as.vector(citygate_gas_ts)
+)
+
+# Calculate moving averages with the specified window sizes
+natural_gas_df$ma5 <- zoo::rollmean(natural_gas_df$Value, 5, mean, fill = NA, align = "right")
+natural_gas_df$ma15 <- zoo::rollmean(natural_gas_df$Value, 15, mean, fill = NA, align = "right")
+natural_gas_df$ma20 <- zoo::rollmean(natural_gas_df$Value, 20, mean, fill = NA, align = "right")
+natural_gas_df$ma30 <- zoo::rollmean(natural_gas_df$Value, 30, mean, fill = NA, align = "right")
+
+# Create the ggplot object with a color aesthetic for the legend
+p_ng <- ggplot(natural_gas_df, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Value (Price)") +
+  ggtitle('Natural Gas Price with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_ng)
+
+```
+
+
+## Electricity
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Calculate moving averages with the specified window sizes
+total_electricity_prices$ma5 <- zoo::rollmean(total_electricity_prices$Value, 5, mean, fill = NA, align = "right")
+total_electricity_prices$ma15 <- zoo::rollmean(total_electricity_prices$Value, 15, mean, fill = NA, align = "right")
+total_electricity_prices$ma20 <- zoo::rollmean(total_electricity_prices$Value, 20, mean, fill = NA, align = "right")
+total_electricity_prices$ma30 <- zoo::rollmean(total_electricity_prices$Value, 30, mean, fill = NA, align = "right")
+
+# Create the ggplot object with a color aesthetic for the legend
+p_electricity <- ggplot(total_electricity_prices, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Price (Cents per Kilowatthour)") +
+  ggtitle('Electricity Price with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_electricity)
+
+```
+
+
+## GDP
+
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Calculate moving averages with the specified window sizes
+gdp_data$ma5 <- zoo::rollmean(gdp_data$GDP, 5, mean, fill = NA, align = "right", by = 4)  # Considering quarterly data
+gdp_data$ma15 <- zoo::rollmean(gdp_data$GDP, 15, mean, fill = NA, align = "right", by = 4)
+gdp_data$ma20 <- zoo::rollmean(gdp_data$GDP, 20, mean, fill = NA, align = "right", by = 4)
+gdp_data$ma30 <- zoo::rollmean(gdp_data$GDP, 30, mean, fill = NA, align = "right", by = 4)
+
+# Create the ggplot object with a color aesthetic for the legend
+p_gdp <- ggplot(gdp_data, aes(x = DATE)) + 
+  geom_line(aes(y = GDP, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("GDP (in billions)") +
+  ggtitle('GDP with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_gdp)
+
+```
+
+
+
+
+
+
+
+## CPI
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+#| 
+# Calculate moving averages with the specified window sizes
+# Replace 'fill = NA' with 'fill = ifelse(is.na(.), NA, mean(., na.rm = TRUE))' if you want to avoid NA in your moving averages
+cpi_data$ma5 <- zoo::rollmean(cpi_data$CPIAUCSL, 5, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma15 <- zoo::rollmean(cpi_data$CPIAUCSL, 15, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma20 <- zoo::rollmean(cpi_data$CPIAUCSL, 20, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma30 <- zoo::rollmean(cpi_data$CPIAUCSL, 30, fill = NA, align = "right", by.column = FALSE)
+
+# Create the ggplot object with a color aesthetic for the legend
+p_cpi <- ggplot(cpi_data, aes(x = DATE)) + 
+  geom_line(aes(y = CPIAUCSL, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("CPIAUCSL") +
+  ggtitle('CPI with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_cpi)
+
+```
+
+##
+
+:::
+
+
+
+
+# Comparing with Benchmark Methods
+
+
+Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
+
+
+::: panel-tabset
+
+
+
+## Crude Oil
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Prepare the data frame with the correct start date
+crude_oil_df <- data.frame(
+  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(composite_crude_oil_ts)),
+  Value = as.vector(composite_crude_oil_ts)
+)
+
+# Calculate moving averages with the specified window sizes
+crude_oil_df$ma5 <- zoo::rollmean(crude_oil_df$Value, 5, mean, fill = NA, align = "right")
+crude_oil_df$ma15 <- zoo::rollmean(crude_oil_df$Value, 15, mean, fill = NA, align = "right")
+crude_oil_df$ma20 <- zoo::rollmean(crude_oil_df$Value, 20, mean, fill = NA, align = "right")
+crude_oil_df$ma30 <- zoo::rollmean(crude_oil_df$Value, 30, mean, fill = NA, align = "right")
+
+# Create the ggplot object with a color aesthetic for the legend
+p <- ggplot(crude_oil_df, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Value (USD)") +
+  ggtitle('Crude Oil Price with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p)
+
+
+
+```
+
+
+## Natural Gas
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+natural_gas_df <- data.frame(
+  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(citygate_gas_ts)),
+  Value = as.vector(citygate_gas_ts)
+)
+
+# Calculate moving averages with the specified window sizes
+natural_gas_df$ma5 <- zoo::rollmean(natural_gas_df$Value, 5, mean, fill = NA, align = "right")
+natural_gas_df$ma15 <- zoo::rollmean(natural_gas_df$Value, 15, mean, fill = NA, align = "right")
+natural_gas_df$ma20 <- zoo::rollmean(natural_gas_df$Value, 20, mean, fill = NA, align = "right")
+natural_gas_df$ma30 <- zoo::rollmean(natural_gas_df$Value, 30, mean, fill = NA, align = "right")
+
+# Create the ggplot object with a color aesthetic for the legend
+p_ng <- ggplot(natural_gas_df, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Value (Price)") +
+  ggtitle('Natural Gas Price with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_ng)
+
+```
+
+
+## Electricity
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Calculate moving averages with the specified window sizes
+total_electricity_prices$ma5 <- zoo::rollmean(total_electricity_prices$Value, 5, mean, fill = NA, align = "right")
+total_electricity_prices$ma15 <- zoo::rollmean(total_electricity_prices$Value, 15, mean, fill = NA, align = "right")
+total_electricity_prices$ma20 <- zoo::rollmean(total_electricity_prices$Value, 20, mean, fill = NA, align = "right")
+total_electricity_prices$ma30 <- zoo::rollmean(total_electricity_prices$Value, 30, mean, fill = NA, align = "right")
+
+# Create the ggplot object with a color aesthetic for the legend
+p_electricity <- ggplot(total_electricity_prices, aes(x = Date)) + 
+  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("Price (Cents per Kilowatthour)") +
+  ggtitle('Electricity Price with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_electricity)
+
+```
+
+
+## GDP
+
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+# Calculate moving averages with the specified window sizes
+gdp_data$ma5 <- zoo::rollmean(gdp_data$GDP, 5, mean, fill = NA, align = "right", by = 4)  # Considering quarterly data
+gdp_data$ma15 <- zoo::rollmean(gdp_data$GDP, 15, mean, fill = NA, align = "right", by = 4)
+gdp_data$ma20 <- zoo::rollmean(gdp_data$GDP, 20, mean, fill = NA, align = "right", by = 4)
+gdp_data$ma30 <- zoo::rollmean(gdp_data$GDP, 30, mean, fill = NA, align = "right", by = 4)
+
+# Create the ggplot object with a color aesthetic for the legend
+p_gdp <- ggplot(gdp_data, aes(x = DATE)) + 
+  geom_line(aes(y = GDP, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("GDP (in billions)") +
+  ggtitle('GDP with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_gdp)
+
+```
+
+
+
+
+
+
+
+## CPI
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+#| 
+# Calculate moving averages with the specified window sizes
+# Replace 'fill = NA' with 'fill = ifelse(is.na(.), NA, mean(., na.rm = TRUE))' if you want to avoid NA in your moving averages
+cpi_data$ma5 <- zoo::rollmean(cpi_data$CPIAUCSL, 5, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma15 <- zoo::rollmean(cpi_data$CPIAUCSL, 15, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma20 <- zoo::rollmean(cpi_data$CPIAUCSL, 20, fill = NA, align = "right", by.column = FALSE)
+cpi_data$ma30 <- zoo::rollmean(cpi_data$CPIAUCSL, 30, fill = NA, align = "right", by.column = FALSE)
+
+# Create the ggplot object with a color aesthetic for the legend
+p_cpi <- ggplot(cpi_data, aes(x = DATE)) + 
+  geom_line(aes(y = CPIAUCSL, color = "Actual Data")) +
+  geom_line(aes(y = ma5, color = "5-MA")) +
+  geom_line(aes(y = ma15, color = "15-MA")) +
+  geom_line(aes(y = ma20, color = "20-MA")) +
+  geom_line(aes(y = ma30, color = "30-MA")) +
+  xlab("Time") + ylab("CPIAUCSL") +
+  ggtitle('CPI with Moving Averages') +
+  theme_bw()
+
+# Convert the ggplot object to a plotly object
+plotly::ggplotly(p_cpi)
+
+```
+
+##
+
+:::
 
 
 
