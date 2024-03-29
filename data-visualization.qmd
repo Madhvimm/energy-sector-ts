@@ -129,7 +129,7 @@ combined_data <- combined_data %>% distinct(Date, Type, Price, .keep_all = TRUE)
 
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Visualization'
 #| warning: false

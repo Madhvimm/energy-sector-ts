@@ -20,7 +20,7 @@ library(tseries)
 library(plotly)
 library(gridExtra)
 library(zoo)
-
+library(TSstudio)
 library(ggplot2)
 library(zoo)
 library(plotly)
@@ -91,20 +91,23 @@ composite_crude_oil_prices <- subset(crude_oil_prices, Description == "Refiner A
 ```
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Plot Crude Oil'
 #| warning: false
 #| output: true
-# Plotting with ggplot2
-p_composite_crude_oil <- ggplot(composite_crude_oil_prices, aes(x = Date, y = Value)) +
-  geom_line() + # Add a line geometry
-  theme_minimal() + # Use a minimal theme for a cleaner look
-  labs(title = "Cost of Crude Oil Over Time",
-       x = "Date",
-       y = "Value (USD)")
 
-# Convert ggplot object to plotly for interactivity
+#Plotting with ggplot2
+p_composite_crude_oil <- ggplot(composite_crude_oil_prices, aes(x = Date, y = Value)) +
+  geom_line(color = "#ce7f72") +
+  theme_minimal() + 
+  labs(title = "Cost of Crude Oil Over Time",  
+       x = "Date",
+       y = "Value (USD)") +
+  theme(plot.title = element_text(hjust = 0.5))   
+
+
+#Convert ggplot object to plotly
 ggplotly(p_composite_crude_oil)
 
 ```
@@ -125,7 +128,7 @@ The time series plot for crude oil showcases the historical refiner acquisition 
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Plot Natural Gas'
 #| warning: false
 #| output: false
 
@@ -176,21 +179,23 @@ citygate_gas_prices <- subset(natural_gas_prices, Description == "Natural Gas Pr
 
 
 
-```{r}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Plot Natural Gas Prices'
 #| warning: false
 #| output: true
 
-# Plotting with ggplot2
+#Plotting
 p_citygate_gas <- ggplot(citygate_gas_prices, aes(x = Date, y = Value)) +
-  geom_line() + # Add a line geometry
-  theme_minimal() + # Use a minimal theme for a cleaner look
-  labs(title = "Natural Gas Price Over Time",
+  geom_line(color = "#ce7f72") + 
+  theme_minimal() + 
+  labs(title = "Natural Gas Price Over Time", 
        x = "Date",
-       y = "Price (USD)")
+       y = "Price (USD)") +
+  theme(plot.title = element_text(hjust = 0.5))  
 
-# Convert ggplot object to plotly for interactivity
+
+#Convert ggplot object to plotly
 ggplotly(p_citygate_gas)
 ```
 
@@ -258,21 +263,22 @@ total_electricity_prices <- subset(avg_prices_electricity, Description == "Avera
 ```
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Plot Electricity Prices'
 #| warning: false
 #| output: true
 
-# Plotting with ggplot2
+#Plotting with ggplot2
 p_total_electricity <- ggplot(total_electricity_prices, aes(x = Date, y = Value)) +
-  geom_line() + # Add a line geometry
-  theme_minimal() + # Use a minimal theme for a cleaner look
-  labs(title = "Average Price of Electricity to Ultimate Customers",
+  geom_line(color = "#ce7f72") + 
+  theme_minimal() + 
+  labs(title = "Average Price of Electricity to Ultimate Customers",  
        x = "Date",
-       y = "Price (Cents per Kilowatthour)")
+       y = "Price (Cents per Kilowatthour)") +
+  theme(plot.title = element_text(hjust = 0.5))  
 
-# Convert ggplot object to plotly for interactivity
+#Convert ggplot object to plotly
 ggplotly(p_total_electricity)
 
 
@@ -315,21 +321,22 @@ gdp_data <- na.omit(gdp_data)
 ```
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Plot GDP'
 #| warning: false
 #| output: true
 
-# Plotting with ggplot2
+#Plotting with ggplot2
 p_gdp <- ggplot(gdp_data, aes(x = DATE, y = GDP)) +
-  geom_line() +
+  geom_line(color = "#ce7f72") + 
   theme_minimal() +
-  labs(title = "Gross Domestic Product Over Time",
+  labs(title = "Gross Domestic Product Over Time",  
        x = "Date",
-       y = "GDP (Billion USD)")
+       y = "GDP (Billion USD)") +
+  theme(plot.title = element_text(hjust = 0.5))  
 
-# Convert ggplot object to plotly for interactivity
+#Convert ggplot object to plotly
 ggplotly(p_gdp)
 
 ```
@@ -376,30 +383,26 @@ cpi_data <- na.omit(cpi_data)
 
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Plot CPI'
 #| warning: false
 #| output: true
 
-# Plotting with ggplot2
+#Plotting with ggplot2
 p_cpi <- ggplot(cpi_data, aes(x = DATE, y = CPIAUCSL)) +
-  geom_line() +
+  geom_line(color = "#ce7f72") +  
   theme_minimal() +
-  labs(title = "Consumer Price Index Over Time",
+  labs(title = "Consumer Price Index Over Time",  
        x = "Date",
-       y = "CPI")
+       y = "CPI") +
+  theme(plot.title = element_text(hjust = 0.5)) 
 
-# Convert ggplot object to plotly for interactivity
+
+#Convert ggplot object to plotly
 ggplotly(p_cpi)
 
 ```
-
-
-
-
-
-
 
 
 
@@ -496,20 +499,20 @@ cpi_ts <- ts(cpi_data$CPIAUCSL, start = c(start_year_cpi, start_month_cpi), freq
 ## Crude Oil
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Lag Plot'
 #| warning: false
 #| output: true
 
-# Create lag plot
-library(forecast)
+#Create lag plot
 gglagplot(composite_crude_oil_ts, do.lines=FALSE) + 
   xlab("Lags") + 
   ylab("Value (USD)") + 
   ggtitle("Lag Plot for Refiner Acquisition Cost of Crude Oil") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
-  theme_bw()
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
 
 
@@ -523,19 +526,20 @@ The lag plots for the Cost of Crude Oil reveal a positive autocorrelation. The p
 
 ## Natural Gas
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Lag Plot'
 #| warning: false
 #| output: true
 
-# Create lag plot
+#Create lag plot
 gglagplot(citygate_gas_ts, do.lines=FALSE) + 
   xlab("Lags") + 
   ylab("Price (USD)") + 
   ggtitle("Lag Plot for Natural Gas Price") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
-  theme_bw()
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
 
 Natural Gas Price lag plots display a positive autocorrelation, especially evident in the initial lags. With increasing lags, the data points become more dispersed, indicating a reduction in autocorrelation strength.
@@ -549,9 +553,9 @@ Natural Gas Price lag plots display a positive autocorrelation, especially evide
 
 ## Electricity
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Lag Plot'
 #| warning: false
 #| output: true
 
@@ -561,7 +565,8 @@ gglagplot(total_electricity_ts, do.lines=FALSE) +
   ylab("Price (Cents per Kilowatthour)") + 
   ggtitle("Lag Plot for Average Price of Electricity to Ultimate Customers") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
-  theme_bw()
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
 
 Electricity price lag plots show a strong and consistent positive autocorrelation across all lags, suggesting stable and predictable price trends. The seasonal effect is visible, with certain months consistently clustering together.
@@ -577,9 +582,9 @@ Electricity price lag plots show a strong and consistent positive autocorrelatio
 ## GDP
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Lag Plot'
 #| warning: false
 #| output: true
 
@@ -589,7 +594,8 @@ gglagplot(gdp_ts, do.lines=FALSE) +
   ylab("GDP (Billion USD)") + 
   ggtitle("Lag Plot for GDP") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
-  theme_bw()
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
 
 
@@ -603,9 +609,9 @@ GDP's lag plots exhibit a very strong linear relationship across all lags, refle
 
 ## CPI
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Lag Plot'
 #| warning: false
 #| output: true
 
@@ -615,7 +621,8 @@ gglagplot(cpi_ts, do.lines=FALSE) +
   ylab("CPI") + 
   ggtitle("Lag Plot for CPI") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
-  theme_bw()
+  theme_bw()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
 
 
@@ -645,19 +652,15 @@ Decomposition plots are powerful tools in time series analysis, allowing us to d
 ## Crude Oil
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Decomposition Plot'
 #| warning: false
 #| output: true
 
-# Decompose the time series
-decomposed_crude_oil <- decompose(composite_crude_oil_ts, "multiplicative")
-
-# Plot the decomposed components
-autoplot(decomposed_crude_oil) + 
-  ggtitle("Decomposition Plot for Refiner Acquisition Cost of Crude Oil") +
-  theme_bw()
+# Plot the decomposed ts
+decomposed_crude_oil <- ts_decompose(composite_crude_oil_ts, "multiplicative",showline = TRUE)
+decomposed_crude_oil
 
 ```
 
@@ -673,22 +676,19 @@ The decomposition plot for the Cost of Crude Oil offers a comprehensive view of 
 
 
 
+
+
 ## Natural Gas
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Decomposition Plot'
 #| warning: false
 #| output: true
 
-# Decompose the time series
-decomposed_natural_gas <- decompose(citygate_gas_ts, "multiplicative")
-
-# Plot the decomposed components
-autoplot(decomposed_natural_gas) + 
-  ggtitle("Decomposition Plot for Natural Gas Price") +
-  theme_bw()
-
+#Plot the decomposed ts
+decomposed_natural_gas <- ts_decompose(citygate_gas_ts, "multiplicative",showline = TRUE)
+decomposed_natural_gas
 ```
 
 
@@ -704,19 +704,15 @@ The decomposition plot for the Natural Gas Price offers a comprehensive view of 
 
 ## Electricity
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Decomposition Plot'
 #| warning: false
 #| output: true
 
-# Decompose the time series
-decomposed_electricity <- decompose(total_electricity_ts, "multiplicative")
-
-# Plot the decomposed components
-autoplot(decomposed_electricity) + 
-  ggtitle("Decomposition Plot for Average Price of Electricity to Ultimate Customers") +
-  theme_bw()
+#Plot the decomposed ts
+decomposed_electricity <- ts_decompose(total_electricity_ts, "multiplicative",showline = TRUE)
+decomposed_electricity
 
 ```
 
@@ -734,19 +730,15 @@ Electricity price decomposition highlights the stable growth and seasonality in 
 ## GDP
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Decomposition Plot'
 #| warning: false
 #| output: true
 
-# Decompose the time series
-decomposed_gdp <- decompose(gdp_ts, "multiplicative")
-
-# Plot the decomposed components
-autoplot(decomposed_gdp) + 
-  ggtitle("Decomposition Plot for GDP") +
-  theme_bw()
+#Plot the decomposed ts
+decomposed_gdp <- ts_decompose(gdp_ts, "multiplicative",showline = TRUE)
+decomposed_gdp
 
 ```
 
@@ -765,19 +757,15 @@ GDP decomposition provides insights into economic growth patterns.
 
 ## CPI
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Decomposition Plot'
 #| warning: false
 #| output: true
 
-# Decompose the time series
-decomposed_cpi <- decompose(cpi_ts, "multiplicative")
-
-# Plot the decomposed components
-autoplot(decomposed_cpi) + 
-  ggtitle("Decomposition Plot for CPI") +
-  theme_bw()
+#Plot the decomposed ts
+decomposed_gdp <- ts_decompose(gdp_ts, "multiplicative",showline = TRUE)
+decomposed_gdp
 
 ```
 
@@ -817,25 +805,29 @@ In this section, we'll explore the ACF and PACF plots for our datasets delving i
 ## Crude Oil
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'ACF-PACF Plot'
 #| warning: false
 #| output: true
 
-# ACF and PACF for Crude Oil
+#ACF Plot for Crude Oil
 crude_oil_acf <- ggAcf(composite_crude_oil_ts) + 
   ggtitle("ACF Plot for Refiner Acquisition Cost of Crude Oil") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "turquoise4") +
-  geom_hline(yintercept = 0, color = "turquoise4") 
+  geom_segment(lineend = "butt", color = "#808000") +
+  geom_hline(yintercept = 0, color = "#808000") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
+#PACF Plot for Crude Oil
 crude_oil_pacf <- ggPacf(composite_crude_oil_ts) + 
   ggtitle("PACF Plot for Refiner Acquisition Cost of Crude Oil") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "turquoise4") +
-  geom_hline(yintercept = 0, color = "turquoise4") 
+  geom_segment(lineend = "butt", color = "#808000") +
+  geom_hline(yintercept = 0, color = "#808000")+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
+#Arrange the plots
 grid.arrange(crude_oil_acf, crude_oil_pacf, nrow = 2)
 
 
@@ -849,11 +841,12 @@ The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1 and 2
 
 
 
+
 ## Natural Gas
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'ACF-PACF Plot'
 #| warning: false
 #| output: true
 
@@ -861,14 +854,16 @@ The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1 and 2
 natural_gas_acf <- ggAcf(citygate_gas_ts) + 
   ggtitle("ACF Plot for Natural Gas Price") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "turquoise4") +
-  geom_hline(yintercept = 0, color = "turquoise4") 
+  geom_segment(lineend = "butt", color = "#808000") +
+  geom_hline(yintercept = 0, color = "#808000") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 natural_gas_pacf <- ggPacf(citygate_gas_ts) + 
   ggtitle("PACF Plot for Natural Gas Price") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "turquoise4") +
-  geom_hline(yintercept = 0, color = "turquoise4") 
+  geom_segment(lineend = "butt", color = "#808000") +
+  geom_hline(yintercept = 0, color = "#808000") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 grid.arrange(natural_gas_acf, natural_gas_pacf, nrow = 2)
 
@@ -886,9 +881,9 @@ The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1 and 2
 
 ## Electricity
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'ACF-PACF Plot'
 #| warning: false
 #| output: true
 
@@ -896,14 +891,16 @@ The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1 and 2
 electricity_acf <- ggAcf(total_electricity_ts) + 
   ggtitle("ACF Plot for Average Price of Electricity to Ultimate Customers") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "turquoise4") +
-  geom_hline(yintercept = 0, color = "turquoise4") 
+  geom_segment(lineend = "butt", color = "#808000") +
+  geom_hline(yintercept = 0, color = "#808000")+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 electricity_pacf <- ggPacf(total_electricity_ts) + 
   ggtitle("PACF Plot for Average Price of Electricity to Ultimate Customers") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "turquoise4") +
-  geom_hline(yintercept = 0, color = "turquoise4") 
+  geom_segment(lineend = "butt", color = "#808000") +
+  geom_hline(yintercept = 0, color = "#808000")+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 grid.arrange(electricity_acf, electricity_pacf, nrow = 2)
 
@@ -921,9 +918,9 @@ The consistent autocorrelation in the ACF plot suggests a potential need for a h
 ## GDP
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'ACF-PACF Plot'
 #| warning: false
 #| output: true
 
@@ -931,14 +928,16 @@ The consistent autocorrelation in the ACF plot suggests a potential need for a h
 gdp_acf <- ggAcf(gdp_ts) + 
   ggtitle("ACF Plot for GDP") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "turquoise4") +
-  geom_hline(yintercept = 0, color = "turquoise4") 
+  geom_segment(lineend = "butt", color = "#808000") +
+  geom_hline(yintercept = 0, color = "#808000")+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 gdp_pacf <- ggPacf(gdp_ts) + 
   ggtitle("PACF Plot for GDP") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "turquoise4") +
-  geom_hline(yintercept = 0, color = "turquoise4") 
+  geom_segment(lineend = "butt", color = "#808000") +
+  geom_hline(yintercept = 0, color = "#808000")+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
 
 grid.arrange(gdp_acf, gdp_pacf, nrow = 2)
 
@@ -957,9 +956,9 @@ Given the strong autocorrelation and the PACF cutoff, an ARIMA(1,1,0) model may 
 
 ## CPI
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'ACF-PACF Plot'
 #| warning: false
 #| output: true
 
@@ -967,14 +966,16 @@ Given the strong autocorrelation and the PACF cutoff, an ARIMA(1,1,0) model may 
 cpi_acf <- ggAcf(cpi_ts) + 
   ggtitle("ACF Plot for CPI") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "turquoise4") +
-  geom_hline(yintercept = 0, color = "turquoise4") 
+  geom_segment(lineend = "butt", color = "#808000") +
+  geom_hline(yintercept = 0, color = "#808000")+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 cpi_pacf <- ggPacf(cpi_ts) + 
   ggtitle("PACF Plot for CPI") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "turquoise4") +
-  geom_hline(yintercept = 0, color = "turquoise4") 
+  geom_segment(lineend = "butt", color = "#808000") +
+  geom_hline(yintercept = 0, color = "#808000")+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
 
 grid.arrange(cpi_acf, cpi_pacf, nrow = 2)
 
@@ -996,10 +997,6 @@ The sustained autocorrelation in the ACF plot implies that differencing might be
 :::
 
 
-
-
-
-
 # Dickey-Fuller Test
 
 The Dickey-Fuller test is a statistical test used to determine the presence of unit root in a time series and, consequently, whether the series is non-stationary. The null hypothesis of the test is that the time series is non-stationary. If the p-value is less than the chosen alpha level (usually 0.05), we reject the null hypothesis and infer that the series is stationary.
@@ -1012,9 +1009,9 @@ The Dickey-Fuller test is a statistical test used to determine the presence of u
 ## Crude Oil
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'D-F Test'
 #| warning: false
 #| output: true
 
@@ -1023,8 +1020,6 @@ adf_test_crude_oil <- tseries::adf.test(composite_crude_oil_ts)
 
 # Display the test results
 adf_test_crude_oil
-
-
 ```
 
 
@@ -1034,9 +1029,9 @@ Since the p-value is greater than 0.05, we do not reject the null hypothesis and
 
 ## Natural Gas
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'D-F Test'
 #| warning: false
 #| output: true
 
@@ -1055,9 +1050,9 @@ The p-value suggests that the natural gas price series is non-stationary, reinfo
 
 ## Electricity
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'D-F Test'
 #| warning: false
 #| output: true
 
@@ -1077,14 +1072,15 @@ With the p-value well above 0.05, the electricity price series is considered non
 ## GDP
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'D-F Test'
 #| warning: false
 #| output: true
 
 # Dickey-Fuller Test for GDP
-adf_test_gdp <- tseries::adf.test(gdp_ts)
+suppressWarnings(adf_test_gdp <- tseries::adf.test(gdp_ts))
+
 
 # Display the test results
 adf_test_gdp
@@ -1096,9 +1092,9 @@ The extremely high p-value indicates that the GDP series is strongly non-station
 
 ## CPI
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'D-F Test'
 #| warning: false
 #| output: true
 
@@ -1140,34 +1136,43 @@ Detrending typically subtracts the estimated trend component from the original s
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Plot'
 #| warning: false
-#| output: true
+#| output: false
 
 # Convert residuals to a ts object
 fit_crude_oil <- lm(Value ~ Date, data = composite_crude_oil_prices, na.action = NULL)
 
 resid_crude_oil_ts <- ts(resid(fit_crude_oil), start=c(start_year, start_month), frequency=12)
+```
 
-# Now plot the residuals
-plot1_crude_oil <- autoplot(resid_crude_oil_ts, series="Detrended Crude Oil", colour = "#00BFC4") + 
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Plot'
+#| warning: false
+#| output: true
+
+#Plot the residuals
+plot1_crude_oil <- autoplot(resid_crude_oil_ts, series="Detrended Crude Oil", colour = "#3fa4b5") + 
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
-  ggtitle("Detrended Crude Oil")
+  ggtitle("Detrended Crude Oil") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-# Differencing plot remains the same
-plot2_crude_oil <- autoplot(diff(composite_crude_oil_ts), series = "First Difference Crude Oil", colour = "#F8766D") + 
+#Differencing plot
+plot2_crude_oil <- autoplot(diff(composite_crude_oil_ts), series = "First Difference Crude Oil", colour = "#ce7f72") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
-  ggtitle("First Difference Crude Oil")
+  ggtitle("First Difference Crude Oil") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-# Arrange plots
+#Arrange plots
 grid.arrange(plot1_crude_oil, plot2_crude_oil, nrow = 2)
-
-
-
 ```
 
 **Detrended:**
@@ -1184,34 +1189,42 @@ The differenced series shows fluctuations around zero, indicative of improved st
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Plot'
 #| warning: false
-#| output: true
+#| output: false
 
 # Detrending using the original data frame
 fit_natural_gas <- lm(Value ~ Date, data = citygate_gas_prices, na.action = NULL)
 
 # Convert residuals to a ts object for plotting
 resid_natural_gas_ts <- ts(resid(fit_natural_gas), start=c(start_year_gas, start_month_gas), frequency=12)
+```
 
-# Now plot the residuals
-plot1_natural_gas <- autoplot(resid_natural_gas_ts, series="Detrended Natural Gas", colour = "#00BFC4") + 
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Plot'
+#| warning: false
+#| output: true
+
+#Plot the residuals
+plot1_natural_gas <- autoplot(resid_natural_gas_ts, series="Detrended Natural Gas", colour = "#3fa4b5") + 
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
-  ggtitle("Detrended Natural Gas")
+  ggtitle("Detrended Natural Gas") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-# Differencing plot remains the same
-plot2_natural_gas <- autoplot(diff(citygate_gas_ts), series = "First Difference Natural Gas", colour = "#F8766D") + 
+#Differencing plot
+plot2_natural_gas <- autoplot(diff(citygate_gas_ts), series = "First Difference Natural Gas", colour = "#ce7f72") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
-  ggtitle("First Difference Natural Gas")
+  ggtitle("First Difference Natural Gas") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-# Arrange plots
+#Arrange plots
 grid.arrange(plot1_natural_gas, plot2_natural_gas, nrow = 2)
-
-
 ```
 
 
@@ -1228,33 +1241,44 @@ Consistent mean but varying volatility and a spike around 2020, which could be d
 
 ## Electricity
 
+
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Plot'
 #| warning: false
-#| output: true
+#| output: false
 
 # Detrending using the original data frame
 fit_electricity <- lm(Value ~ Date, data = total_electricity_prices, na.action = NULL)
 
 # Convert residuals to a ts object for plotting
 resid_electricity_ts <- ts(resid(fit_electricity), start=c(start_year_elec, start_month_elec), frequency=12)
+```
 
-# Plot the residuals
-plot1_electricity <- autoplot(resid_electricity_ts, series="Detrended Electricity", colour = "#00BFC4") + 
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Plot'
+#| warning: false
+#| output: true
+
+#Plot the residuals
+plot1_electricity <- autoplot(resid_electricity_ts, series="Detrended Electricity", colour = "#3fa4b5") + 
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
-  ggtitle("Detrended Electricity")
+  ggtitle("Detrended Electricity") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-# Differencing plot
-plot2_electricity <- autoplot(diff(total_electricity_ts), series = "First Difference Electricity", colour = "#F8766D") + 
+#Differencing plot
+plot2_electricity <- autoplot(diff(total_electricity_ts), series = "First Difference Electricity", colour = "#ce7f72") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
-  ggtitle("First Difference Electricity")
+  ggtitle("First Difference Electricity") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-# Arrange plots
+#Arrange plots
 grid.arrange(plot1_electricity, plot2_electricity, nrow = 2)
 
 
@@ -1277,9 +1301,10 @@ The first differenced series oscillates around a central mean, which is indicati
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Plot'
 #| warning: false
-#| output: true
+#| output: false
+
 
 # Detrending using the original data frame
 fit_gdp <- lm(GDP ~ DATE, data = gdp_data, na.action = NULL)
@@ -1287,21 +1312,32 @@ fit_gdp <- lm(GDP ~ DATE, data = gdp_data, na.action = NULL)
 # Convert residuals to a ts object for plotting
 resid_gdp_ts <- ts(resid(fit_gdp), start=c(start_year_gdp, start_quarter_gdp), frequency=4)
 
-# Plot the residuals
-plot1_gdp <- autoplot(resid_gdp_ts, series="Detrended GDP", colour = "#00BFC4") + 
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Plot'
+#| warning: false
+#| output: true
+
+#Plot the residuals
+plot1_gdp <- autoplot(resid_gdp_ts, series="Detrended GDP", colour = "#3fa4b5") + 
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
-  ggtitle("Detrended GDP")
+  ggtitle("Detrended GDP") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-# Differencing plot
-plot2_gdp <- autoplot(diff(gdp_ts), series = "First Difference GDP", colour = "#F8766D") + 
+#Differencing plot
+plot2_gdp <- autoplot(diff(gdp_ts), series = "First Difference GDP", colour = "#ce7f72") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
-  ggtitle("First Difference GDP")
+  ggtitle("First Difference GDP") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-# Arrange plots
+#Arrange plots
 grid.arrange(plot1_gdp, plot2_gdp, nrow = 2)
 
 
@@ -1321,11 +1357,13 @@ The differenced series predominantly hovers around the zero line, which indicate
 
 ## CPI
 
+
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Plot'
 #| warning: false
-#| output: true
+#| output: false
+
 
 # Detrending using the original data frame
 fit_cpi <- lm(CPIAUCSL ~ DATE, data = cpi_data, na.action = NULL)
@@ -1333,21 +1371,33 @@ fit_cpi <- lm(CPIAUCSL ~ DATE, data = cpi_data, na.action = NULL)
 # Convert residuals to a ts object for plotting
 resid_cpi_ts <- ts(resid(fit_cpi), start=c(start_year_cpi, start_month_cpi), frequency=12)
 
-# Plot the residuals
-plot1_cpi <- autoplot(resid_cpi_ts, series="Detrended CPI", colour = "#00BFC4") + 
+```
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Plot'
+#| warning: false
+#| output: true
+
+#Plot the residuals
+plot1_cpi <- autoplot(resid_cpi_ts, series="Detrended CPI", colour = "#3fa4b5") + 
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
-  ggtitle("Detrended CPI")
+  ggtitle("Detrended CPI") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-# Differencing plot
-plot2_cpi <- autoplot(diff(cpi_ts), series = "First Difference CPI", colour = "#F8766D") + 
+#Differencing plot
+plot2_cpi <- autoplot(diff(cpi_ts), series = "First Difference CPI", colour = "#ce7f72") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
-  ggtitle("First Difference CPI")
+  ggtitle("First Difference CPI") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-# Arrange plots
+#Arrange plots
 grid.arrange(plot1_cpi, plot2_cpi, nrow = 2)
 
 
@@ -1364,9 +1414,6 @@ The detrended CPI plot reveals residuals that decline over a prolonged period be
 **First Difference:**
 
 The first difference plot for CPI demonstrates a series that fluctuates around a central mean value.
-
-
-
 
 
 
@@ -1419,7 +1466,21 @@ crude_oil_df$ma15 <- zoo::rollmean(crude_oil_df$Value, 15, mean, fill = NA, alig
 crude_oil_df$ma20 <- zoo::rollmean(crude_oil_df$Value, 20, mean, fill = NA, align = "right")
 crude_oil_df$ma30 <- zoo::rollmean(crude_oil_df$Value, 30, mean, fill = NA, align = "right")
 
-# Create the ggplot object with a color aesthetic for the legend
+
+```
+
+
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'MA Plot'
+#| warning: false
+#| output: true
+
+
+#Ggplot
 p <- ggplot(crude_oil_df, aes(x = Date)) + 
   geom_line(aes(y = Value, color = "Actual Data")) +
   geom_line(aes(y = ma5, color = "5-MA")) +
@@ -1428,12 +1489,11 @@ p <- ggplot(crude_oil_df, aes(x = Date)) +
   geom_line(aes(y = ma30, color = "30-MA")) +
   xlab("Time") + ylab("Value (USD)") +
   ggtitle('Crude Oil Price with Moving Averages') +
-  theme_bw()
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-# Convert the ggplot object to a plotly object
+#Convert ggplot object to plotly
 plotly::ggplotly(p)
-
-
 
 ```
 
@@ -1445,6 +1505,7 @@ plotly::ggplotly(p)
 
 
 ## Natural Gas
+
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -1463,7 +1524,17 @@ natural_gas_df$ma15 <- zoo::rollmean(natural_gas_df$Value, 15, mean, fill = NA, 
 natural_gas_df$ma20 <- zoo::rollmean(natural_gas_df$Value, 20, mean, fill = NA, align = "right")
 natural_gas_df$ma30 <- zoo::rollmean(natural_gas_df$Value, 30, mean, fill = NA, align = "right")
 
-# Create the ggplot object with a color aesthetic for the legend
+```
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'MA Plot'
+#| warning: false
+#| output: true
+
+#Ggplot
 p_ng <- ggplot(natural_gas_df, aes(x = Date)) + 
   geom_line(aes(y = Value, color = "Actual Data")) +
   geom_line(aes(y = ma5, color = "5-MA")) +
@@ -1472,15 +1543,17 @@ p_ng <- ggplot(natural_gas_df, aes(x = Date)) +
   geom_line(aes(y = ma30, color = "30-MA")) +
   xlab("Time") + ylab("Value (Price)") +
   ggtitle('Natural Gas Price with Moving Averages') +
-  theme_bw()
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-# Convert the ggplot object to a plotly object
+#Convert ggplot object to plotly
 plotly::ggplotly(p_ng)
 
 ```
 
 
 ## Electricity
+
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -1493,8 +1566,17 @@ total_electricity_prices$ma5 <- zoo::rollmean(total_electricity_prices$Value, 5,
 total_electricity_prices$ma15 <- zoo::rollmean(total_electricity_prices$Value, 15, mean, fill = NA, align = "right")
 total_electricity_prices$ma20 <- zoo::rollmean(total_electricity_prices$Value, 20, mean, fill = NA, align = "right")
 total_electricity_prices$ma30 <- zoo::rollmean(total_electricity_prices$Value, 30, mean, fill = NA, align = "right")
+```
 
-# Create the ggplot object with a color aesthetic for the legend
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'MA Plot'
+#| warning: false
+#| output: true
+
+#Ggplot
 p_electricity <- ggplot(total_electricity_prices, aes(x = Date)) + 
   geom_line(aes(y = Value, color = "Actual Data")) +
   geom_line(aes(y = ma5, color = "5-MA")) +
@@ -1503,17 +1585,16 @@ p_electricity <- ggplot(total_electricity_prices, aes(x = Date)) +
   geom_line(aes(y = ma30, color = "30-MA")) +
   xlab("Time") + ylab("Price (Cents per Kilowatthour)") +
   ggtitle('Electricity Price with Moving Averages') +
-  theme_bw()
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-# Convert the ggplot object to a plotly object
+#Convert ggplot object to plotly
 plotly::ggplotly(p_electricity)
 
 ```
 
 
 ## GDP
-
-
 
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -1528,7 +1609,17 @@ gdp_data$ma15 <- zoo::rollmean(gdp_data$GDP, 15, mean, fill = NA, align = "right
 gdp_data$ma20 <- zoo::rollmean(gdp_data$GDP, 20, mean, fill = NA, align = "right", by = 4)
 gdp_data$ma30 <- zoo::rollmean(gdp_data$GDP, 30, mean, fill = NA, align = "right", by = 4)
 
-# Create the ggplot object with a color aesthetic for the legend
+```
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'MA Plot'
+#| warning: false
+#| output: true
+
+#Ggplot
 p_gdp <- ggplot(gdp_data, aes(x = DATE)) + 
   geom_line(aes(y = GDP, color = "Actual Data")) +
   geom_line(aes(y = ma5, color = "5-MA")) +
@@ -1537,9 +1628,10 @@ p_gdp <- ggplot(gdp_data, aes(x = DATE)) +
   geom_line(aes(y = ma30, color = "30-MA")) +
   xlab("Time") + ylab("GDP (in billions)") +
   ggtitle('GDP with Moving Averages') +
-  theme_bw()
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-# Convert the ggplot object to a plotly object
+#Convert ggplot object to plotly
 plotly::ggplotly(p_gdp)
 
 ```
@@ -1548,24 +1640,33 @@ plotly::ggplotly(p_gdp)
 
 
 
-
-
 ## CPI
+
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'MA Plot'
 #| warning: false
 #| output: true
-#| 
+
 # Calculate moving averages with the specified window sizes
-# Replace 'fill = NA' with 'fill = ifelse(is.na(.), NA, mean(., na.rm = TRUE))' if you want to avoid NA in your moving averages
 cpi_data$ma5 <- zoo::rollmean(cpi_data$CPIAUCSL, 5, fill = NA, align = "right", by.column = FALSE)
 cpi_data$ma15 <- zoo::rollmean(cpi_data$CPIAUCSL, 15, fill = NA, align = "right", by.column = FALSE)
 cpi_data$ma20 <- zoo::rollmean(cpi_data$CPIAUCSL, 20, fill = NA, align = "right", by.column = FALSE)
 cpi_data$ma30 <- zoo::rollmean(cpi_data$CPIAUCSL, 30, fill = NA, align = "right", by.column = FALSE)
 
-# Create the ggplot object with a color aesthetic for the legend
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'MA Plot'
+#| warning: false
+#| output: true
+#| 
+
+#Ggplot
 p_cpi <- ggplot(cpi_data, aes(x = DATE)) + 
   geom_line(aes(y = CPIAUCSL, color = "Actual Data")) +
   geom_line(aes(y = ma5, color = "5-MA")) +
@@ -1574,9 +1675,10 @@ p_cpi <- ggplot(cpi_data, aes(x = DATE)) +
   geom_line(aes(y = ma30, color = "30-MA")) +
   xlab("Time") + ylab("CPIAUCSL") +
   ggtitle('CPI with Moving Averages') +
-  theme_bw()
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-# Convert the ggplot object to a plotly object
+#Convert ggplot object to plotly
 plotly::ggplotly(p_cpi)
 
 ```
