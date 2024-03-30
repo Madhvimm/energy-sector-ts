@@ -136,7 +136,7 @@ combined_data <- combined_data %>% distinct(Date, Type, Price, .keep_all = TRUE)
 #| output: true
 
 ## Define custom colors for the two types
-colors <- c("Electricity" = "dodgerblue2", "Natural Gas" = "orange3")
+colors <- c("Electricity" = "#499995", "Natural Gas" = "#b07ba1")
 
 p <- plot_ly(data = combined_data, x = ~Date, y = ~Price, color = ~Type, colors = colors, type = 'scatter', mode = 'lines') %>%
   layout(title = "Energy Price Trends Over Time",

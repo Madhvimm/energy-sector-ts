@@ -99,7 +99,7 @@ composite_crude_oil_prices <- subset(crude_oil_prices, Description == "Refiner A
 
 #Plotting with ggplot2
 p_composite_crude_oil <- ggplot(composite_crude_oil_prices, aes(x = Date, y = Value)) +
-  geom_line(color = "#ce7f72") +
+  geom_line(color = "#99494d") +
   theme_minimal() + 
   labs(title = "Cost of Crude Oil Over Time",  
        x = "Date",
@@ -187,7 +187,7 @@ citygate_gas_prices <- subset(natural_gas_prices, Description == "Natural Gas Pr
 
 #Plotting
 p_citygate_gas <- ggplot(citygate_gas_prices, aes(x = Date, y = Value)) +
-  geom_line(color = "#ce7f72") + 
+  geom_line(color = "#99494d") + 
   theme_minimal() + 
   labs(title = "Natural Gas Price Over Time", 
        x = "Date",
@@ -271,7 +271,7 @@ total_electricity_prices <- subset(avg_prices_electricity, Description == "Avera
 
 #Plotting with ggplot2
 p_total_electricity <- ggplot(total_electricity_prices, aes(x = Date, y = Value)) +
-  geom_line(color = "#ce7f72") + 
+  geom_line(color = "#99494d") + 
   theme_minimal() + 
   labs(title = "Average Price of Electricity to Ultimate Customers",  
        x = "Date",
@@ -329,7 +329,7 @@ gdp_data <- na.omit(gdp_data)
 
 #Plotting with ggplot2
 p_gdp <- ggplot(gdp_data, aes(x = DATE, y = GDP)) +
-  geom_line(color = "#ce7f72") + 
+  geom_line(color = "#99494d") + 
   theme_minimal() +
   labs(title = "Gross Domestic Product Over Time",  
        x = "Date",
@@ -391,7 +391,7 @@ cpi_data <- na.omit(cpi_data)
 
 #Plotting with ggplot2
 p_cpi <- ggplot(cpi_data, aes(x = DATE, y = CPIAUCSL)) +
-  geom_line(color = "#ce7f72") +  
+  geom_line(color = "#99494d") +  
   theme_minimal() +
   labs(title = "Consumer Price Index Over Time",  
        x = "Date",
@@ -815,16 +815,16 @@ In this section, we'll explore the ACF and PACF plots for our datasets delving i
 crude_oil_acf <- ggAcf(composite_crude_oil_ts) + 
   ggtitle("ACF Plot for Refiner Acquisition Cost of Crude Oil") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#808000") +
-  geom_hline(yintercept = 0, color = "#808000") +
+  geom_segment(lineend = "butt", color = "#99494d") +
+  geom_hline(yintercept = 0, color = "#99494d") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #PACF Plot for Crude Oil
 crude_oil_pacf <- ggPacf(composite_crude_oil_ts) + 
   ggtitle("PACF Plot for Refiner Acquisition Cost of Crude Oil") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#808000") +
-  geom_hline(yintercept = 0, color = "#808000")+
+  geom_segment(lineend = "butt", color = "#99494d") +
+  geom_hline(yintercept = 0, color = "#99494d")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Arrange the plots
@@ -854,15 +854,15 @@ The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1 and 2
 natural_gas_acf <- ggAcf(citygate_gas_ts) + 
   ggtitle("ACF Plot for Natural Gas Price") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#808000") +
-  geom_hline(yintercept = 0, color = "#808000") +
+  geom_segment(lineend = "butt", color = "#99494d") +
+  geom_hline(yintercept = 0, color = "#99494d") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 natural_gas_pacf <- ggPacf(citygate_gas_ts) + 
   ggtitle("PACF Plot for Natural Gas Price") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#808000") +
-  geom_hline(yintercept = 0, color = "#808000") +
+  geom_segment(lineend = "butt", color = "#99494d") +
+  geom_hline(yintercept = 0, color = "#99494d") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 grid.arrange(natural_gas_acf, natural_gas_pacf, nrow = 2)
@@ -891,15 +891,15 @@ The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1 and 2
 electricity_acf <- ggAcf(total_electricity_ts) + 
   ggtitle("ACF Plot for Average Price of Electricity to Ultimate Customers") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#808000") +
-  geom_hline(yintercept = 0, color = "#808000")+
+  geom_segment(lineend = "butt", color = "#99494d") +
+  geom_hline(yintercept = 0, color = "#99494d")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 electricity_pacf <- ggPacf(total_electricity_ts) + 
   ggtitle("PACF Plot for Average Price of Electricity to Ultimate Customers") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#808000") +
-  geom_hline(yintercept = 0, color = "#808000")+
+  geom_segment(lineend = "butt", color = "#99494d") +
+  geom_hline(yintercept = 0, color = "#99494d")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 grid.arrange(electricity_acf, electricity_pacf, nrow = 2)
@@ -928,15 +928,15 @@ The consistent autocorrelation in the ACF plot suggests a potential need for a h
 gdp_acf <- ggAcf(gdp_ts) + 
   ggtitle("ACF Plot for GDP") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#808000") +
-  geom_hline(yintercept = 0, color = "#808000")+
+  geom_segment(lineend = "butt", color = "#99494d") +
+  geom_hline(yintercept = 0, color = "#99494d")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 gdp_pacf <- ggPacf(gdp_ts) + 
   ggtitle("PACF Plot for GDP") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#808000") +
-  geom_hline(yintercept = 0, color = "#808000")+
+  geom_segment(lineend = "butt", color = "#99494d") +
+  geom_hline(yintercept = 0, color = "#99494d")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
 
 grid.arrange(gdp_acf, gdp_pacf, nrow = 2)
@@ -966,15 +966,15 @@ Given the strong autocorrelation and the PACF cutoff, an ARIMA(1,1,0) model may 
 cpi_acf <- ggAcf(cpi_ts) + 
   ggtitle("ACF Plot for CPI") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#808000") +
-  geom_hline(yintercept = 0, color = "#808000")+
+  geom_segment(lineend = "butt", color = "#99494d") +
+  geom_hline(yintercept = 0, color = "#99494d")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 cpi_pacf <- ggPacf(cpi_ts) + 
   ggtitle("PACF Plot for CPI") + 
   theme_bw() +
-  geom_segment(lineend = "butt", color = "#808000") +
-  geom_hline(yintercept = 0, color = "#808000")+
+  geom_segment(lineend = "butt", color = "#99494d") +
+  geom_hline(yintercept = 0, color = "#99494d")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold")) 
 
 grid.arrange(cpi_acf, cpi_pacf, nrow = 2)
@@ -1156,7 +1156,7 @@ resid_crude_oil_ts <- ts(resid(fit_crude_oil), start=c(start_year, start_month),
 #| output: true
 
 #Plot the residuals
-plot1_crude_oil <- autoplot(resid_crude_oil_ts, series="Detrended Crude Oil", colour = "#3fa4b5") + 
+plot1_crude_oil <- autoplot(resid_crude_oil_ts, series="Detrended Crude Oil", colour = "#499995") + 
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
@@ -1164,7 +1164,7 @@ plot1_crude_oil <- autoplot(resid_crude_oil_ts, series="Detrended Crude Oil", co
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Differencing plot
-plot2_crude_oil <- autoplot(diff(composite_crude_oil_ts), series = "First Difference Crude Oil", colour = "#ce7f72") + 
+plot2_crude_oil <- autoplot(diff(composite_crude_oil_ts), series = "First Difference Crude Oil", colour = "#99494d") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
@@ -1208,7 +1208,7 @@ resid_natural_gas_ts <- ts(resid(fit_natural_gas), start=c(start_year_gas, start
 #| output: true
 
 #Plot the residuals
-plot1_natural_gas <- autoplot(resid_natural_gas_ts, series="Detrended Natural Gas", colour = "#3fa4b5") + 
+plot1_natural_gas <- autoplot(resid_natural_gas_ts, series="Detrended Natural Gas", colour = "#499995") + 
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
@@ -1216,7 +1216,7 @@ plot1_natural_gas <- autoplot(resid_natural_gas_ts, series="Detrended Natural Ga
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Differencing plot
-plot2_natural_gas <- autoplot(diff(citygate_gas_ts), series = "First Difference Natural Gas", colour = "#ce7f72") + 
+plot2_natural_gas <- autoplot(diff(citygate_gas_ts), series = "First Difference Natural Gas", colour = "#99494d") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
@@ -1263,7 +1263,7 @@ resid_electricity_ts <- ts(resid(fit_electricity), start=c(start_year_elec, star
 #| output: true
 
 #Plot the residuals
-plot1_electricity <- autoplot(resid_electricity_ts, series="Detrended Electricity", colour = "#3fa4b5") + 
+plot1_electricity <- autoplot(resid_electricity_ts, series="Detrended Electricity", colour = "#499995") + 
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
@@ -1271,7 +1271,7 @@ plot1_electricity <- autoplot(resid_electricity_ts, series="Detrended Electricit
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Differencing plot
-plot2_electricity <- autoplot(diff(total_electricity_ts), series = "First Difference Electricity", colour = "#ce7f72") + 
+plot2_electricity <- autoplot(diff(total_electricity_ts), series = "First Difference Electricity", colour = "#99494d") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
@@ -1322,7 +1322,7 @@ resid_gdp_ts <- ts(resid(fit_gdp), start=c(start_year_gdp, start_quarter_gdp), f
 #| output: true
 
 #Plot the residuals
-plot1_gdp <- autoplot(resid_gdp_ts, series="Detrended GDP", colour = "#3fa4b5") + 
+plot1_gdp <- autoplot(resid_gdp_ts, series="Detrended GDP", colour = "#499995") + 
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
@@ -1330,7 +1330,7 @@ plot1_gdp <- autoplot(resid_gdp_ts, series="Detrended GDP", colour = "#3fa4b5") 
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Differencing plot
-plot2_gdp <- autoplot(diff(gdp_ts), series = "First Difference GDP", colour = "#ce7f72") + 
+plot2_gdp <- autoplot(diff(gdp_ts), series = "First Difference GDP", colour = "#99494d") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
@@ -1382,7 +1382,7 @@ resid_cpi_ts <- ts(resid(fit_cpi), start=c(start_year_cpi, start_month_cpi), fre
 #| output: true
 
 #Plot the residuals
-plot1_cpi <- autoplot(resid_cpi_ts, series="Detrended CPI", colour = "#3fa4b5") + 
+plot1_cpi <- autoplot(resid_cpi_ts, series="Detrended CPI", colour = "#499995") + 
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
@@ -1390,7 +1390,7 @@ plot1_cpi <- autoplot(resid_cpi_ts, series="Detrended CPI", colour = "#3fa4b5") 
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Differencing plot
-plot2_cpi <- autoplot(diff(cpi_ts), series = "First Difference CPI", colour = "#ce7f72") + 
+plot2_cpi <- autoplot(diff(cpi_ts), series = "First Difference CPI", colour = "#99494d") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
