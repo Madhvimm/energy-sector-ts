@@ -17,6 +17,7 @@ library(tseries)
 library(plotly)
 library(gridExtra)
 library(zoo)
+library(astsa)
 
 library(ggplot2)
 library(zoo)
@@ -68,14 +69,19 @@ total_electricity_ts <- ts(total_electricity_prices$Value, start = c(start_year_
 gdp_data$DATE <- as.Date(gdp_data$DATE, format = "%Y-%m-%d")
 start_year_gdp <- as.numeric(format(min(gdp_data$DATE), "%Y"))
 start_quarter_gdp <- quarter(min(gdp_data$DATE))
-gdp_ts <- ts(gdp_data$GDP, start = c(start_year_gdp, start_quarter_gdp), frequency = 4)
+# Log-transform GDP
+gdp_data$LOG_GDP <- log(gdp_data$GDP)
+gdp_ts <- ts(gdp_data$LOG_GDP, start=c(start_year_gdp, start_quarter_gdp), frequency=4)
 
 
 # For CPI (it's monthly)
 cpi_data$DATE <- as.Date(cpi_data$DATE, format = "%Y-%m-%d")
 start_year_cpi <- as.numeric(format(min(cpi_data$DATE), "%Y"))
 start_month_cpi <- as.numeric(format(min(cpi_data$DATE), "%m"))
-cpi_ts <- ts(cpi_data$CPIAUCSL, start = c(start_year_cpi, start_month_cpi), frequency = 12)
+# Log-transform CPI
+cpi_data$LOG_CPI <- log(cpi_data$CPIAUCSL)
+cpi_ts <- ts(cpi_data$LOG_CPI, start = c(start_year_cpi, start_month_cpi), frequency = 12)
+
 ```
 
 # ACF & PACF Plots
@@ -127,8 +133,6 @@ The **ACF plot** for crude oil prices demonstrates prolonged significant autocor
 The **PACF plot** shows significant spike at lag 1 and 2, followed by non-significant values
 
 The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1 and 2. The slow decay in the ACF implies that differencing (d > 0) may be necessary to achieve stationarity.
-
-
 
 
 ## Natural Gas
@@ -283,6 +287,7 @@ The sustained autocorrelation in the ACF plot implies that differencing might be
 
 
 ## 
+
 :::
 
 
@@ -295,7 +300,6 @@ Detrending typically subtracts the estimated trend component from the original s
 
 
 ::: panel-tabset
-
 
 
 ## Crude Oil
@@ -312,8 +316,6 @@ fit_crude_oil <- lm(Value ~ Date, data = composite_crude_oil_prices, na.action =
 
 resid_crude_oil_ts <- ts(resid(fit_crude_oil), start=c(start_year, start_month), frequency=12)
 ```
-
-
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
@@ -472,11 +474,12 @@ The first differenced series oscillates around a central mean, which is indicati
 #| output: false
 
 
+
 # Detrending using the original data frame
-fit_gdp <- lm(GDP ~ DATE, data = gdp_data, na.action = NULL)
+fit_log_gdp <- lm(LOG_GDP ~ DATE, data = gdp_data, na.action = NULL)
 
 # Convert residuals to a ts object for plotting
-resid_gdp_ts <- ts(resid(fit_gdp), start=c(start_year_gdp, start_quarter_gdp), frequency=4)
+resid_log_gdp_ts <- ts(resid(fit_log_gdp), start=c(start_year_gdp, start_quarter_gdp), frequency=4)
 
 ```
 
@@ -488,23 +491,24 @@ resid_gdp_ts <- ts(resid(fit_gdp), start=c(start_year_gdp, start_quarter_gdp), f
 #| output: true
 
 #Plot the residuals
-plot1_gdp <- autoplot(resid_gdp_ts, series="Detrended GDP", colour = "#499995") + 
+plot1_log_gdp <- autoplot(resid_log_gdp_ts, series="Detrended Log GDP", colour = "#499995") + 
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
-  ggtitle("Detrended GDP") +
+  ggtitle("Detrended Log GDP") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Differencing plot
-plot2_gdp <- autoplot(diff(gdp_ts), series = "First Difference GDP", colour = "#99494d") + 
+plot2_log_gdp <- autoplot(diff(gdp_ts), series = "First Difference Log GDP", colour = "#99494d") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
-  ggtitle("First Difference GDP") +
+  ggtitle("First Difference Log GDP") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
+
 #Arrange plots
-grid.arrange(plot1_gdp, plot2_gdp, nrow = 2)
+grid.arrange(plot1_log_gdp, plot2_log_gdp, nrow = 2)
 
 
 ```
@@ -532,10 +536,11 @@ The differenced series predominantly hovers around the zero line, which indicate
 
 
 # Detrending using the original data frame
-fit_cpi <- lm(CPIAUCSL ~ DATE, data = cpi_data, na.action = NULL)
+fit_log_cpi <- lm(LOG_CPI ~ DATE, data = cpi_data, na.action = NULL)
+
 
 # Convert residuals to a ts object for plotting
-resid_cpi_ts <- ts(resid(fit_cpi), start=c(start_year_cpi, start_month_cpi), frequency=12)
+resid_log_cpi_ts <- ts(resid(fit_log_cpi), start=c(start_year_cpi, start_month_cpi), frequency=12)
 
 ```
 
@@ -548,24 +553,25 @@ resid_cpi_ts <- ts(resid(fit_cpi), start=c(start_year_cpi, start_month_cpi), fre
 #| output: true
 
 #Plot the residuals
-plot1_cpi <- autoplot(resid_cpi_ts, series="Detrended CPI", colour = "#499995") + 
+plot1_log_cpi <- autoplot(resid_log_cpi_ts, series="Detrended Log CPI", colour = "#499995") + 
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
-  ggtitle("Detrended CPI") +
+  ggtitle("Detrended Log CPI") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
+
 #Differencing plot
-plot2_cpi <- autoplot(diff(cpi_ts), series = "First Difference CPI", colour = "#99494d") + 
+plot2_diff_log_cpi <- autoplot(diff(cpi_ts), series = "First Difference Log CPI", colour = "#99494d") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
-  ggtitle("First Difference CPI") +
+  ggtitle("First Difference Log CPI") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-#Arrange plots
-grid.arrange(plot1_cpi, plot2_cpi, nrow = 2)
 
+#Arrange plots
+grid.arrange(plot1_log_cpi, plot2_diff_log_cpi, nrow = 2)
 
 ```
 
@@ -637,8 +643,6 @@ plot2 <- ggplot(composite_crude_oil_prices, aes(x = Date, y = Diff_Value)) +
 grid.arrange(plot1, plot2, nrow = 2)
 
 ```
-
-
 
 ## Natural Gas
 
@@ -720,16 +724,16 @@ grid.arrange(plot1_elec, plot2_elec, nrow = 2)
 #| output: true
 
 #Plot for the original
-plot1_gdp <- ggplot(gdp_data, aes(x = DATE, y = GDP)) + 
+plot1_gdp <- ggplot(gdp_data, aes(x = DATE, y = LOG_GDP)) + 
   geom_line(colour = "#207068") + 
   theme_bw() +
   xlab("Time") + 
-  ylab("GDP (in billions)") +
-  ggtitle("Original GDP Data")+
+  ylab("Log of GDP") +
+  ggtitle("Original GDP Data (Log)")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Calculate the first differences
-gdp_data$Diff_GDP <- c(NA, diff(gdp_data$GDP))
+gdp_data$Diff_GDP <- c(NA, diff(gdp_data$LOG_GDP))
 
 #Plot for the first-differenced
 plot2_gdp <- ggplot(gdp_data, aes(x = DATE, y = Diff_GDP)) + 
@@ -737,7 +741,7 @@ plot2_gdp <- ggplot(gdp_data, aes(x = DATE, y = Diff_GDP)) +
   theme_bw() +
   xlab("Time") + 
   ylab("First Differences") +
-  ggtitle("First Differenced GDP Data")+
+  ggtitle("First Differenced GDP (Log)")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Arrange
@@ -756,24 +760,24 @@ grid.arrange(plot1_gdp, plot2_gdp, nrow = 2)
 #| output: true
 
 #Plot for the original
-plot1_cpi <- ggplot(cpi_data, aes(x = DATE, y = CPIAUCSL)) + 
+plot1_cpi <- ggplot(cpi_data, aes(x = DATE, y = LOG_CPI)) + 
   geom_line(colour = "#207068") + 
   theme_bw() +
   xlab("Time") + 
   ylab("CPI") +
-  ggtitle("Original CPI Data")+
+  ggtitle("Original CPI Data (Log)")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Calculate the first differences
-cpi_data$Diff_CPIAUCSL <- c(NA, diff(cpi_data$CPIAUCSL))
+cpi_data$Diff_CPI <- c(NA, diff(cpi_data$LOG_CPI))
 
 #Plot for the first-differenced
-plot2_cpi <- ggplot(cpi_data, aes(x = DATE, y = Diff_CPIAUCSL)) + 
+plot2_cpi <- ggplot(cpi_data, aes(x = DATE, y = Diff_CPI)) + 
   geom_line(colour = "#702028") + 
   theme_bw() +
   xlab("Time") + 
   ylab("First Differences") +
-  ggtitle("First Differenced CPI Data")+
+  ggtitle("First Differenced CPI Data (Log)")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Arrange
@@ -948,6 +952,20 @@ second_diff_crude_oil <- diff(first_diff_crude_oil)
 ggtsdisplay(second_diff_crude_oil, main = "Second Differencing of Crude Oil Prices")
 ```
 
+Based on these graphs, second differencing does not seem necessary. The first differencing appears to have sufficiently stabilized the mean of the time series, as there is no visible trend or seasonality, and the autocorrelation in the data seems to be addressed.
+
+
+Examining the ACF and PACF plots for the first differencing of crude oil prices, we can suggest a range of values for p and q:
+
+p = 0 (since after the first lag, PACF cuts off which suggests no autoregressive terms)
+p = 1, 2, (to account for the spike at lag 1 and 2)
+
+q = 0 
+q = 1, 2, 3 (as the first three lags are above the significance level)
+q = 4, 5 
+
+
+
 ## Natural Gas
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
@@ -965,6 +983,17 @@ second_diff_natural_gas <- diff(first_diff_natural_gas)
 ggtsdisplay(second_diff_natural_gas, main = "Second Differencing of Natural Gas Prices")
 
 ```
+
+We can clearly observe second differencing doesn’t appear to provide additional benefits. In fact, doing so may result in a loss of information and potentially over-differencing the data. The first difference might be sufficient for the natural gas prices time series, as the plots don't indicate non-stationarity. 
+
+
+Examining the ACF and PACF plots for the first differencing of natural gas prices, we can suggest a range of values for p and q:
+
+p = 0,1,2
+q = 1 (considering the first significant lag)
+q = 2,3 (gradual decay and a second significant lag)
+
+
 
 ## Electricity
 
@@ -984,6 +1013,16 @@ ggtsdisplay(second_diff_electricity, main = "Second Differencing of Electricity 
 
 ```
 
+
+It seems that first differencing might have been adequate to stabilize the mean of the series and to reduce the autocorrelation, the second differencing does not appear to provide additional necessary correction, as evidenced by the ACF and PACF plots which do not show significant autocorrelation after the first differencing.
+
+
+Examining the ACF and PACF plots for the first differencing of electricity prices, we can suggest a range of values for p and q:
+
+p = 0, 1, 2 (considering the significant spike at the first lag)
+q = 1, 2, 3, 4 
+
+
 ## GDP
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
@@ -1001,6 +1040,14 @@ second_diff_gdp <- diff(first_diff_gdp)
 ggtsdisplay(second_diff_gdp, main = "Second Differencing of GDP")
 
 ```
+
+The first differencing of GDP may be sufficient for stationarity, as the time series graph shows no trend and the ACF plot exhibits no significant autocorrelations.  The second differencing results indicates over-differencing, as suggested by the significant negative correlations in the ACF and PACF plots at the initial lags.
+
+Examining the ACF and PACF plots for the first differencing of GDP, we can suggest a range of values for p and q:
+
+p = 1, 2,  
+q = 1, 2, 3 (considering the first few significant lags)
+
 
 ## CPI
 
@@ -1021,10 +1068,28 @@ ggtsdisplay(second_diff_cpi, main = "Second Differencing of CPI")
 
 ```
 
+The second differencing of CPI doesn't show a noticeable trend, the first differencing might be sufficient. The second differencing does not seem to add further information; it rather makes the ACF and PACF plots more of a white noise process, which could suggest over-differencing.
+
+Examining the ACF and PACF plots for the first differencing of CPI, we can suggest a range of values for p and q:
+
+p = 1, 2, 3, 4, 5, 6 (significant spike at lag 1)
+q = 1, 2, 3, 4, 5, 6, 7, 8, 9 (to capture the initial significant lags)
+
+
+
 ## 
 
 
+In our analysis, we applied first and second differencing techniques to examine their effects on stationarity. First differencing is often sufficient to stabilize the mean of a series and make it stationary. Second differencing, although sometimes necessary for complex trends, wasn't found to provide substantial benefits in our datasets. Instead, it seems to indicate a potential over-differencing, which can obscure meaningful insights from the data.
+
+For our datasets, first differencing effectively addressed visible trends and autocorrelations, the second differencing didn't reveal additional insights and, in some cases, suggested that the data might be overly differenced, indicated by increased noise in the ACF and PACF plots. Therefore, in our case, sticking with first differencing seems to be the prudent approach to preparing our time series data for further analysis and modeling.
+
+
+
+
+
 :::
+
 
 # AIC & BIC
 
@@ -1034,403 +1099,410 @@ In time series analysis, choosing the right model is paramount for accurate fore
 
 -   BIC extends the logic of AIC by incorporating sample size into the penalty for complexity. This adjustment makes BIC more stringent with complex models when dealing with larger datasets. As with AIC, a lower BIC suggests a better model.
 
+
+
 ::: panel-tabset
 
 ## Crude Oil
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'AIC-BIC'
 #| warning: false
 #| output: true
 
 
-d=1
-i=1
-temp= data.frame()
-ls=matrix(rep(NA,6*25),nrow=25)
+d <- 1 # Degree of differencing
+temp <- data.frame()
+ls <- matrix(rep(NA, 6 * 18), nrow = 18)  # 18 combinations
 
-
-for (p in 1:5)
-{
-  for(q in 1:5)
-  {
-      if(p-1+d+q-1<=8) 
-      {
-        
-        model<- Arima(composite_crude_oil_ts,order=c(p-1,d,q-1),include.drift=TRUE) 
-        ls[i,]= c(p-1,d,q-1,model$aic,model$bic,model$aicc)
-        i=i+1
-      }
-      
+i <- 1
+for (p in 0:2) {
+  for (q in 0:5) {
+    if(p-1+d+q-1<=8) {
+      model <- Arima(composite_crude_oil_ts, order = c(p, d, q), include.drift = TRUE)
+      ls[i,] <- c(p, d, q, model$aic, model$bic, model$aicc)
+      i <- i + 1
     }
   }
+}
 
 temp= as.data.frame(ls)
 names(temp)= c("p","d","q","AIC","BIC","AICc")
 
-temp[which.min(temp$AIC),]
+knitr::kable(temp)
 
 
-
-# Find and display the models with the minimum AIC, BIC, and AICc
+#Displaying the models with min values
 temp[which.min(temp$AIC),]
 temp[which.min(temp$BIC),]
 temp[which.min(temp$AICc),]
+
 ```
+
+When selecting the best ARIMA model for forecasting crude oil prices, it's common for the AIC and BIC to suggest different models. In such cases, we often prefer the model with the lower AIC. Based on the results, we've can select two models for further consideration:
+
+- Best Model by AIC (and AICc): ARIMA(2,1,4)
+- Best Model by BIC: ARIMA(2,1,1)
+
+
 
 ## Natural Gas
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'AIC-BIC'
 #| warning: false
 #| output: true
 
-d=1
-i=1
-temp= data.frame()
-ls=matrix(rep(NA,6*25),nrow=25)
+d <- 1 # Degree of differencing
+temp <- data.frame()
+ls <- matrix(rep(NA, 6 * 9), nrow = 9)  #  9 combinations: p (3 options) * q (3 options)
 
-
-for (p in 1:5)
-{
-  for(q in 1:5)
-  {
-      if(p-1+d+q-1<=8) 
-      {
-        
-        model<- Arima(citygate_gas_ts,order=c(p-1,d,q-1),include.drift=TRUE) 
-        ls[i,]= c(p-1,d,q-1,model$aic,model$bic,model$aicc)
-        i=i+1
-      }
-      
+i <- 1
+for (p in 0:2) {
+  for (q in 1:3) {
+    if(p-1+d+q-1<=8) {
+      model <- Arima(citygate_gas_ts, order = c(p, d, q), include.drift = TRUE)
+      ls[i,] <- c(p, d, q, model$aic, model$bic, model$aicc)
+      i <- i + 1
     }
   }
+}
 
 temp= as.data.frame(ls)
 names(temp)= c("p","d","q","AIC","BIC","AICc")
 
-temp[which.min(temp$AIC),]
+#Displaying the table
+knitr::kable(temp)
 
 
-
-# Find and display the models with the minimum AIC, BIC, and AICc
+#Displaying the models with min values
 temp[which.min(temp$AIC),]
 temp[which.min(temp$BIC),]
 temp[which.min(temp$AICc),]
-
 ```
+
+When selecting the best ARIMA model for forecasting natural gas prices, it's common for the AIC and BIC to suggest different models. In such cases, we often prefer the model with the lower AIC. Based on the results, we've can select two models for further consideration:
+
+- Best Model by AIC (and AICc): ARIMA(2,1,1)
+- Best Model by BIC: ARIMA(0,1,1)
+
+
+
 
 ## Electricity
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'AIC-BIC'
 #| warning: false
 #| output: true
 
-d=1
-i=1
-temp= data.frame()
-ls=matrix(rep(NA,6*25),nrow=25)
+d <- 1 # Degree of differencing
+temp <- data.frame()
+ls <- matrix(rep(NA, 6 * 12), nrow = 12)  # p (3 options) * q (4 options) = 12 combinations
 
-
-for (p in 1:5)
-{
-  for(q in 1:5)
-  {
-      if(p-1+d+q-1<=8) 
-      {
-        
-        model<- Arima(resid_electricity_ts,order=c(p-1,d,q-1),include.drift=TRUE) 
-        ls[i,]= c(p-1,d,q-1,model$aic,model$bic,model$aicc)
-        i=i+1
-      }
-      
+i <- 1
+for (p in 0:2) {
+  for (q in 1:4) {
+    if(p-1+d+q-1<=8) {
+      model <- Arima(total_electricity_ts, order = c(p, d, q), include.drift = TRUE)
+      ls[i,] <- c(p, d, q, model$aic, model$bic, model$aicc)
+      i <- i + 1
     }
   }
+}
 
 temp= as.data.frame(ls)
 names(temp)= c("p","d","q","AIC","BIC","AICc")
 
-temp[which.min(temp$AIC),]
+#Displaying the table
+knitr::kable(temp)
 
 
-
-# Find and display the models with the minimum AIC, BIC, and AICc
+#Displaying the models with min values
 temp[which.min(temp$AIC),]
 temp[which.min(temp$BIC),]
 temp[which.min(temp$AICc),]
-
 ```
+
+
+When selecting the best ARIMA model for forecasting electricity prices, it's common for the AIC and BIC to suggest different models. In such cases, we often prefer the model with the lower AIC. Based on the results, we've can select two models for further consideration:
+
+- Best Model by AIC, BIC, and AICc (ARIMA(2,1,2))
+- ARIMA(2,1,4)
+
+
+
 
 ## GDP
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'AIC-BIC'
 #| warning: false
 #| output: true
 
-d=1
-i=1
-temp= data.frame()
-ls=matrix(rep(NA,6*4),nrow=4)
+d <- 1 # Degree of differencing
+temp <- data.frame()
+ls <- matrix(rep(NA, 6 * 6), nrow = 6)  # p (2 options) * q (3 options) = 6 combinations
 
-
-for (p in 1:2)
-{
-  for(q in 1:2)
-  {
-      if(p-1+d+q-1<=8) 
-      {
-        
-        model<- Arima(gdp_ts,order=c(p-1,d,q-1),include.drift=TRUE) 
-        ls[i,]= c(p-1,d,q-1,model$aic,model$bic,model$aicc)
-        i=i+1
-      }
-      
+i <- 1
+for (p in 1:2) {
+  for (q in 1:3) {
+    if(p-1+d+q-1<=8) {
+      model <- Arima(gdp_ts, order = c(p, d, q), include.drift = TRUE)
+      ls[i,] <- c(p, d, q, model$aic, model$bic, model$aicc)
+      i <- i + 1
     }
   }
+}
 
 temp= as.data.frame(ls)
 names(temp)= c("p","d","q","AIC","BIC","AICc")
 
-temp[which.min(temp$AIC),]
+#Displaying the table
+knitr::kable(temp)
 
-
-
-# Find and display the models with the minimum AIC, BIC, and AICc
+#Displaying the models with min values
 temp[which.min(temp$AIC),]
 temp[which.min(temp$BIC),]
 temp[which.min(temp$AICc),]
 
 ```
+
+
+When selecting the best ARIMA model for forecasting GDP, it's common for the AIC and BIC to suggest different models. In such cases, we often prefer the model with the lower AIC. Based on the results, we've can select two models for further consideration:
+
+- Best Model by AIC: ARIMA(1,1,2)
+- Best Model by BIC: ARIMA(1,1,1)
+
+
 
 ## CPI
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'AIC-BIC'
 #| warning: false
 #| output: true
-#| 
-d=1
-i=1
-temp= data.frame()
-ls=matrix(rep(NA,6*5),nrow=5)
 
 
-for (p in 1:2)
-{
-  for(q in 1:2)
-  {
-      if(p-1+d+q-1<=8) 
-      {
-        
-        model<- Arima(gdp_ts,order=c(p-1,d,q-1),include.drift=TRUE) 
-        ls[i,]= c(p-1,d,q-1,model$aic,model$bic,model$aicc)
-        i=i+1
-      }
-      
+d <- 1 # Degree of differencing
+temp <- data.frame()
+ls <- matrix(rep(NA, 6 * 33), nrow = 33)  
+
+i <- 1
+for (p in 1:6) {
+  for (q in 1:9) {
+    if (p-1+d+q-1<=8) {
+      model <- Arima(cpi_ts, order = c(p, d, q), include.drift = TRUE)
+      ls[i,] <- c(p, d, q, model$aic, model$bic, model$aicc)
+      i <- i + 1
     }
   }
+}
 
 temp= as.data.frame(ls)
 names(temp)= c("p","d","q","AIC","BIC","AICc")
 
-temp[which.min(temp$AIC),]
+#Displaying the table
+knitr::kable(temp)
 
-
-
-# Find and display the models with the minimum AIC, BIC, and AICc
+#Displaying the models with min values
 temp[which.min(temp$AIC),]
 temp[which.min(temp$BIC),]
 temp[which.min(temp$AICc),]
 
 ```
 
+
+When selecting the best ARIMA model for forecasting CPI, it's common for the AIC and BIC to suggest different models. In such cases, we often prefer the model with the lower AIC. Based on the results, we've can select two models for further consideration:
+
+- Best Model by AIC: ARIMA(3,1,4)
+- Best Model by BIC: ARIMA(1,1,2)
+
+
 ## 
+
 :::
 
 # Fitting ARIMA
 
+## Fitting Best Model
+
 Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
 
 ::: panel-tabset
+
 ## Crude Oil
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Fitting ARIMA'
 #| warning: false
 #| output: true
 
-# Prepare the data frame with the correct start date
-crude_oil_df <- data.frame(
-  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(composite_crude_oil_ts)),
-  Value = as.vector(composite_crude_oil_ts)
-)
-
-# Calculate moving averages with the specified window sizes
-crude_oil_df$ma5 <- zoo::rollmean(crude_oil_df$Value, 5, mean, fill = NA, align = "right")
-crude_oil_df$ma15 <- zoo::rollmean(crude_oil_df$Value, 15, mean, fill = NA, align = "right")
-crude_oil_df$ma20 <- zoo::rollmean(crude_oil_df$Value, 20, mean, fill = NA, align = "right")
-crude_oil_df$ma30 <- zoo::rollmean(crude_oil_df$Value, 30, mean, fill = NA, align = "right")
-
-# Create the ggplot object with a color aesthetic for the legend
-p <- ggplot(crude_oil_df, aes(x = Date)) + 
-  geom_line(aes(y = Value, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("Value (USD)") +
-  ggtitle('Crude Oil Price with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p)
-
-
-
+#Fitting ARIMA
+fit_crudeoil <- Arima(diff(composite_crude_oil_ts), order=c(2, 1, 4),include.drift = TRUE) 
+summary(fit_crudeoil)
 ```
 
 ## Natural Gas
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Fitting ARIMA'
 #| warning: false
 #| output: true
 
-natural_gas_df <- data.frame(
-  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(citygate_gas_ts)),
-  Value = as.vector(citygate_gas_ts)
-)
-
-# Calculate moving averages with the specified window sizes
-natural_gas_df$ma5 <- zoo::rollmean(natural_gas_df$Value, 5, mean, fill = NA, align = "right")
-natural_gas_df$ma15 <- zoo::rollmean(natural_gas_df$Value, 15, mean, fill = NA, align = "right")
-natural_gas_df$ma20 <- zoo::rollmean(natural_gas_df$Value, 20, mean, fill = NA, align = "right")
-natural_gas_df$ma30 <- zoo::rollmean(natural_gas_df$Value, 30, mean, fill = NA, align = "right")
-
-# Create the ggplot object with a color aesthetic for the legend
-p_ng <- ggplot(natural_gas_df, aes(x = Date)) + 
-  geom_line(aes(y = Value, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("Value (Price)") +
-  ggtitle('Natural Gas Price with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p_ng)
+#Fitting ARIMA
+fit_NaturalGas <- Arima(diff(citygate_gas_ts), order=c(2, 1, 1),include.drift = TRUE) 
+summary(fit_NaturalGas)
 
 ```
 
 ## Electricity
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Fitting ARIMA'
 #| warning: false
 #| output: true
 
-# Calculate moving averages with the specified window sizes
-total_electricity_prices$ma5 <- zoo::rollmean(total_electricity_prices$Value, 5, mean, fill = NA, align = "right")
-total_electricity_prices$ma15 <- zoo::rollmean(total_electricity_prices$Value, 15, mean, fill = NA, align = "right")
-total_electricity_prices$ma20 <- zoo::rollmean(total_electricity_prices$Value, 20, mean, fill = NA, align = "right")
-total_electricity_prices$ma30 <- zoo::rollmean(total_electricity_prices$Value, 30, mean, fill = NA, align = "right")
-
-# Create the ggplot object with a color aesthetic for the legend
-p_electricity <- ggplot(total_electricity_prices, aes(x = Date)) + 
-  geom_line(aes(y = Value, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("Price (Cents per Kilowatthour)") +
-  ggtitle('Electricity Price with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p_electricity)
+#Fitting ARIMA
+fit_electricity <- Arima(diff(total_electricity_ts), order=c(2, 1, 2),include.drift = TRUE) 
+summary(fit_electricity)
 
 ```
 
 ## GDP
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Fitting ARIMA'
 #| warning: false
 #| output: true
 
-# Calculate moving averages with the specified window sizes
-gdp_data$ma5 <- zoo::rollmean(gdp_data$GDP, 5, mean, fill = NA, align = "right", by = 4)  # Considering quarterly data
-gdp_data$ma15 <- zoo::rollmean(gdp_data$GDP, 15, mean, fill = NA, align = "right", by = 4)
-gdp_data$ma20 <- zoo::rollmean(gdp_data$GDP, 20, mean, fill = NA, align = "right", by = 4)
-gdp_data$ma30 <- zoo::rollmean(gdp_data$GDP, 30, mean, fill = NA, align = "right", by = 4)
-
-# Create the ggplot object with a color aesthetic for the legend
-p_gdp <- ggplot(gdp_data, aes(x = DATE)) + 
-  geom_line(aes(y = GDP, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("GDP (in billions)") +
-  ggtitle('GDP with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p_gdp)
+#Fitting ARIMA
+fit_gdp_a <- Arima(diff(gdp_ts), order=c(1, 1, 2),include.drift = TRUE) 
+summary(fit_gdp_a)
 
 ```
 
 ## CPI
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Fitting ARIMA'
 #| warning: false
 #| output: true
-#| 
-# Calculate moving averages with the specified window sizes
-# Replace 'fill = NA' with 'fill = ifelse(is.na(.), NA, mean(., na.rm = TRUE))' if you want to avoid NA in your moving averages
-cpi_data$ma5 <- zoo::rollmean(cpi_data$CPIAUCSL, 5, fill = NA, align = "right", by.column = FALSE)
-cpi_data$ma15 <- zoo::rollmean(cpi_data$CPIAUCSL, 15, fill = NA, align = "right", by.column = FALSE)
-cpi_data$ma20 <- zoo::rollmean(cpi_data$CPIAUCSL, 20, fill = NA, align = "right", by.column = FALSE)
-cpi_data$ma30 <- zoo::rollmean(cpi_data$CPIAUCSL, 30, fill = NA, align = "right", by.column = FALSE)
 
-# Create the ggplot object with a color aesthetic for the legend
-p_cpi <- ggplot(cpi_data, aes(x = DATE)) + 
-  geom_line(aes(y = CPIAUCSL, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("CPIAUCSL") +
-  ggtitle('CPI with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p_cpi)
+#Fitting ARIMA
+fit_cpi_a <- Arima(diff(cpi_ts), order=c(3, 1, 4),include.drift = TRUE) 
+summary(fit_cpi_a)
 
 ```
 
 ## 
+
 :::
+
+
+## Fitting Second Best Model
+
+
+::: panel-tabset
+
+## Crude Oil
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Fitting ARIMA'
+#| warning: false
+#| output: true
+
+#Fitting ARIMA
+fit_crudeoil2 <- Arima(diff(composite_crude_oil_ts), order=c(2, 1, 1),include.drift = TRUE) 
+summary(fit_crudeoil2)
+```
+
+## Natural Gas
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Fitting ARIMA'
+#| warning: false
+#| output: true
+
+#Fitting ARIMA
+fit_NaturalGas2 <- Arima(diff(citygate_gas_ts), order=c(0, 1, 1),include.drift = TRUE) 
+summary(fit_NaturalGas2)
+
+```
+
+## Electricity
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Fitting ARIMA'
+#| warning: false
+#| output: true
+
+#Fitting ARIMA
+fit_electricity2 <- Arima(diff(total_electricity_ts), order=c(2, 1, 4),include.drift = TRUE) 
+summary(fit_electricity2)
+
+```
+
+## GDP
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Fitting ARIMA'
+#| warning: false
+#| output: true
+
+#Fitting ARIMA
+fit_gdp_a2 <- Arima(diff(gdp_ts), order=c(1, 1, 1),include.drift = TRUE) 
+summary(fit_gdp_a2)
+
+```
+
+## CPI
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Fitting ARIMA'
+#| warning: false
+#| output: true
+
+#Fitting ARIMA
+fit_cpi_a2 <- Arima(diff(cpi_ts), order=c(1, 1, 2),include.drift = TRUE) 
+summary(fit_cpi_a2)
+
+```
+
+## 
+
+:::
+
+
 
 # Model Diagnostics
 
 Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
 
 ::: panel-tabset
+
 ## Crude Oil
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -1439,33 +1511,8 @@ Moving average smoothing is a time series forecasting method that can help ident
 #| warning: false
 #| output: true
 
-# Prepare the data frame with the correct start date
-crude_oil_df <- data.frame(
-  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(composite_crude_oil_ts)),
-  Value = as.vector(composite_crude_oil_ts)
-)
-
-# Calculate moving averages with the specified window sizes
-crude_oil_df$ma5 <- zoo::rollmean(crude_oil_df$Value, 5, mean, fill = NA, align = "right")
-crude_oil_df$ma15 <- zoo::rollmean(crude_oil_df$Value, 15, mean, fill = NA, align = "right")
-crude_oil_df$ma20 <- zoo::rollmean(crude_oil_df$Value, 20, mean, fill = NA, align = "right")
-crude_oil_df$ma30 <- zoo::rollmean(crude_oil_df$Value, 30, mean, fill = NA, align = "right")
-
-# Create the ggplot object with a color aesthetic for the legend
-p <- ggplot(crude_oil_df, aes(x = Date)) + 
-  geom_line(aes(y = Value, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("Value (USD)") +
-  ggtitle('Crude Oil Price with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p)
-
-
+set.seed(222)
+diag_crudeoil <- capture.output(sarima(composite_crude_oil_ts, 2,1,4))
 
 ```
 
@@ -1477,30 +1524,9 @@ plotly::ggplotly(p)
 #| warning: false
 #| output: true
 
-natural_gas_df <- data.frame(
-  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(citygate_gas_ts)),
-  Value = as.vector(citygate_gas_ts)
-)
+set.seed(222)
+diag_ng <- capture.output(sarima(citygate_gas_ts, 2,1,1))
 
-# Calculate moving averages with the specified window sizes
-natural_gas_df$ma5 <- zoo::rollmean(natural_gas_df$Value, 5, mean, fill = NA, align = "right")
-natural_gas_df$ma15 <- zoo::rollmean(natural_gas_df$Value, 15, mean, fill = NA, align = "right")
-natural_gas_df$ma20 <- zoo::rollmean(natural_gas_df$Value, 20, mean, fill = NA, align = "right")
-natural_gas_df$ma30 <- zoo::rollmean(natural_gas_df$Value, 30, mean, fill = NA, align = "right")
-
-# Create the ggplot object with a color aesthetic for the legend
-p_ng <- ggplot(natural_gas_df, aes(x = Date)) + 
-  geom_line(aes(y = Value, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("Value (Price)") +
-  ggtitle('Natural Gas Price with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p_ng)
 
 ```
 
@@ -1512,25 +1538,8 @@ plotly::ggplotly(p_ng)
 #| warning: false
 #| output: true
 
-# Calculate moving averages with the specified window sizes
-total_electricity_prices$ma5 <- zoo::rollmean(total_electricity_prices$Value, 5, mean, fill = NA, align = "right")
-total_electricity_prices$ma15 <- zoo::rollmean(total_electricity_prices$Value, 15, mean, fill = NA, align = "right")
-total_electricity_prices$ma20 <- zoo::rollmean(total_electricity_prices$Value, 20, mean, fill = NA, align = "right")
-total_electricity_prices$ma30 <- zoo::rollmean(total_electricity_prices$Value, 30, mean, fill = NA, align = "right")
-
-# Create the ggplot object with a color aesthetic for the legend
-p_electricity <- ggplot(total_electricity_prices, aes(x = Date)) + 
-  geom_line(aes(y = Value, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("Price (Cents per Kilowatthour)") +
-  ggtitle('Electricity Price with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p_electricity)
+set.seed(222)
+diag_electricity <- capture.output(sarima(total_electricity_ts, 2,1,2))
 
 ```
 
@@ -1542,25 +1551,8 @@ plotly::ggplotly(p_electricity)
 #| warning: false
 #| output: true
 
-# Calculate moving averages with the specified window sizes
-gdp_data$ma5 <- zoo::rollmean(gdp_data$GDP, 5, mean, fill = NA, align = "right", by = 4)  # Considering quarterly data
-gdp_data$ma15 <- zoo::rollmean(gdp_data$GDP, 15, mean, fill = NA, align = "right", by = 4)
-gdp_data$ma20 <- zoo::rollmean(gdp_data$GDP, 20, mean, fill = NA, align = "right", by = 4)
-gdp_data$ma30 <- zoo::rollmean(gdp_data$GDP, 30, mean, fill = NA, align = "right", by = 4)
-
-# Create the ggplot object with a color aesthetic for the legend
-p_gdp <- ggplot(gdp_data, aes(x = DATE)) + 
-  geom_line(aes(y = GDP, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("GDP (in billions)") +
-  ggtitle('GDP with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p_gdp)
+set.seed(222)
+diag_gdp <- capture.output(sarima(gdp_ts, 1,1,2))
 
 ```
 
@@ -1571,27 +1563,9 @@ plotly::ggplotly(p_gdp)
 #| code-summary: 'Importing Libraries'
 #| warning: false
 #| output: true
-#| 
-# Calculate moving averages with the specified window sizes
-# Replace 'fill = NA' with 'fill = ifelse(is.na(.), NA, mean(., na.rm = TRUE))' if you want to avoid NA in your moving averages
-cpi_data$ma5 <- zoo::rollmean(cpi_data$CPIAUCSL, 5, fill = NA, align = "right", by.column = FALSE)
-cpi_data$ma15 <- zoo::rollmean(cpi_data$CPIAUCSL, 15, fill = NA, align = "right", by.column = FALSE)
-cpi_data$ma20 <- zoo::rollmean(cpi_data$CPIAUCSL, 20, fill = NA, align = "right", by.column = FALSE)
-cpi_data$ma30 <- zoo::rollmean(cpi_data$CPIAUCSL, 30, fill = NA, align = "right", by.column = FALSE)
 
-# Create the ggplot object with a color aesthetic for the legend
-p_cpi <- ggplot(cpi_data, aes(x = DATE)) + 
-  geom_line(aes(y = CPIAUCSL, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("CPIAUCSL") +
-  ggtitle('CPI with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p_cpi)
+set.seed(222)
+diag_cpi <- capture.output(sarima(cpi_ts, 1,1,2))
 
 ```
 
@@ -1603,6 +1577,7 @@ plotly::ggplotly(p_cpi)
 Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
 
 ::: panel-tabset
+
 ## Crude Oil
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -1611,33 +1586,7 @@ Moving average smoothing is a time series forecasting method that can help ident
 #| warning: false
 #| output: true
 
-# Prepare the data frame with the correct start date
-crude_oil_df <- data.frame(
-  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(composite_crude_oil_ts)),
-  Value = as.vector(composite_crude_oil_ts)
-)
-
-# Calculate moving averages with the specified window sizes
-crude_oil_df$ma5 <- zoo::rollmean(crude_oil_df$Value, 5, mean, fill = NA, align = "right")
-crude_oil_df$ma15 <- zoo::rollmean(crude_oil_df$Value, 15, mean, fill = NA, align = "right")
-crude_oil_df$ma20 <- zoo::rollmean(crude_oil_df$Value, 20, mean, fill = NA, align = "right")
-crude_oil_df$ma30 <- zoo::rollmean(crude_oil_df$Value, 30, mean, fill = NA, align = "right")
-
-# Create the ggplot object with a color aesthetic for the legend
-p <- ggplot(crude_oil_df, aes(x = Date)) + 
-  geom_line(aes(y = Value, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("Value (USD)") +
-  ggtitle('Crude Oil Price with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p)
-
-
+auto.arima(composite_crude_oil_ts)
 
 ```
 
@@ -1649,31 +1598,7 @@ plotly::ggplotly(p)
 #| warning: false
 #| output: true
 
-natural_gas_df <- data.frame(
-  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(citygate_gas_ts)),
-  Value = as.vector(citygate_gas_ts)
-)
-
-# Calculate moving averages with the specified window sizes
-natural_gas_df$ma5 <- zoo::rollmean(natural_gas_df$Value, 5, mean, fill = NA, align = "right")
-natural_gas_df$ma15 <- zoo::rollmean(natural_gas_df$Value, 15, mean, fill = NA, align = "right")
-natural_gas_df$ma20 <- zoo::rollmean(natural_gas_df$Value, 20, mean, fill = NA, align = "right")
-natural_gas_df$ma30 <- zoo::rollmean(natural_gas_df$Value, 30, mean, fill = NA, align = "right")
-
-# Create the ggplot object with a color aesthetic for the legend
-p_ng <- ggplot(natural_gas_df, aes(x = Date)) + 
-  geom_line(aes(y = Value, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("Value (Price)") +
-  ggtitle('Natural Gas Price with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p_ng)
-
+auto.arima(citygate_gas_ts)
 ```
 
 ## Electricity
@@ -1684,25 +1609,7 @@ plotly::ggplotly(p_ng)
 #| warning: false
 #| output: true
 
-# Calculate moving averages with the specified window sizes
-total_electricity_prices$ma5 <- zoo::rollmean(total_electricity_prices$Value, 5, mean, fill = NA, align = "right")
-total_electricity_prices$ma15 <- zoo::rollmean(total_electricity_prices$Value, 15, mean, fill = NA, align = "right")
-total_electricity_prices$ma20 <- zoo::rollmean(total_electricity_prices$Value, 20, mean, fill = NA, align = "right")
-total_electricity_prices$ma30 <- zoo::rollmean(total_electricity_prices$Value, 30, mean, fill = NA, align = "right")
-
-# Create the ggplot object with a color aesthetic for the legend
-p_electricity <- ggplot(total_electricity_prices, aes(x = Date)) + 
-  geom_line(aes(y = Value, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("Price (Cents per Kilowatthour)") +
-  ggtitle('Electricity Price with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p_electricity)
+auto.arima(total_electricity_ts)
 
 ```
 
@@ -1714,25 +1621,7 @@ plotly::ggplotly(p_electricity)
 #| warning: false
 #| output: true
 
-# Calculate moving averages with the specified window sizes
-gdp_data$ma5 <- zoo::rollmean(gdp_data$GDP, 5, mean, fill = NA, align = "right", by = 4)  # Considering quarterly data
-gdp_data$ma15 <- zoo::rollmean(gdp_data$GDP, 15, mean, fill = NA, align = "right", by = 4)
-gdp_data$ma20 <- zoo::rollmean(gdp_data$GDP, 20, mean, fill = NA, align = "right", by = 4)
-gdp_data$ma30 <- zoo::rollmean(gdp_data$GDP, 30, mean, fill = NA, align = "right", by = 4)
-
-# Create the ggplot object with a color aesthetic for the legend
-p_gdp <- ggplot(gdp_data, aes(x = DATE)) + 
-  geom_line(aes(y = GDP, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("GDP (in billions)") +
-  ggtitle('GDP with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p_gdp)
+auto.arima(gdp_ts)
 
 ```
 
@@ -1743,27 +1632,8 @@ plotly::ggplotly(p_gdp)
 #| code-summary: 'Importing Libraries'
 #| warning: false
 #| output: true
-#| 
-# Calculate moving averages with the specified window sizes
-# Replace 'fill = NA' with 'fill = ifelse(is.na(.), NA, mean(., na.rm = TRUE))' if you want to avoid NA in your moving averages
-cpi_data$ma5 <- zoo::rollmean(cpi_data$CPIAUCSL, 5, fill = NA, align = "right", by.column = FALSE)
-cpi_data$ma15 <- zoo::rollmean(cpi_data$CPIAUCSL, 15, fill = NA, align = "right", by.column = FALSE)
-cpi_data$ma20 <- zoo::rollmean(cpi_data$CPIAUCSL, 20, fill = NA, align = "right", by.column = FALSE)
-cpi_data$ma30 <- zoo::rollmean(cpi_data$CPIAUCSL, 30, fill = NA, align = "right", by.column = FALSE)
 
-# Create the ggplot object with a color aesthetic for the legend
-p_cpi <- ggplot(cpi_data, aes(x = DATE)) + 
-  geom_line(aes(y = CPIAUCSL, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("CPIAUCSL") +
-  ggtitle('CPI with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p_cpi)
+auto.arima((cpi_ts))
 
 ```
 
@@ -1783,32 +1653,7 @@ Moving average smoothing is a time series forecasting method that can help ident
 #| warning: false
 #| output: true
 
-# Prepare the data frame with the correct start date
-crude_oil_df <- data.frame(
-  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(composite_crude_oil_ts)),
-  Value = as.vector(composite_crude_oil_ts)
-)
-
-# Calculate moving averages with the specified window sizes
-crude_oil_df$ma5 <- zoo::rollmean(crude_oil_df$Value, 5, mean, fill = NA, align = "right")
-crude_oil_df$ma15 <- zoo::rollmean(crude_oil_df$Value, 15, mean, fill = NA, align = "right")
-crude_oil_df$ma20 <- zoo::rollmean(crude_oil_df$Value, 20, mean, fill = NA, align = "right")
-crude_oil_df$ma30 <- zoo::rollmean(crude_oil_df$Value, 30, mean, fill = NA, align = "right")
-
-# Create the ggplot object with a color aesthetic for the legend
-p <- ggplot(crude_oil_df, aes(x = Date)) + 
-  geom_line(aes(y = Value, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("Value (USD)") +
-  ggtitle('Crude Oil Price with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p)
-
+fit_crudeoil %>% forecast(h=36) %>% autoplot()
 
 
 ```
@@ -1821,30 +1666,7 @@ plotly::ggplotly(p)
 #| warning: false
 #| output: true
 
-natural_gas_df <- data.frame(
-  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(citygate_gas_ts)),
-  Value = as.vector(citygate_gas_ts)
-)
-
-# Calculate moving averages with the specified window sizes
-natural_gas_df$ma5 <- zoo::rollmean(natural_gas_df$Value, 5, mean, fill = NA, align = "right")
-natural_gas_df$ma15 <- zoo::rollmean(natural_gas_df$Value, 15, mean, fill = NA, align = "right")
-natural_gas_df$ma20 <- zoo::rollmean(natural_gas_df$Value, 20, mean, fill = NA, align = "right")
-natural_gas_df$ma30 <- zoo::rollmean(natural_gas_df$Value, 30, mean, fill = NA, align = "right")
-
-# Create the ggplot object with a color aesthetic for the legend
-p_ng <- ggplot(natural_gas_df, aes(x = Date)) + 
-  geom_line(aes(y = Value, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("Value (Price)") +
-  ggtitle('Natural Gas Price with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p_ng)
+fit_NaturalGas %>% forecast(h=36) %>% autoplot()
 
 ```
 
@@ -1856,25 +1678,7 @@ plotly::ggplotly(p_ng)
 #| warning: false
 #| output: true
 
-# Calculate moving averages with the specified window sizes
-total_electricity_prices$ma5 <- zoo::rollmean(total_electricity_prices$Value, 5, mean, fill = NA, align = "right")
-total_electricity_prices$ma15 <- zoo::rollmean(total_electricity_prices$Value, 15, mean, fill = NA, align = "right")
-total_electricity_prices$ma20 <- zoo::rollmean(total_electricity_prices$Value, 20, mean, fill = NA, align = "right")
-total_electricity_prices$ma30 <- zoo::rollmean(total_electricity_prices$Value, 30, mean, fill = NA, align = "right")
-
-# Create the ggplot object with a color aesthetic for the legend
-p_electricity <- ggplot(total_electricity_prices, aes(x = Date)) + 
-  geom_line(aes(y = Value, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("Price (Cents per Kilowatthour)") +
-  ggtitle('Electricity Price with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p_electricity)
+fit_electricity %>% forecast(h=36) %>% autoplot()
 
 ```
 
@@ -1886,25 +1690,7 @@ plotly::ggplotly(p_electricity)
 #| warning: false
 #| output: true
 
-# Calculate moving averages with the specified window sizes
-gdp_data$ma5 <- zoo::rollmean(gdp_data$GDP, 5, mean, fill = NA, align = "right", by = 4)  # Considering quarterly data
-gdp_data$ma15 <- zoo::rollmean(gdp_data$GDP, 15, mean, fill = NA, align = "right", by = 4)
-gdp_data$ma20 <- zoo::rollmean(gdp_data$GDP, 20, mean, fill = NA, align = "right", by = 4)
-gdp_data$ma30 <- zoo::rollmean(gdp_data$GDP, 30, mean, fill = NA, align = "right", by = 4)
-
-# Create the ggplot object with a color aesthetic for the legend
-p_gdp <- ggplot(gdp_data, aes(x = DATE)) + 
-  geom_line(aes(y = GDP, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("GDP (in billions)") +
-  ggtitle('GDP with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p_gdp)
+fit_gdp_a %>% forecast(h=36) %>% autoplot()
 
 ```
 
@@ -1916,26 +1702,7 @@ plotly::ggplotly(p_gdp)
 #| warning: false
 #| output: true
 #| 
-# Calculate moving averages with the specified window sizes
-# Replace 'fill = NA' with 'fill = ifelse(is.na(.), NA, mean(., na.rm = TRUE))' if you want to avoid NA in your moving averages
-cpi_data$ma5 <- zoo::rollmean(cpi_data$CPIAUCSL, 5, fill = NA, align = "right", by.column = FALSE)
-cpi_data$ma15 <- zoo::rollmean(cpi_data$CPIAUCSL, 15, fill = NA, align = "right", by.column = FALSE)
-cpi_data$ma20 <- zoo::rollmean(cpi_data$CPIAUCSL, 20, fill = NA, align = "right", by.column = FALSE)
-cpi_data$ma30 <- zoo::rollmean(cpi_data$CPIAUCSL, 30, fill = NA, align = "right", by.column = FALSE)
-
-# Create the ggplot object with a color aesthetic for the legend
-p_cpi <- ggplot(cpi_data, aes(x = DATE)) + 
-  geom_line(aes(y = CPIAUCSL, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("CPIAUCSL") +
-  ggtitle('CPI with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p_cpi)
+fit_cpi_a %>% forecast() %>% autoplot()
 
 ```
 
@@ -1955,33 +1722,18 @@ Moving average smoothing is a time series forecasting method that can help ident
 #| warning: false
 #| output: true
 
-# Prepare the data frame with the correct start date
-crude_oil_df <- data.frame(
-  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(composite_crude_oil_ts)),
-  Value = as.vector(composite_crude_oil_ts)
-)
-
-# Calculate moving averages with the specified window sizes
-crude_oil_df$ma5 <- zoo::rollmean(crude_oil_df$Value, 5, mean, fill = NA, align = "right")
-crude_oil_df$ma15 <- zoo::rollmean(crude_oil_df$Value, 15, mean, fill = NA, align = "right")
-crude_oil_df$ma20 <- zoo::rollmean(crude_oil_df$Value, 20, mean, fill = NA, align = "right")
-crude_oil_df$ma30 <- zoo::rollmean(crude_oil_df$Value, 30, mean, fill = NA, align = "right")
-
-# Create the ggplot object with a color aesthetic for the legend
-p <- ggplot(crude_oil_df, aes(x = Date)) + 
-  geom_line(aes(y = Value, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("Value (USD)") +
-  ggtitle('Crude Oil Price with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p)
-
-
+autoplot(composite_crude_oil_ts) +
+  autolayer(meanf(composite_crude_oil_ts, h=36),
+            series="Mean", PI=FALSE) +
+  autolayer(naive(composite_crude_oil_ts, h=36),
+            series="Naïve", PI=FALSE) +
+  autolayer(snaive(composite_crude_oil_ts, h=36),
+            series="SNaïve", PI=FALSE)+
+  autolayer(rwf(composite_crude_oil_ts, h=36, drift=TRUE),
+            series="Drift", PI=FALSE)+
+  autolayer(forecast(fit_crudeoil,36), 
+            series="fit",PI=FALSE) +
+  guides(colour=guide_legend(title="Forecast"))
 
 ```
 
@@ -1993,30 +1745,18 @@ plotly::ggplotly(p)
 #| warning: false
 #| output: true
 
-natural_gas_df <- data.frame(
-  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(citygate_gas_ts)),
-  Value = as.vector(citygate_gas_ts)
-)
-
-# Calculate moving averages with the specified window sizes
-natural_gas_df$ma5 <- zoo::rollmean(natural_gas_df$Value, 5, mean, fill = NA, align = "right")
-natural_gas_df$ma15 <- zoo::rollmean(natural_gas_df$Value, 15, mean, fill = NA, align = "right")
-natural_gas_df$ma20 <- zoo::rollmean(natural_gas_df$Value, 20, mean, fill = NA, align = "right")
-natural_gas_df$ma30 <- zoo::rollmean(natural_gas_df$Value, 30, mean, fill = NA, align = "right")
-
-# Create the ggplot object with a color aesthetic for the legend
-p_ng <- ggplot(natural_gas_df, aes(x = Date)) + 
-  geom_line(aes(y = Value, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("Value (Price)") +
-  ggtitle('Natural Gas Price with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p_ng)
+autoplot(citygate_gas_ts) +
+  autolayer(meanf(citygate_gas_ts, h=36),
+            series="Mean", PI=FALSE) +
+  autolayer(naive(citygate_gas_ts, h=36),
+            series="Naïve", PI=FALSE) +
+  autolayer(snaive(citygate_gas_ts, h=36),
+            series="SNaïve", PI=FALSE)+
+  autolayer(rwf(citygate_gas_ts, h=36, drift=TRUE),
+            series="Drift", PI=FALSE)+
+  autolayer(forecast(fit_NaturalGas,36), 
+            series="fit",PI=FALSE) +
+  guides(colour=guide_legend(title="Forecast"))
 
 ```
 
@@ -2028,25 +1768,18 @@ plotly::ggplotly(p_ng)
 #| warning: false
 #| output: true
 
-# Calculate moving averages with the specified window sizes
-total_electricity_prices$ma5 <- zoo::rollmean(total_electricity_prices$Value, 5, mean, fill = NA, align = "right")
-total_electricity_prices$ma15 <- zoo::rollmean(total_electricity_prices$Value, 15, mean, fill = NA, align = "right")
-total_electricity_prices$ma20 <- zoo::rollmean(total_electricity_prices$Value, 20, mean, fill = NA, align = "right")
-total_electricity_prices$ma30 <- zoo::rollmean(total_electricity_prices$Value, 30, mean, fill = NA, align = "right")
-
-# Create the ggplot object with a color aesthetic for the legend
-p_electricity <- ggplot(total_electricity_prices, aes(x = Date)) + 
-  geom_line(aes(y = Value, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("Price (Cents per Kilowatthour)") +
-  ggtitle('Electricity Price with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p_electricity)
+autoplot(total_electricity_ts) +
+  autolayer(meanf(total_electricity_ts, h=36),
+            series="Mean", PI=FALSE) +
+  autolayer(naive(total_electricity_ts, h=36),
+            series="Naïve", PI=FALSE) +
+  autolayer(snaive(total_electricity_ts, h=36),
+            series="SNaïve", PI=FALSE)+
+  autolayer(rwf(total_electricity_ts, h=36, drift=TRUE),
+            series="Drift", PI=FALSE)+
+  autolayer(forecast(fit_electricity,36), 
+            series="fit",PI=FALSE) +
+  guides(colour=guide_legend(title="Forecast"))
 
 ```
 
@@ -2058,25 +1791,18 @@ plotly::ggplotly(p_electricity)
 #| warning: false
 #| output: true
 
-# Calculate moving averages with the specified window sizes
-gdp_data$ma5 <- zoo::rollmean(gdp_data$GDP, 5, mean, fill = NA, align = "right", by = 4)  # Considering quarterly data
-gdp_data$ma15 <- zoo::rollmean(gdp_data$GDP, 15, mean, fill = NA, align = "right", by = 4)
-gdp_data$ma20 <- zoo::rollmean(gdp_data$GDP, 20, mean, fill = NA, align = "right", by = 4)
-gdp_data$ma30 <- zoo::rollmean(gdp_data$GDP, 30, mean, fill = NA, align = "right", by = 4)
-
-# Create the ggplot object with a color aesthetic for the legend
-p_gdp <- ggplot(gdp_data, aes(x = DATE)) + 
-  geom_line(aes(y = GDP, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("GDP (in billions)") +
-  ggtitle('GDP with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p_gdp)
+autoplot(gdp_ts) +
+  autolayer(meanf(gdp_ts, h=36),
+            series="Mean", PI=FALSE) +
+  autolayer(naive(gdp_ts, h=36),
+            series="Naïve", PI=FALSE) +
+  autolayer(snaive(gdp_ts, h=36),
+            series="SNaïve", PI=FALSE)+
+  autolayer(rwf(gdp_ts, h=36, drift=TRUE),
+            series="Drift", PI=FALSE)+
+  autolayer(forecast(fit_gdp_a,36), 
+            series="fit",PI=FALSE) +
+  guides(colour=guide_legend(title="Forecast"))
 
 ```
 
@@ -2088,26 +1814,19 @@ plotly::ggplotly(p_gdp)
 #| warning: false
 #| output: true
 #| 
-# Calculate moving averages with the specified window sizes
-# Replace 'fill = NA' with 'fill = ifelse(is.na(.), NA, mean(., na.rm = TRUE))' if you want to avoid NA in your moving averages
-cpi_data$ma5 <- zoo::rollmean(cpi_data$CPIAUCSL, 5, fill = NA, align = "right", by.column = FALSE)
-cpi_data$ma15 <- zoo::rollmean(cpi_data$CPIAUCSL, 15, fill = NA, align = "right", by.column = FALSE)
-cpi_data$ma20 <- zoo::rollmean(cpi_data$CPIAUCSL, 20, fill = NA, align = "right", by.column = FALSE)
-cpi_data$ma30 <- zoo::rollmean(cpi_data$CPIAUCSL, 30, fill = NA, align = "right", by.column = FALSE)
 
-# Create the ggplot object with a color aesthetic for the legend
-p_cpi <- ggplot(cpi_data, aes(x = DATE)) + 
-  geom_line(aes(y = CPIAUCSL, color = "Actual Data")) +
-  geom_line(aes(y = ma5, color = "5-MA")) +
-  geom_line(aes(y = ma15, color = "15-MA")) +
-  geom_line(aes(y = ma20, color = "20-MA")) +
-  geom_line(aes(y = ma30, color = "30-MA")) +
-  xlab("Time") + ylab("CPIAUCSL") +
-  ggtitle('CPI with Moving Averages') +
-  theme_bw()
-
-# Convert the ggplot object to a plotly object
-plotly::ggplotly(p_cpi)
+autoplot(cpi_ts) +
+  autolayer(meanf(cpi_ts, h=36),
+            series="Mean", PI=FALSE) +
+  autolayer(naive(cpi_ts, h=36),
+            series="Naïve", PI=FALSE) +
+  autolayer(snaive(cpi_ts, h=36),
+            series="SNaïve", PI=FALSE)+
+  autolayer(rwf(cpi_ts, h=36, drift=TRUE),
+            series="Drift", PI=FALSE)+
+  autolayer(forecast(fit_cpi_a,36), 
+            series="fit",PI=FALSE) +
+  guides(colour=guide_legend(title="Forecast"))
 
 ```
 
