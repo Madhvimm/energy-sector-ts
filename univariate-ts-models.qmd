@@ -18,7 +18,6 @@ library(plotly)
 library(gridExtra)
 library(zoo)
 library(astsa)
-
 library(ggplot2)
 library(zoo)
 library(plotly)
@@ -71,7 +70,7 @@ start_year_gdp <- as.numeric(format(min(gdp_data$DATE), "%Y"))
 start_quarter_gdp <- quarter(min(gdp_data$DATE))
 # Log-transform GDP
 gdp_data$LOG_GDP <- log(gdp_data$GDP)
-gdp_ts <- ts(gdp_data$LOG_GDP, start=c(start_year_gdp, start_quarter_gdp), frequency=4)
+gdp_log_ts <- ts(gdp_data$LOG_GDP, start=c(start_year_gdp, start_quarter_gdp), frequency=4)
 
 
 # For CPI (it's monthly)
@@ -80,7 +79,7 @@ start_year_cpi <- as.numeric(format(min(cpi_data$DATE), "%Y"))
 start_month_cpi <- as.numeric(format(min(cpi_data$DATE), "%m"))
 # Log-transform CPI
 cpi_data$LOG_CPI <- log(cpi_data$CPIAUCSL)
-cpi_ts <- ts(cpi_data$LOG_CPI, start = c(start_year_cpi, start_month_cpi), frequency = 12)
+cpi_log_ts <- ts(cpi_data$LOG_CPI, start = c(start_year_cpi, start_month_cpi), frequency = 12)
 
 ```
 
@@ -90,7 +89,7 @@ Autocorrelation Function (ACF) and Partial Autocorrelation Function (PACF) plots
 
 By examining the ACF and PACF plots, we can discern patterns that suggest the presence of autoregressive (AR) or moving average (MA) components in our time series models. Significant spikes in the ACF plot indicate potential AR terms, while significant spikes in the PACF plot suggest MA terms. These plots also assist in determining the stationarity of the series, a crucial aspect in time series modeling, where non-stationary data often require differencing to achieve stationarity.
 
-In this section, we'll explore the ACF and PACF plots for our datasets delving into their autocorrelation structures and deriving insights that will inform our model selection and forecasting approach.
+This section delves into the ACF and PACF plots for our datasets, examining their autocorrelation structures to get insights that will guide our model selection and inform our forecasting methodology.
 
 
 ::: panel-tabset
@@ -217,15 +216,15 @@ The consistent autocorrelation in the ACF plot suggests a potential need for a h
 #| warning: false
 #| output: true
 
-# ACF and PACF for GDP
-gdp_acf <- ggAcf(gdp_ts) + 
+# ACF and PACF for GDP (Log)
+gdp_acf <- ggAcf(gdp_log_ts) + 
   ggtitle("ACF Plot for GDP") + 
   theme_bw() +
   geom_segment(lineend = "butt", color = "#99494d") +
   geom_hline(yintercept = 0, color = "#99494d")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-gdp_pacf <- ggPacf(gdp_ts) + 
+gdp_pacf <- ggPacf(gdp_log_ts) + 
   ggtitle("PACF Plot for GDP") + 
   theme_bw() +
   geom_segment(lineend = "butt", color = "#99494d") +
@@ -255,15 +254,15 @@ Given the strong autocorrelation and the PACF cutoff, an ARIMA(1,1,0) model may 
 #| warning: false
 #| output: true
 
-# ACF and PACF for CPI
-cpi_acf <- ggAcf(cpi_ts) + 
+# ACF and PACF for CPI (Log)
+cpi_acf <- ggAcf(cpi_log_ts) + 
   ggtitle("ACF Plot for CPI") + 
   theme_bw() +
   geom_segment(lineend = "butt", color = "#99494d") +
   geom_hline(yintercept = 0, color = "#99494d")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-cpi_pacf <- ggPacf(cpi_ts) + 
+cpi_pacf <- ggPacf(cpi_log_ts) + 
   ggtitle("PACF Plot for CPI") + 
   theme_bw() +
   geom_segment(lineend = "butt", color = "#99494d") +
@@ -291,13 +290,14 @@ The sustained autocorrelation in the ACF plot implies that differencing might be
 :::
 
 
-# Detrend VS Difference
+# Detrend VS First - Difference
 
 
-Detrending and differencing are two methods used to make time series data stationary, it involves removing the underlying trend from the data, while differencing focuses on the changes between consecutive observations.
+Detrending and differencing are foundational techniques used to render time series data stationary. **Detrending** removes the underlying trend from the data, usually by subtracting an estimated trend component from the original series. **Differencing**, in contrast, focuses on the changes between consecutive observations by transforming the series into a sequence of differences. While detrending is aimed at addressing trends, differencing is capable of eliminating both trend and seasonal components, potentially achieving stationarity in the process.
 
-Detrending typically subtracts the estimated trend component from the original series, while differencing transforms the series into the sequence of differences between adjacent values. While detrending addresses the trend, differencing can help eliminate both trend and seasonality, making the series stationary.
+**Applying Detrending and Differencing to Our Datasets:**
 
+Now, let's apply these critical techniques of detrending and differencing to our datasets, observing how they enhance the stationarity of the data:
 
 ::: panel-tabset
 
@@ -326,7 +326,7 @@ resid_crude_oil_ts <- ts(resid(fit_crude_oil), start=c(start_year, start_month),
 #Plot the residuals
 plot1_crude_oil <- autoplot(resid_crude_oil_ts, series="Detrended Crude Oil", colour = "#499995") + 
   theme_bw() +
-  xlab("Time") +
+  xlab("Year") +
   ylab("Residuals") +
   ggtitle("Detrended Crude Oil") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -334,7 +334,7 @@ plot1_crude_oil <- autoplot(resid_crude_oil_ts, series="Detrended Crude Oil", co
 #Differencing plot
 plot2_crude_oil <- autoplot(diff(composite_crude_oil_ts), series = "First Difference Crude Oil", colour = "#99494d") + 
   theme_bw() +
-  xlab("Time") +
+  xlab("Year") +
   ylab("Differences") +
   ggtitle("First Difference Crude Oil") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -345,11 +345,11 @@ grid.arrange(plot1_crude_oil, plot2_crude_oil, nrow = 2)
 
 **Detrended:**
 
-The residuals after detrending indicate that linear detrending might not fully account for all underlying components, as patterns still emerge.
+Post-detrending residuals may exhibit patterns, suggesting that linear detrending doesn’t fully capture all dynamics within the series.
 
 **First Difference:**
 
-The differenced series shows fluctuations around zero, indicative of improved stationarity. While the mean appears stabilized, examining autocorrelation in the differenced data is crucial to confirm stationarity fully.
+The series shows fluctuations that average out around zero, suggesting enhanced stationarity. Still, a deeper autocorrelation analysis is necessary to confirm full stationarity.
 
 
 
@@ -378,7 +378,7 @@ resid_natural_gas_ts <- ts(resid(fit_natural_gas), start=c(start_year_gas, start
 #Plot the residuals
 plot1_natural_gas <- autoplot(resid_natural_gas_ts, series="Detrended Natural Gas", colour = "#499995") + 
   theme_bw() +
-  xlab("Time") +
+  xlab("Year") +
   ylab("Residuals") +
   ggtitle("Detrended Natural Gas") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -386,7 +386,7 @@ plot1_natural_gas <- autoplot(resid_natural_gas_ts, series="Detrended Natural Ga
 #Differencing plot
 plot2_natural_gas <- autoplot(diff(citygate_gas_ts), series = "First Difference Natural Gas", colour = "#99494d") + 
   theme_bw() +
-  xlab("Time") +
+  xlab("Year") +
   ylab("Differences") +
   ggtitle("First Difference Natural Gas") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -398,11 +398,11 @@ grid.arrange(plot1_natural_gas, plot2_natural_gas, nrow = 2)
 
 **Detrended:**
 
-The detrended series shows periods of volatility, indicating that removing the linear trend doesn't capture all the data's dynamics, remaining fluctuations may reflect other underlying components like seasonality
+Even after detrending, the series displays volatility, implying that mere removal of a linear trend doesn't encapsulate all the complexities in the data.
 
 **First Difference:**
 
-Consistent mean but varying volatility and a spike around 2020, which could be due to the pandemic
+The series maintains a consistent mean, though volatility persists, with noticeable spikes potentially attributable to external shocks like the 2020 pandemic.
 
 
 
@@ -433,7 +433,7 @@ resid_electricity_ts <- ts(resid(fit_electricity), start=c(start_year_elec, star
 #Plot the residuals
 plot1_electricity <- autoplot(resid_electricity_ts, series="Detrended Electricity", colour = "#499995") + 
   theme_bw() +
-  xlab("Time") +
+  xlab("Year") +
   ylab("Residuals") +
   ggtitle("Detrended Electricity") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -441,7 +441,7 @@ plot1_electricity <- autoplot(resid_electricity_ts, series="Detrended Electricit
 #Differencing plot
 plot2_electricity <- autoplot(diff(total_electricity_ts), series = "First Difference Electricity", colour = "#99494d") + 
   theme_bw() +
-  xlab("Time") +
+  xlab("Year") +
   ylab("Differences") +
   ggtitle("First Difference Electricity") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -455,11 +455,11 @@ grid.arrange(plot1_electricity, plot2_electricity, nrow = 2)
 
 **Detrended:**
 
-The detrended plot of electricity prices displays clear periodic fluctuations, suggesting the presence of seasonality.
+Periodic fluctuations in the detrended plot hint at seasonality within the electricity price data.
 
 **First Difference:**
 
-The first differenced series oscillates around a central mean, which is indicative of stationarity in the mean of the series. However, the consistent pattern of spikes followed by a return to the mean—indicates a strong seasonal component.
+The first differenced series oscillates around a central mean, which is indicative of stationarity in the mean of the series. However, the consistent pattern of spikes indicates a strong seasonal component.
 
 
 
@@ -493,15 +493,15 @@ resid_log_gdp_ts <- ts(resid(fit_log_gdp), start=c(start_year_gdp, start_quarter
 #Plot the residuals
 plot1_log_gdp <- autoplot(resid_log_gdp_ts, series="Detrended Log GDP", colour = "#499995") + 
   theme_bw() +
-  xlab("Time") +
+  xlab("Year") +
   ylab("Residuals") +
   ggtitle("Detrended Log GDP") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Differencing plot
-plot2_log_gdp <- autoplot(diff(gdp_ts), series = "First Difference Log GDP", colour = "#99494d") + 
+plot2_log_gdp <- autoplot(diff(gdp_log_ts), series = "First Difference Log GDP", colour = "#99494d") + 
   theme_bw() +
-  xlab("Time") +
+  xlab("Year") +
   ylab("Differences") +
   ggtitle("First Difference Log GDP") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -521,7 +521,7 @@ The detrended GDP plot showcases that the residuals seem to have a non-linear co
 
 **First Difference:**
 
-The differenced series predominantly hovers around the zero line, which indicates that this transformation effectively removes the trend from the data, leading to a stationary series in terms of the mean. The substantial spike observed towards the end is likely due to the recent economic downturn due to the COVID-19 pandemic, which represents a significant economic shock not accounted for by typical GDP growth patterns. 
+The differenced series predominantly hovers around the zero line, which indicates that this transformation effectively removes the trend from the data, leading to a stationary series in terms of the mean. The substantial spike observed towards the end is likely due to the recent economic downturn due to the COVID-19 pandemic. 
 
 
 
@@ -555,16 +555,16 @@ resid_log_cpi_ts <- ts(resid(fit_log_cpi), start=c(start_year_cpi, start_month_c
 #Plot the residuals
 plot1_log_cpi <- autoplot(resid_log_cpi_ts, series="Detrended Log CPI", colour = "#499995") + 
   theme_bw() +
-  xlab("Time") +
+  xlab("") +
   ylab("Residuals") +
   ggtitle("Detrended Log CPI") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 
 #Differencing plot
-plot2_diff_log_cpi <- autoplot(diff(cpi_ts), series = "First Difference Log CPI", colour = "#99494d") + 
+plot2_diff_log_cpi <- autoplot(diff(cpi_log_ts), series = "First Difference Log CPI", colour = "#99494d") + 
   theme_bw() +
-  xlab("Time") +
+  xlab("Year") +
   ylab("Differences") +
   ggtitle("First Difference Log CPI") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -580,7 +580,7 @@ grid.arrange(plot1_log_cpi, plot2_diff_log_cpi, nrow = 2)
 
 **Detrended:**
 
-The detrended CPI plot reveals residuals that decline over a prolonged period before stabilizing and then increasing. This pattern suggests that a simple linear trend does not fully capture the complexity of the inflationary trend over time. 
+A decline followed by stabilization and increase in the residuals indicates that inflationary trends are not linear over Year.
 
 
 **First Difference:**
@@ -598,11 +598,8 @@ The first difference plot for CPI demonstrates a series that fluctuates around a
 
 # Original Vs First Difference
 
-Time series data often embody intrinsic trends and seasonality, which can confound analyses if not properly addressed. Two techniques to transform such data into a stationary are detrending and differencing.
 
-Detrending involves the removal of a trend line from the time series, thus flattening the data into a horizontal line around the mean. 
-
-Differencing, on the other hand, involves computing the difference between consecutive observations. This method is effective in eliminating both trend and seasonality, transforming the series into one where the mean level does not change over time. Differencing is a critical step in preparing data for ARIMA (AutoRegressive Integrated Moving Average) modeling.
+This section focuses on a direct comparison between our original time series data and their first differenced forms. By examining the differences, we can highlight the effectiveness of the differencing technique in achieving stationarity—a key prerequisite for many time series modeling approaches.
 
 
 
@@ -622,8 +619,8 @@ Differencing, on the other hand, involves computing the difference between conse
 plot1 <- ggplot(composite_crude_oil_prices, aes(x = Date, y = Value)) + 
   geom_line(colour = "#207068") + 
   theme_bw() +
-  xlab("Time") + 
-  ylab("CPI") +
+  xlab("Year") + 
+  ylab("Crude Oil Prices (USD)") +
   ggtitle("Original Crude Oil Prices Data")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
@@ -634,13 +631,14 @@ composite_crude_oil_prices$Diff_Value <- c(NA, diff(composite_crude_oil_prices$V
 plot2 <- ggplot(composite_crude_oil_prices, aes(x = Date, y = Diff_Value)) + 
   geom_line(colour = "#702028") + 
   theme_bw() +
-  xlab("Time") + 
+  xlab("Year") + 
   ylab("First Differences") +
   ggtitle("First Differenced Crude Oil Data")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Arrange
 grid.arrange(plot1, plot2, nrow = 2)
+
 
 ```
 
@@ -656,7 +654,7 @@ grid.arrange(plot1, plot2, nrow = 2)
 plot1_ng <- ggplot(citygate_gas_prices, aes(x = Date, y = Value)) + 
   geom_line(colour = "#207068") + 
   theme_bw() +
-  xlab("Time") + 
+  xlab("Year") + 
   ylab("Natural Gas Prices") +
   ggtitle("Original Natural Gas Data")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -668,7 +666,7 @@ citygate_gas_prices$Diff_Value <- c(NA, diff(citygate_gas_prices$Value))
 plot2_ng <- ggplot(citygate_gas_prices, aes(x = Date, y = Diff_Value)) + 
   geom_line(colour = "#702028") + 
   theme_bw() +
-  xlab("Time") + 
+  xlab("Year") + 
   ylab("First Differences") +
   ggtitle("First Differenced Natural Gas Data")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -691,7 +689,7 @@ grid.arrange(plot1_ng, plot2_ng, nrow = 2)
 plot1_elec <- ggplot(total_electricity_prices, aes(x = Date, y = Value)) + 
   geom_line(colour = "#207068") + 
   theme_bw() +
-  xlab("Time") + 
+  xlab("Year") + 
   ylab("Electricity Prices") +
   ggtitle("Original Electricity Data")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -703,7 +701,7 @@ total_electricity_prices$Diff_Value <- c(NA, diff(total_electricity_prices$Value
 plot2_elec <- ggplot(total_electricity_prices, aes(x = Date, y = Diff_Value)) + 
   geom_line(colour = "#702028") + 
   theme_bw() +
-  xlab("Time") + 
+  xlab("Year") + 
   ylab("First Differences") +
   ggtitle("First Differenced Electricity Data")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -727,7 +725,7 @@ grid.arrange(plot1_elec, plot2_elec, nrow = 2)
 plot1_gdp <- ggplot(gdp_data, aes(x = DATE, y = LOG_GDP)) + 
   geom_line(colour = "#207068") + 
   theme_bw() +
-  xlab("Time") + 
+  xlab("Year") + 
   ylab("Log of GDP") +
   ggtitle("Original GDP Data (Log)")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -739,7 +737,7 @@ gdp_data$Diff_GDP <- c(NA, diff(gdp_data$LOG_GDP))
 plot2_gdp <- ggplot(gdp_data, aes(x = DATE, y = Diff_GDP)) + 
   geom_line(colour = "#702028") + 
   theme_bw() +
-  xlab("Time") + 
+  xlab("Year") + 
   ylab("First Differences") +
   ggtitle("First Differenced GDP (Log)")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -763,7 +761,7 @@ grid.arrange(plot1_gdp, plot2_gdp, nrow = 2)
 plot1_cpi <- ggplot(cpi_data, aes(x = DATE, y = LOG_CPI)) + 
   geom_line(colour = "#207068") + 
   theme_bw() +
-  xlab("Time") + 
+  xlab("Year") + 
   ylab("CPI") +
   ggtitle("Original CPI Data (Log)")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -775,7 +773,7 @@ cpi_data$Diff_CPI <- c(NA, diff(cpi_data$LOG_CPI))
 plot2_cpi <- ggplot(cpi_data, aes(x = DATE, y = Diff_CPI)) + 
   geom_line(colour = "#702028") + 
   theme_bw() +
-  xlab("Time") + 
+  xlab("Year") + 
   ylab("First Differences") +
   ggtitle("First Differenced CPI Data (Log)")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -877,7 +875,7 @@ With the p-value now below 0.05, we can reject the null hypothesis, concluding t
 #| output: true
 
 #First difference
-diff_gdp_ts <- diff(gdp_ts, differences = 1)
+diff_gdp_ts <- diff(gdp_log_ts, differences = 1)
 diff_gdp_ts <- na.omit(diff_gdp_ts)
 
 #Applying ADF test to the differenced time series
@@ -900,7 +898,7 @@ The p-value below 0.05 allows us to reject the null hypothesis, concluding that 
 #| output: true
 
 #First difference
-diff_cpi_ts <- diff(cpi_ts, differences = 1)
+diff_cpi_ts <- diff(cpi_log_ts, differences = 1)
 diff_cpi_ts <- na.omit(diff_cpi_ts)
 
 #Applying ADF test to the differenced time series
@@ -1032,7 +1030,7 @@ q = 1, 2, 3, 4
 #| output: true
 
 # First Differencing
-first_diff_gdp <- diff(gdp_ts)
+first_diff_gdp <- diff(gdp_log_ts)
 ggtsdisplay(first_diff_gdp, main = "First Differencing of GDP")
 
 # Second Differencing
@@ -1059,7 +1057,7 @@ q = 1, 2, 3 (considering the first few significant lags)
 
 
 # First Differencing
-first_diff_cpi <- diff(cpi_ts)
+first_diff_cpi <- diff(cpi_log_ts)
 ggtsdisplay(first_diff_cpi, main = "First Differencing of CPI")
 
 # Second Differencing
@@ -1255,7 +1253,7 @@ i <- 1
 for (p in 1:2) {
   for (q in 1:3) {
     if(p-1+d+q-1<=8) {
-      model <- Arima(gdp_ts, order = c(p, d, q), include.drift = TRUE)
+      model <- Arima(gdp_log_ts, order = c(p, d, q), include.drift = TRUE)
       ls[i,] <- c(p, d, q, model$aic, model$bic, model$aicc)
       i <- i + 1
     }
@@ -1304,7 +1302,7 @@ i <- 1
 for (p in 1:6) {
   for (q in 1:9) {
     if (p-1+d+q-1<=8) {
-      model <- Arima(cpi_ts, order = c(p, d, q), include.drift = TRUE)
+      model <- Arima(cpi_log_ts, order = c(p, d, q), include.drift = TRUE)
       ls[i,] <- c(p, d, q, model$aic, model$bic, model$aicc)
       i <- i + 1
     }
@@ -1333,13 +1331,38 @@ When selecting the best ARIMA model for forecasting CPI, it's common for the AIC
 
 ## 
 
+In our analysis, we used AIC and BIC to pick the best models for forecasting our data. Even though AIC and BIC sometimes suggest different models, we often chose the one with the lower AIC because it usually gives us a good balance and does a good job predicting future trends. This careful selection helps ensure our forecasts are as accurate as possible, providing valuable insights for each dataset.
+
+
 :::
 
 # Fitting ARIMA
 
+After identifying the best models for our time series data using criteria like AIC and BIC, our next step is to fit these models to the data. Fitting the best ARIMA model allows us to refine our forecasts by honing in on the underlying patterns. While our primary focus is on the top-performing model, we also consider the second-best model. This approach gives us a fallback and an opportunity to compare, ensuring that our conclusions are robust and our forecasts are as reliable as possible.
+
+For a general ARIMA(p, d, q) model, the equation can be represented as:
+
+$$
+x_t = \sum_{i=1}^{p} \phi_i x_{t-i} + \sum_{j=1}^{q} \theta_j w_{t-j} + w_t
+$$
+
+Here, 
+
+- \( x_t \) represents the time series after differencing, 
+
+- The coefficients for the autoregressive (AR) part are denoted as phi_i, where 'phi' represents the coefficients and 'i' is an index that ranges from 1 to p
+
+
+- The coefficients for the moving average (MA) part are denoted as theta_j, where 'theta' represents the coefficients and 'j' is an index that ranges from 1 to q
+
+
+- \( w_t \) is the error term at time \( t \).
+
+
+
+
 ## Fitting Best Model
 
-Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
 
 ::: panel-tabset
 
@@ -1356,6 +1379,30 @@ fit_crudeoil <- Arima(diff(composite_crude_oil_ts), order=c(2, 1, 4),include.dri
 summary(fit_crudeoil)
 ```
 
+**Coefficients:** The model includes two autoregressive terms (ar1, ar2) and four moving average terms (ma1, ma2, ma3, ma4), with all coefficients having significant values.
+**Drift:** The drift coefficient is effectively zero, suggesting no consistent linear trend in the differenced series.
+
+
+For the Best Model (ARIMA(2,1,4)):
+Given the coefficients:
+
+- AR1: -0.7645
+- AR2: -0.3345
+- MA1: 0.3231
+- MA2: -0.3344
+- MA3: -0.6574
+- MA4: -0.3313
+
+The equation for the ARIMA(2,1,4) model, ignoring the drift since it's 0, would be:
+
+$$
+x_t = -0.7645x_{t-1} - 0.3345x_{t-2} + w_t + 0.3231w_{t-1} - 0.3344w_{t-2} - 0.6574w_{t-3} - 0.3313w_{t-4}
+$$
+
+
+
+
+
 ## Natural Gas
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
@@ -1369,6 +1416,31 @@ fit_NaturalGas <- Arima(diff(citygate_gas_ts), order=c(2, 1, 1),include.drift = 
 summary(fit_NaturalGas)
 
 ```
+
+
+**Coefficients:** The model includes two autoregressive terms (ar1, ar2) and one moving average terms (ma1), with all coefficients having significant values.
+**Drift:** The drift coefficient is effectively zero, suggesting no consistent linear trend in the differenced series.
+
+
+For the Best Model (ARIMA(2,1,1)):
+
+Given the coefficients:
+
+- AR1: -0.2626
+- AR2: -0.1480
+- MA1: -1.0000
+
+The equation for the ARIMA(2,1,1) model, ignoring the drift since it's 0, would be:
+
+$$
+x_t = -0.2626x_{t-1} - 0.1480x_{t-2} + w_t - 1.0w_{t-1}
+$$
+
+
+
+
+
+
 
 ## Electricity
 
@@ -1384,6 +1456,28 @@ summary(fit_electricity)
 
 ```
 
+**Coefficients:** The model includes two autoregressive terms (ar1, ar2) and two moving average terms (ma1, ma2), with all coefficients having significant values.
+**Drift:** The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.
+
+
+For the Best Model (ARIMA(2,1,2)):
+
+Given the coefficients:
+
+- AR1: 1.3161
+- AR2: -0.6405
+- MA1: -1.8537
+- MA2: 0.8630
+
+The equation for the ARIMA(2,1,2) model:
+
+$$
+x_t = 1.3161x_{t-1} - 0.6405x_{t-2} + w_t - 1.8537w_{t-1} + 0.8630w_{t-2}
+$$
+
+
+
+
 ## GDP
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
@@ -1393,10 +1487,30 @@ summary(fit_electricity)
 #| output: true
 
 #Fitting ARIMA
-fit_gdp_a <- Arima(diff(gdp_ts), order=c(1, 1, 2),include.drift = TRUE) 
+fit_gdp_a <- Arima(diff(gdp_log_ts), order=c(1, 1, 2),include.drift = TRUE) 
 summary(fit_gdp_a)
 
 ```
+
+**Coefficients:** The model includes one autoregressive terms (ar1) and two moving average terms (ma1, ma2), with all coefficients having significant values.
+**Drift:** The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.
+
+
+For the Best Model (ARIMA(1,1,2)):
+
+Given the coefficients:
+
+- AR1: 0.5077
+- MA1: -1.2832
+- MA2: 0.3072
+
+The equation for the ARIMA(1,1,2) model:
+
+$$
+x_t = 0.5077x_{t-1} + w_t - 1.2832w_{t-1} + 0.3072w_{t-2}
+$$
+
+
 
 ## CPI
 
@@ -1407,10 +1521,33 @@ summary(fit_gdp_a)
 #| output: true
 
 #Fitting ARIMA
-fit_cpi_a <- Arima(diff(cpi_ts), order=c(3, 1, 4),include.drift = TRUE) 
+fit_cpi_a <- Arima(diff(cpi_log_ts), order=c(3, 1, 4),include.drift = TRUE) 
 summary(fit_cpi_a)
 
 ```
+
+**Coefficients:** The model includes three autoregressive terms (ar1, ar2, ar3) and four moving average terms (ma1, ma2, ma3, ma4), with all coefficients having significant values.
+**Drift:** The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.
+
+
+For the Best Model (ARIMA(3,1,4)):
+
+Given the coefficients:
+
+- AR1: -0.6173
+- AR2: -0.7741
+- AR3: 0.2142
+- MA1: 0.0696
+- MA2: 0.2021
+- MA3: -0.8341
+- MA4: -0.0649
+
+The equation for the ARIMA(3,1,4) model:
+
+$$
+x_t = - 0.6173x_{t-1} - 0.7741x_{t-2} + 0.2142x_{t-3} + w_t + 0.0696w_{t-1} + 0.2021w_{t-2}-0.8341w_{t-2}-0.0649w_{t-4}
+$$
+
 
 ## 
 
@@ -1435,6 +1572,28 @@ fit_crudeoil2 <- Arima(diff(composite_crude_oil_ts), order=c(2, 1, 1),include.dr
 summary(fit_crudeoil2)
 ```
 
+
+**Coefficients:** This model is simpler, with two AR and one MA parameters. Notably, the MA coefficient is -1.
+**Drift:** Similar to the best model, the drift is zero.
+
+
+For the Best Model (ARIMA(2,1,1)):
+Given the coefficients:
+
+- AR1: 0.5655
+- AR2: -0.1200
+- MA1: -1.0000
+
+The equation for the ARIMA(2,1,1) model, ignoring the drift since it's 0, would be:
+
+$$
+x_t = 0.5655x_{t-1} - 0.1200x_{t-2} + w_t - 1.00 w_{t-1}
+$$
+
+
+
+
+
 ## Natural Gas
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
@@ -1444,10 +1603,31 @@ summary(fit_crudeoil2)
 #| output: true
 
 #Fitting ARIMA
-fit_NaturalGas2 <- Arima(diff(citygate_gas_ts), order=c(0, 1, 1),include.drift = TRUE) 
+fit_NaturalGas2 <- Arima(diff(citygate_gas_ts), order=c(1, 1, 1),include.drift = TRUE) 
 summary(fit_NaturalGas2)
 
 ```
+
+**Coefficients:** The model includes one autoregressive terms (ar1) and one moving average terms (ma1), with all coefficients having significant values.
+**Drift:** The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.
+
+
+For the Best Model (ARIMA(1,1,1)):
+
+Given the coefficients:
+
+- AR1: -0.2283 
+- MA1: -1.0
+
+
+The equation for the ARIMA(1,1,1) model:
+
+$$
+x_t = - 0.2283x_{t-1} + w_t - 1.0w_{t-1}
+$$
+
+
+
 
 ## Electricity
 
@@ -1463,6 +1643,30 @@ summary(fit_electricity2)
 
 ```
 
+**Coefficients:** The model includes two autoregressive terms (ar1, ar2) and four moving average terms (ma1, ma2, ma3, ma4), with all coefficients having significant values.
+**Drift:** The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.
+
+
+For the Best Model (ARIMA(2,1,4)):
+
+Given the coefficients:
+
+- AR1: -0.2486
+- AR2: -0.5019
+- MA1: -0.1576
+- MA2: 0.0838
+- MA3: -0.5582
+- MA4: -0.3680
+
+The equation for the ARIMA(2,1,4) model:
+
+$$
+x_t = -0.2486x_{t-1} -0.5019x_{t-2}+ w_t -0.1576w_{t-1} + 0.0838w_{t-2}-0.5582w_{t-2}-0.3680w_{t-4}
+$$
+
+
+
+
 ## GDP
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
@@ -1472,10 +1676,29 @@ summary(fit_electricity2)
 #| output: true
 
 #Fitting ARIMA
-fit_gdp_a2 <- Arima(diff(gdp_ts), order=c(1, 1, 1),include.drift = TRUE) 
+fit_gdp_a2 <- Arima(diff(gdp_log_ts), order=c(1, 1, 1),include.drift = TRUE) 
 summary(fit_gdp_a2)
 
 ```
+
+
+**Coefficients:** The model includes one autoregressive terms (ar1) and one moving average terms (ma1), with all coefficients having significant values.
+**Drift:** The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.
+
+
+For the Best Model (ARIMA(1,1,1)):
+
+Given the coefficients:
+
+- AR1: 0.1754
+- MA1: -0.9547
+
+
+The equation for the ARIMA(1,1,1) model:
+
+$$
+x_t = 0.1754x_{t-1} + w_t -0.9547w_{t-1} 
+$$
 
 ## CPI
 
@@ -1486,10 +1709,33 @@ summary(fit_gdp_a2)
 #| output: true
 
 #Fitting ARIMA
-fit_cpi_a2 <- Arima(diff(cpi_ts), order=c(1, 1, 2),include.drift = TRUE) 
+fit_cpi_a2 <- Arima(diff(cpi_log_ts), order=c(1, 1, 2),include.drift = TRUE) 
 summary(fit_cpi_a2)
 
 ```
+
+
+
+**Coefficients:** The model includes one autoregressive terms (ar1) and two moving average terms (ma1, ma2), with all coefficients having significant values.
+**Drift:** The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.
+
+
+For the Best Model (ARIMA(1,1,2)):
+
+Given the coefficients:
+
+- AR1: 0.1208 
+- MA1: -0.6728
+- MA2: -0.1731
+
+
+The equation for the ARIMA(1,1,2) model:
+
+$$
+x_t = 0.1208 x_{t-1} + w_t -0.6728w_{t-1} -0.1731w_{t-2}
+$$
+
+
 
 ## 
 
@@ -1499,7 +1745,7 @@ summary(fit_cpi_a2)
 
 # Model Diagnostics
 
-Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
+
 
 ::: panel-tabset
 
@@ -1552,7 +1798,7 @@ diag_electricity <- capture.output(sarima(total_electricity_ts, 2,1,2))
 #| output: true
 
 set.seed(222)
-diag_gdp <- capture.output(sarima(gdp_ts, 1,1,2))
+diag_gdp <- capture.output(sarima(gdp_log_ts, 1,1,2))
 
 ```
 
@@ -1565,7 +1811,7 @@ diag_gdp <- capture.output(sarima(gdp_ts, 1,1,2))
 #| output: true
 
 set.seed(222)
-diag_cpi <- capture.output(sarima(cpi_ts, 1,1,2))
+diag_cpi <- capture.output(sarima(cpi_log_ts, 1,1,2))
 
 ```
 
@@ -1574,7 +1820,7 @@ diag_cpi <- capture.output(sarima(cpi_ts, 1,1,2))
 
 # Auto.Arima()
 
-Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
+
 
 ::: panel-tabset
 
@@ -1621,7 +1867,7 @@ auto.arima(total_electricity_ts)
 #| warning: false
 #| output: true
 
-auto.arima(gdp_ts)
+auto.arima(gdp_log_ts)
 
 ```
 
@@ -1633,7 +1879,7 @@ auto.arima(gdp_ts)
 #| warning: false
 #| output: true
 
-auto.arima((cpi_ts))
+auto.arima((cpi_log_ts))
 
 ```
 
@@ -1642,7 +1888,7 @@ auto.arima((cpi_ts))
 
 # Forecasting
 
-Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
+
 
 ::: panel-tabset
 ## Crude Oil
@@ -1711,7 +1957,7 @@ fit_cpi_a %>% forecast() %>% autoplot()
 
 # Comparing with Benchmark Methods
 
-Moving average smoothing is a time series forecasting method that can help identify long-term trends by smoothing out short-term fluctuations. By averaging the data over specific time windows, these methods filter out the 'noise' and offer a cleaner view of the direction in which the series is moving.
+
 
 ::: panel-tabset
 ## Crude Oil
@@ -1791,14 +2037,14 @@ autoplot(total_electricity_ts) +
 #| warning: false
 #| output: true
 
-autoplot(gdp_ts) +
-  autolayer(meanf(gdp_ts, h=36),
+autoplot(gdp_log_ts) +
+  autolayer(meanf(gdp_log_ts, h=36),
             series="Mean", PI=FALSE) +
-  autolayer(naive(gdp_ts, h=36),
+  autolayer(naive(gdp_log_ts, h=36),
             series="Naïve", PI=FALSE) +
-  autolayer(snaive(gdp_ts, h=36),
+  autolayer(snaive(gdp_log_ts, h=36),
             series="SNaïve", PI=FALSE)+
-  autolayer(rwf(gdp_ts, h=36, drift=TRUE),
+  autolayer(rwf(gdp_log_ts, h=36, drift=TRUE),
             series="Drift", PI=FALSE)+
   autolayer(forecast(fit_gdp_a,36), 
             series="fit",PI=FALSE) +
@@ -1815,20 +2061,21 @@ autoplot(gdp_ts) +
 #| output: true
 #| 
 
-autoplot(cpi_ts) +
-  autolayer(meanf(cpi_ts, h=36),
+autoplot(cpi_log_ts) +
+  autolayer(meanf(cpi_log_ts, h=36),
             series="Mean", PI=FALSE) +
-  autolayer(naive(cpi_ts, h=36),
+  autolayer(naive(cpi_log_ts, h=36),
             series="Naïve", PI=FALSE) +
-  autolayer(snaive(cpi_ts, h=36),
+  autolayer(snaive(cpi_log_ts, h=36),
             series="SNaïve", PI=FALSE)+
-  autolayer(rwf(cpi_ts, h=36, drift=TRUE),
+  autolayer(rwf(cpi_log_ts, h=36, drift=TRUE),
             series="Drift", PI=FALSE)+
   autolayer(forecast(fit_cpi_a,36), 
             series="fit",PI=FALSE) +
   guides(colour=guide_legend(title="Forecast"))
 
 ```
+
 
 ## 
 :::
