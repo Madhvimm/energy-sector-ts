@@ -4,6 +4,7 @@ project:
 
 website:
   title: "Powering Change"
+  page-navigation: true
   navbar:
     left:
       - href: introduction.qmd
@@ -29,6 +30,14 @@ website:
 
 format:
   html:
-    theme: lux
-    css: styles.css
+    theme:
+      - lux
+      - custom.scss
     toc: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: true
+    code-fold: true
+    code-copy: false
+    code-tools: false
+    code-overflow: wrap

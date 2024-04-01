@@ -1684,8 +1684,6 @@ plotly::ggplotly(p_gdp)
 
 
 
-
-
 ## CPI
 
 
@@ -1696,10 +1694,10 @@ plotly::ggplotly(p_gdp)
 #| output: true
 
 # Calculate moving averages with the specified window sizes
-cpi_data$ma5_log <- rollmean((cpi_data$LOG_CPI), 5, fill = NA, align = "right")
-cpi_data$ma15_log <- rollmean((cpi_data$LOG_CPI), 15, fill = NA, align = "right")
-cpi_data$ma20_log <- rollmean((cpi_data$LOG_CPI), 20, fill = NA, align = "right")
-cpi_data$ma30_log <- rollmean((cpi_data$LOG_CPI), 30, fill = NA, align = "right")
+cpi_data$ma5_log <- rollmean(cpi_data$LOG_CPI, 5, fill = NA, align = "right")
+cpi_data$ma15_log <- rollmean(cpi_data$LOG_CPI, 15, fill = NA, align = "right")
+cpi_data$ma20_log <- rollmean(cpi_data$LOG_CPI, 20, fill = NA, align = "right")
+cpi_data$ma30_log <- rollmean(cpi_data$LOG_CPI, 30, fill = NA, align = "right")
 
 ```
 
@@ -1713,7 +1711,7 @@ cpi_data$ma30_log <- rollmean((cpi_data$LOG_CPI), 30, fill = NA, align = "right"
 
 #Ggplot
 p_cpi <- ggplot(cpi_data, aes(x = DATE)) + 
-  geom_line(aes(y = cpi_data$LOG_CPI, color = "Actual Data")) +
+  geom_line(aes(y = LOG_CPI, color = "Actual Data")) +
   geom_line(aes(y = ma5_log, color = "5-MA")) +
   geom_line(aes(y = ma15_log, color = "15-MA")) +
   geom_line(aes(y = ma20_log, color = "20-MA")) +

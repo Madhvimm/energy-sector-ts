@@ -1,5 +1,6 @@
 ---
 title: ""
+output: distill::distill_article
 ---
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}

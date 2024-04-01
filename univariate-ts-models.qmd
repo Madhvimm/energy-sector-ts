@@ -626,9 +626,12 @@ plot1 <- ggplot(composite_crude_oil_prices, aes(x = Date, y = Value)) +
 
 #Calculate the first differences
 composite_crude_oil_prices$Diff_Value <- c(NA, diff(composite_crude_oil_prices$Value))
+composite_crude_oil_prices_filtered <- composite_crude_oil_prices %>% 
+  filter(!is.na(Diff_Value))
+
 
 #Plot for the first-differenced
-plot2 <- ggplot(composite_crude_oil_prices, aes(x = Date, y = Diff_Value)) + 
+plot2 <- ggplot(composite_crude_oil_prices_filtered, aes(x = Date, y = Diff_Value)) + 
   geom_line(colour = "#702028") + 
   theme_bw() +
   xlab("Year") + 
@@ -661,9 +664,11 @@ plot1_ng <- ggplot(citygate_gas_prices, aes(x = Date, y = Value)) +
 
 #Calculate the first differences
 citygate_gas_prices$Diff_Value <- c(NA, diff(citygate_gas_prices$Value))
+citygate_gas_prices_filtered <- citygate_gas_prices %>% 
+  filter(!is.na(Diff_Value))
 
 #Plot for the first-differenced
-plot2_ng <- ggplot(citygate_gas_prices, aes(x = Date, y = Diff_Value)) + 
+plot2_ng <- ggplot(citygate_gas_prices_filtered, aes(x = Date, y = Diff_Value)) + 
   geom_line(colour = "#702028") + 
   theme_bw() +
   xlab("Year") + 
@@ -696,9 +701,12 @@ plot1_elec <- ggplot(total_electricity_prices, aes(x = Date, y = Value)) +
 
 #Calculate the first differences
 total_electricity_prices$Diff_Value <- c(NA, diff(total_electricity_prices$Value))
+total_electricity_prices_filtered <- total_electricity_prices %>% 
+  filter(!is.na(Diff_Value))
+
 
 #Plot for the first-differenced
-plot2_elec <- ggplot(total_electricity_prices, aes(x = Date, y = Diff_Value)) + 
+plot2_elec <- ggplot(total_electricity_prices_filtered, aes(x = Date, y = Diff_Value)) + 
   geom_line(colour = "#702028") + 
   theme_bw() +
   xlab("Year") + 
@@ -732,9 +740,11 @@ plot1_gdp <- ggplot(gdp_data, aes(x = DATE, y = LOG_GDP)) +
 
 #Calculate the first differences
 gdp_data$Diff_GDP <- c(NA, diff(gdp_data$LOG_GDP))
+gdp_data_filtered <- gdp_data %>% 
+  filter(!is.na(Diff_GDP))
 
 #Plot for the first-differenced
-plot2_gdp <- ggplot(gdp_data, aes(x = DATE, y = Diff_GDP)) + 
+plot2_gdp <- ggplot(gdp_data_filtered, aes(x = DATE, y = Diff_GDP)) + 
   geom_line(colour = "#702028") + 
   theme_bw() +
   xlab("Year") + 
@@ -768,9 +778,11 @@ plot1_cpi <- ggplot(cpi_data, aes(x = DATE, y = LOG_CPI)) +
 
 #Calculate the first differences
 cpi_data$Diff_CPI <- c(NA, diff(cpi_data$LOG_CPI))
+cpi_data_filtered <- cpi_data %>% 
+  filter(!is.na(Diff_CPI))
 
 #Plot for the first-differenced
-plot2_cpi <- ggplot(cpi_data, aes(x = DATE, y = Diff_CPI)) + 
+plot2_cpi <- ggplot(cpi_data_filtered, aes(x = DATE, y = Diff_CPI)) + 
   geom_line(colour = "#702028") + 
   theme_bw() +
   xlab("Year") + 
@@ -806,7 +818,8 @@ After applying various transformations to address the non-stationarity in our ti
 diff_crude_oil_ts <- diff(composite_crude_oil_ts, differences = 1)
 
 #Applying ADF test to the differenced time series
-adf_test_diff_crude_oil <- adf.test(diff_crude_oil_ts, alternative = "stationary")
+adf_test_diff_crude_oil <- suppressWarnings(
+  adf.test(diff_crude_oil_ts, alternative = "stationary"))
 
 #Display the test results
 print(adf_test_diff_crude_oil)
@@ -830,10 +843,11 @@ diff_citygate_gas_ts <- diff(citygate_gas_ts, differences = 1)
 diff_citygate_gas_ts <- na.omit(diff_citygate_gas_ts)
 
 #Applying ADF test to the differenced time series
-adf_test_diff_natural_gas <- adf.test(diff_citygate_gas_ts, alternative = "stationary")
+adf_test_diff_natural_gas <- suppressWarnings(
+  adf.test(diff_citygate_gas_ts, alternative = "stationary"))
 
 #Display the test results
-print(adf_test_diff_natural_gas)
+adf_test_diff_natural_gas
 
 ```
 
@@ -854,7 +868,8 @@ diff_total_electricity_ts <- diff(total_electricity_ts, differences = 1)
 diff_total_electricity_ts <- na.omit(diff_total_electricity_ts)
 
 #Applying ADF test to the differenced time series
-adf_test_diff_electricity <- adf.test(diff_total_electricity_ts, alternative = "stationary")
+adf_test_diff_electricity <- suppressWarnings(
+  adf.test(diff_total_electricity_ts, alternative = "stationary"))
 
 #Display the test results
 print(adf_test_diff_electricity)
@@ -879,7 +894,8 @@ diff_gdp_ts <- diff(gdp_log_ts, differences = 1)
 diff_gdp_ts <- na.omit(diff_gdp_ts)
 
 #Applying ADF test to the differenced time series
-adf_test_diff_gdp <- adf.test(diff_gdp_ts, alternative = "stationary")
+adf_test_diff_gdp <- suppressWarnings(
+  adf.test(diff_gdp_ts, alternative = "stationary"))
 
 # Display the test results
 print(adf_test_diff_gdp)
@@ -902,7 +918,8 @@ diff_cpi_ts <- diff(cpi_log_ts, differences = 1)
 diff_cpi_ts <- na.omit(diff_cpi_ts)
 
 #Applying ADF test to the differenced time series
-adf_test_diff_cpi <- adf.test(diff_cpi_ts, alternative = "stationary")
+adf_test_diff_cpi <- suppressWarnings(
+  adf.test(diff_cpi_ts, alternative = "stationary"))
 
 # Display the test results
 print(adf_test_diff_cpi)
