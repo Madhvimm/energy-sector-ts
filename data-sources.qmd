@@ -4,28 +4,160 @@ title: "**Data Sources**"
 
 
 
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: false
+library(ggplot2)
+library(readr)
+library(tidyverse)
+library(lubridate)
+library(forecast)
+library(tseries)
+library(plotly)
+library(gridExtra)
+library(zoo)
+library(astsa)
+library(ggplot2)
+library(zoo)
+library(plotly)
+
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Read data'
+#| warning: false
+#| output: false
+
+composite_crude_oil_prices <- read.csv("data/composite_crude_oil_prices.csv")
+citygate_gas_prices <- read.csv("data/citygate_gas_prices.csv")
+total_electricity_prices <- read.csv("data/total_electricity_prices.csv")
+gdp_data <- read.csv("data/gdp_data.csv")
+cpi_data <- read.csv("data/cpi_data.csv")
+
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'convert to ts'
+#| warning: false
+#| output: false
+
+# For Crude Oil
+composite_crude_oil_prices$Date <- as.Date(composite_crude_oil_prices$Date)
+crude_oil_prices <- composite_crude_oil_prices[c( "Date","Value", "Description", "Unit")]
+
+
+# For Natural Gas
+citygate_gas_prices$Date <- as.Date(citygate_gas_prices$Date)
+natural_gas_prices <- citygate_gas_prices[c( "Date","Value", "Description", "Unit")]
+
+# For Electricity
+total_electricity_prices$Date <- as.Date(total_electricity_prices$Date, format = "%Y-%m-%d")
+electricity_prices <- total_electricity_prices[c( "Date","Value", "Description", "Unit")]
+
+# For GDP (it's quarterly)
+gdp_data$DATE <- as.Date(gdp_data$DATE, format = "%Y-%m-%d")
+gdp_data <- gdp_data[c( "DATE","GDP")]
+
+# For CPI (it's monthly)
+cpi_data$DATE <- as.Date(cpi_data$DATE, format = "%Y-%m-%d")
+
+```
+
+
+
+
+
+
 To investigate the economic impact of the energy sector, this project utilizes a series of datasets focusing on crude oil and natural gas prices, electricity costs, and key economic indicators. These datasets serve as the foundation for our analysis, enabling us to explore the intricate dynamics between energy market fluctuations and economic performance.
 
 
-### **[Crude Oil Price Summary](https://www.eia.gov/totalenergy/data/browser/?tbl=T09.01#/?f=A)**
+# **[Crude Oil Price Summary](https://www.eia.gov/totalenergy/data/browser/?tbl=T09.01#/?f=A)**
 
 **Source:** U.S. Energy Information Administration (EIA)
 
 
-We will leverage this dataset to analyze how crude oil price fluctuations correlate with economic indicators such as GDP and CPI, providing insights into the broader economic implications of oil price movements.
+We will leverage this dataset to analyze how crude oil price fluctuations correlate with economic indicators such as GDP and CPI, providing insights into the broader economic implications of oil price movements. Here is the summary of the dataset
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Head Crude Oil'
+#| warning: false
+#| output: true
+
+head(crude_oil_prices)
+```
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Plot Crude Oil'
+#| warning: false
+#| output: true
+
+#Plotting with ggplot2
+p_crude_oil_prices <- ggplot(crude_oil_prices, aes(x = Date, y = Value)) +
+  geom_line(color = "#499995") +
+  theme_minimal() + 
+  labs(title = "Cost of Crude Oil Over Time", x = "Date", y = "Value (USD)")+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+
+p_crude_oil_prices_interactive <- ggplotly(p_crude_oil_prices)
+p_crude_oil_prices_interactive
+
+
+```
 
 
 
 
-### **[Natural Gas Prices](https://www.eia.gov/totalenergy/data/browser/?tbl=T09.10#/?f=A)**
+# **[Natural Gas Prices](https://www.eia.gov/totalenergy/data/browser/?tbl=T09.10#/?f=A)**
 
 **Source:** U.S. Energy Information Administration (EIA)
 
-We will leverage this dataset to examine the trends in natural gas prices and their impact on the economy, particularly focusing on their influence on electricity pricing and economic indicators.
+We will leverage this dataset to examine the trends in natural gas prices and their impact on the economy, particularly focusing on their influence on electricity pricing and economic indicators. Here is the summary of the dataset
 
 
 
-### **[Average Prices of Electricity to Ultimate Customers](https://www.eia.gov/totalenergy/data/browser/?tbl=T09.08#/?f=M&start=197601&end=202311&charted=0-1-2-3-4)**
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Head Natural Gas'
+#| warning: false
+#| output: true
+
+head(natural_gas_prices)
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Plot Natural Gas'
+#| warning: false
+#| output: true
+
+#Plotting with ggplot2
+p_natural_gas_prices <- ggplot(natural_gas_prices, aes(x = Date, y = Value)) +
+  geom_line(color = "#99494d") +
+  theme_minimal() + 
+  labs(title = "Cost of Natural Gas Over Time", x = "Date", y = "Value (USD)")+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+
+p_natural_gas_prices_interactive <- ggplotly(p_natural_gas_prices)
+p_natural_gas_prices_interactive
+
+
+```
+
+
+
+
+# **[Average Prices of Electricity to Ultimate Customers](https://www.eia.gov/totalenergy/data/browser/?tbl=T09.08#/?f=M&start=197601&end=202311&charted=0-1-2-3-4)**
 
 **Source:** U.S. Energy Information Administration (EIA)
 
@@ -34,10 +166,46 @@ We will leverage this dataset to explore how fluctuations in energy prices affec
 
 
 
-### **External Economic Indicators**
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Head Electricity'
+#| warning: false
+#| output: true
+
+head(electricity_prices)
+```
 
 
-##### **[GDP Data](https://fred.stlouisfed.org/series/GDP)**
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Plot Electricity'
+#| warning: false
+#| output: true
+
+#Plotting with ggplot2
+p_electricity_prices <- ggplot(electricity_prices, aes(x = Date, y = Value)) +
+  geom_line(color = "#499995") +
+  theme_minimal() + 
+  labs(title = "Average Prices of Electricity Over Time", x = "Date", y = "Value (USD)")+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+
+p_electricity_prices_interactive <- ggplotly(p_electricity_prices)
+p_electricity_prices_interactive
+
+
+```
+
+
+
+
+
+
+# **Economic Indicators**
+
+
+## **[GDP Data](https://fred.stlouisfed.org/series/GDP)**
 
 **Source:** Federal Reserve Economic Data (FRED), (Federal Reserve Bank of St. Louis)
 
@@ -46,7 +214,43 @@ We will leverage this dataset to find patterns and correlate them with energy an
 
 
 
-##### **[Consumer Price Index (CPI)](https://fred.stlouisfed.org/series/CPIAUCSL)**
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Head GDP'
+#| warning: false
+#| output: true
+
+head(gdp_data)
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Plot GDP'
+#| warning: false
+#| output: true
+
+#Plotting with ggplot2
+p_gdp_data <- ggplot(gdp_data, aes(x = DATE, y = GDP)) +
+  geom_line(color = "#99494d") +
+  theme_minimal() + 
+  labs(title = "GDP Over Time", x = "Date", y = "Value (USD)")+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+
+p_gdp_data_interactive <- ggplotly(p_gdp_data)
+p_gdp_data_interactive
+
+
+```
+
+
+
+
+
+
+## **[Consumer Price Index (CPI)](https://fred.stlouisfed.org/series/CPIAUCSL)**
 
 **Source:** Federal Reserve Economic Data (FRED), (Federal Reserve Bank of St. Louis)
 
@@ -55,7 +259,44 @@ We will leverage this dataset to analyze CPI data and understand the relationshi
 
 
 
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Head CPI'
+#| warning: false
+#| output: true
+
+head(cpi_data)
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Plot CPI'
+#| warning: false
+#| output: true
+
+#Plotting with ggplot2
+p_cpi_data <- ggplot(cpi_data, aes(x = DATE, y = CPIAUCSL)) +
+  geom_line(color = "#499995") +
+  theme_minimal() + 
+  labs(title = "CPI Over Time", x = "Date", y = "Value (USD)")+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+
+p_cpi_data_interactive <- ggplotly(p_cpi_data)
+p_cpi_data_interactive
+
+
+```
+
+
+
+
+
 By integrating these datasets, our analysis will provide a comprehensive view of the interconnections between the energy sector's fluctuations and the U.S. economy's health, contributing to the broader discourse on energy economics and policy-making.
+
+
 
 
 
