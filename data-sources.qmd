@@ -388,3 +388,8 @@ By integrating these datasets, our analysis will provide a comprehensive view of
   <img src="yahoofinance.png" style="display: inline; margin-right: 10px;"/>
 </a>
 
+
+<a href="introduction.qmd" class="previous-page-link" style="float: left;">&larr; Previous Page: Introduction</a>
+
+
+<a href="data-visualization.qmd" class="next-page-link" style="float: right;">Next Page: Data Viz &rarr;</a>

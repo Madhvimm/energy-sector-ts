@@ -5,6 +5,8 @@ project:
 website:
   title: "Powering Change"
   page-navigation: true
+  back-to-top-navigation: true
+  search: true
   navbar:
     left:
       - href: introduction.qmd
@@ -14,7 +16,7 @@ website:
       - href: data-visualization.qmd
         text: Data Visualization
       - href: exploratory-data-analysis.qmd
-        text: Exploratory Data Analysis
+        text: EDA
       - href: univariate-ts-models.qmd
         text: Univariate TS Models (ARIMA/SARIMA)
       - href: multivariate-ts-models.qmd
@@ -23,8 +25,6 @@ website:
         text: Financial Time Series Models (ARCH/GARCH)
       - href: deep-learning-ts.qmd
         text: Deep Learning for TS
-      - href: other-ts-methods.qmd
-        text: "Other: Interrupted TS/ARFIMA/ Spectral Analysis"
       - href: conclusions.qmd
         text: Conclusions
 
@@ -41,3 +41,4 @@ format:
     code-copy: false
     code-tools: false
     code-overflow: wrap
+    page-navigation: true

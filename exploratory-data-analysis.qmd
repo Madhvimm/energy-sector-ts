@@ -1733,7 +1733,11 @@ plotly::ggplotly(p_cpi)
 :::
 
 
+<a href="data-visualization.qmd" class="previous-page-link" style="float: left;">&larr; Previous Page: Data Viz</a>
 
+
+
+<a href="univariate-ts-models.qmd" class="next-page-link" style="float: right;">Next Page: Univariate &rarr;</a>
 
 
 

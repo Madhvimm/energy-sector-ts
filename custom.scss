@@ -1,0 +1,64 @@
+/* custom.scss */
+
+/*-- scss:defaults --*/
+$primary-color: #000000;
+
+/*-- scss:rules --*/
+/* Styles for your navbar */
+/*-- scss:rules --*/
+.navbar {
+  white-space: nowrap; /* Prevent line breaks */
+  overflow-x: auto; /* Allows horizontal scrolling for overflowed items */
+  text-overflow: ellipsis; /* Add ellipsis for overflowed content */
+  /* Removed position: fixed to allow the navbar to scroll with the page */
+  width: 100%;
+  z-index: 1030;
+}
+
+
+/*-- scss:rules --*/
+body {
+  padding-top: 100px; /* Increase if your navbar is taller than 70px */
+}
+
+/*-- scss:rules --*/
+/* Add your custom navbar rules here */
+
+/* Style for active nav item */
+.navbar .nav-link.active,
+.navbar .nav-item.show .nav-link {
+  color: white; /* Set the text color to white for active tab */
+}
+
+/*-- scss:rules --*/
+/* Style for nav items on hover for better user experience */
+.navbar .nav-link:hover {
+  color: white; /* Optional: change color on hover as well */
+}
+
+
+/*-- scss:rules --*/
+
+.previous-page-link, .next-page-link {
+  text-decoration: none;
+  font-weight: bold;
+  display: block;
+  margin-top: 20px;
+}
+
+.previous-page-link {
+  float: left;
+}
+
+.next-page-link {
+  float: right;
+}
+
+/* Clear float */
+.navigation-links:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+

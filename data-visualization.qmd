@@ -182,7 +182,8 @@ The Tableau dashboard below provides an interactive exploration of GDP data for 
 
 
 
+<a href="data-sources.qmd" class="previous-page-link" style="float: left;">&larr; Previous Page: Data Sources</a>
 
 
-
+<a href="exploratory-data-analysis.qmd" class="next-page-link" style="float: right;">Next Page: EDA &rarr;</a>
 

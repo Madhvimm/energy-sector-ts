@@ -2096,3 +2096,11 @@ autoplot(cpi_log_ts) +
 
 ## 
 :::
+
+
+
+<a href="exploratory-data-analysis.qmd" class="previous-page-link" style="float: left;">&larr; Previous Page: EDA</a>
+
+
+
+
