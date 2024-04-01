@@ -22,8 +22,11 @@ library(astsa)
 library(ggplot2)
 library(zoo)
 library(plotly)
+library(quantmod)
 
 ```
+
+
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -75,7 +78,7 @@ cpi_data$DATE <- as.Date(cpi_data$DATE, format = "%Y-%m-%d")
 To investigate the economic impact of the energy sector, this project utilizes a series of datasets focusing on crude oil and natural gas prices, electricity costs, and key economic indicators. These datasets serve as the foundation for our analysis, enabling us to explore the intricate dynamics between energy market fluctuations and economic performance.
 
 
-# **[Crude Oil Price Summary](https://www.eia.gov/totalenergy/data/browser/?tbl=T09.01#/?f=A)**
+# 1. **[Crude Oil Price Summary](https://www.eia.gov/totalenergy/data/browser/?tbl=T09.01#/?f=A)**
 
 **Source:** U.S. Energy Information Administration (EIA)
 
@@ -116,7 +119,7 @@ p_crude_oil_prices_interactive
 
 
 
-# **[Natural Gas Prices](https://www.eia.gov/totalenergy/data/browser/?tbl=T09.10#/?f=A)**
+# 2. **[Natural Gas Prices](https://www.eia.gov/totalenergy/data/browser/?tbl=T09.10#/?f=A)**
 
 **Source:** U.S. Energy Information Administration (EIA)
 
@@ -157,7 +160,7 @@ p_natural_gas_prices_interactive
 
 
 
-# **[Average Prices of Electricity to Ultimate Customers](https://www.eia.gov/totalenergy/data/browser/?tbl=T09.08#/?f=M&start=197601&end=202311&charted=0-1-2-3-4)**
+# 3. **[Average Prices of Electricity to Ultimate Customers](https://www.eia.gov/totalenergy/data/browser/?tbl=T09.08#/?f=M&start=197601&end=202311&charted=0-1-2-3-4)**
 
 **Source:** U.S. Energy Information Administration (EIA)
 
@@ -205,7 +208,7 @@ p_electricity_prices_interactive
 # **Economic Indicators**
 
 
-## **[GDP Data](https://fred.stlouisfed.org/series/GDP)**
+# 4. **[GDP Data](https://fred.stlouisfed.org/series/GDP)**
 
 **Source:** Federal Reserve Economic Data (FRED), (Federal Reserve Bank of St. Louis)
 
@@ -250,7 +253,7 @@ p_gdp_data_interactive
 
 
 
-## **[Consumer Price Index (CPI)](https://fred.stlouisfed.org/series/CPIAUCSL)**
+# 5. **[Consumer Price Index (CPI)](https://fred.stlouisfed.org/series/CPIAUCSL)**
 
 **Source:** Federal Reserve Economic Data (FRED), (Federal Reserve Bank of St. Louis)
 
@@ -293,9 +296,83 @@ p_cpi_data_interactive
 
 
 
+# **Financial Indicators**
+
+## **Stock Price Analysis for Major Oil Companies**
+
+
+# 6. **[Exxon Mobil Corporation (XOM) Stock Price Data](https://finance.yahoo.com/quote/XOM/history)**
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Plot Exxon stock'
+#| warning: false
+#| output: true
+
+options("getSymbols.warning4.0"=FALSE)
+options("getSymbols.yahoo.warning"=FALSE)
+
+#Fetching stock data for Exxon Mobil
+exxon_data <- getSymbols("XOM", from = "1984-10-01", to = "2024-01-01", auto.assign = TRUE)
+xom_stock <- data.frame(Date = index(XOM), XOM.Adjusted = XOM$XOM.Adjusted)
+
+
+#Plotting Exxon Mobil stock prices
+g_xom <- ggplot(xom_stock, aes(x=Date, y=XOM.Adjusted)) +
+  geom_line(color="#99494d") + 
+  labs(
+    title = "Stock Price for Exxon Mobil Corporation",
+    x = "Date",
+    y = "Adjusted Closing Price"
+  ) +
+  theme_minimal()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+# Convert ggplot objects to plotly objects for interactivity
+p_xom <- ggplotly(g_xom) %>% layout(hovermode = "x")
+p_xom
+```
+
+
+
+# 7. **[Chevron Corporation (CVX) Stock Price Data](https://finance.yahoo.com/quote/CVX/history)**
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Plot Chevron stock'
+#| warning: false
+#| output: true
+
+options("getSymbols.warning4.0"=FALSE)
+options("getSymbols.yahoo.warning"=FALSE)
+
+#Fetching stock data for Chevron Corporation
+chevron_data <- getSymbols("CVX", from = "1984-10-01", to = "2024-01-01", auto.assign = TRUE)
+cvx_stock <- data.frame(Date = index(CVX), CVX.Adjusted = CVX$CVX.Adjusted)
+
+
+#Plotting Chevron Corporation stock prices
+g_cvx <- ggplot(cvx_stock, aes(x=Date, y=CVX.Adjusted)) +
+  geom_line(color="#499995") +
+  labs(
+    title = "Stock Price for Chevron Corporation",
+    x = "Date",
+    y = "Adjusted Closing Price"
+  ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+# Convert ggplot objects to plotly objects for interactivity
+p_cvx <- ggplotly(g_cvx) %>% layout(hovermode = "x")
+
+p_cvx
+```
+
+
+
+
 
 By integrating these datasets, our analysis will provide a comprehensive view of the interconnections between the energy sector's fluctuations and the U.S. economy's health, contributing to the broader discourse on energy economics and policy-making.
-
 
 
 
@@ -305,5 +382,8 @@ By integrating these datasets, our analysis will provide a comprehensive view of
 </a>
 <a href="https://fred.stlouisfed.org/series/GDP">
   <img src="fred_logo.png" style="display: inline; margin-right: 10px;"/>
+</a>
+<a href="https://finance.yahoo.com/">
+  <img src="yahoofinance.png" style="display: inline; margin-right: 10px;"/>
 </a>
 
