@@ -2432,6 +2432,7 @@ Training set -0.007727752 3.20586 1.972593 NaN  Inf 0.6443334 -0.01156425</code>
 <p><span class="math display">\[
 x_t = 0.5655x_{t-1} - 0.1200x_{t-2} + w_t - 1.00 w_{t-1}
 \]</span></p>
+<p>Given these points, the ARIMA(2,1,4) model appears to have a slight edge in terms of the goodness of fit (based on AIC and error metrics).</p>
 </div>
 <div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
 <div class="cell">
@@ -2612,6 +2613,11 @@ x_t = 0.1208 x_{t-1} + w_t -0.6728w_{t-1} -0.1731w_{t-2}
 </div>
 </div>
 </div>
+<p><strong>Standardized Residuals</strong>: The plot shows some fluctuation, but there don’t appear to be any clear patterns or trends.</p>
+<p><strong>ACF of Residuals</strong>: We observe no apparent autocorrelation amongst the residuals. The absence of significant spikes outside the confidence bounds suggests that the residuals are essentially white noise</p>
+<p><strong>Q-Q Plot of Std Residuals</strong>: which assesses the normality of the residuals, shows an acceptable alignment</p>
+<p><strong>Ljung-Box test</strong>: While the p-values at various lags are notably low, suggesting the presence of significant autocorrelation, this does not align with the ACF plot which did not show such correlations.</p>
+<p>The diagnostic plots suggest that the ARIMA(2,1,4) model is a reasonably good fit for the data. The residuals are mostly random, implying that the model is capturing the underlying process well. The Q-Q plot does suggest some minor issues with normality, particularly with possible outliers or extreme values. The presence of significant autocorrelation as indicated by the low p-values in the Ljung-Box test means the model may need to be improved.</p>
 </div>
 <div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
 <div class="cell">
@@ -2683,6 +2689,7 @@ sigma^2 = 10.06:  log likelihood = -1538.82
 AIC=3091.64   AICc=3091.83   BIC=3122.41</code></pre>
 </div>
 </div>
+<p>We used auto.arima() to pick the best model, and it chose ARIMA(2,1,4). Interestingly, this is the same model we thought was best earlier. So, while it’s great that auto.arima() confirmed our model choice, we should be a bit cautious. It’s always good to double-check the model’s predictions and not rely solely on what the automated tool suggests.</p>
 </div>
 <div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
 <div class="cell">
@@ -2819,6 +2826,7 @@ AIC=-8343.37   AICc=-8343.31   BIC=-8319.23</code></pre>
 </div>
 </div>
 </div>
+<p>The forecasting model has designed to predict future trends for our datasets. Utilizing historical data, the model, foresee market movements up to the period we have defined, identifying patterns to craft reliable future forecasts. The predictions are visualized through the charts above, showcasing the range of possible outcomes, providing a clear, comprehensive view of upcoming market dynamics. While our model offers insightful foresight, it’s built on the principle that future patterns will follow the past.</p>
 </section>
 <section id="comparing-with-benchmark-methods" class="level1">
 <h1>Comparing with Benchmark Methods</h1>
