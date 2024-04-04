@@ -50,7 +50,9 @@ composite_crude_oil_prices$Date <- as.Date(composite_crude_oil_prices$Date)
 start_year <- as.numeric(format(min(composite_crude_oil_prices$Date), "%Y"))
 start_month <- as.numeric(format(min(composite_crude_oil_prices$Date), "%m"))
 composite_crude_oil_ts <- ts(composite_crude_oil_prices$Value, start=c(start_year, start_month), frequency=12)
-
+# Log-transform Value
+composite_crude_oil_prices$LOG_Value <- log(composite_crude_oil_prices$Value)
+oil_log_ts <- ts(composite_crude_oil_prices$LOG_Value, start=c(start_year, start_month), frequency=12)
 
 # For Natural Gas
 citygate_gas_prices$Date <- as.Date(citygate_gas_prices$Date)
@@ -106,16 +108,16 @@ This section delves into the ACF and PACF plots for our datasets, examining thei
 #| output: true
 
 #ACF Plot for Crude Oil
-crude_oil_acf <- ggAcf(composite_crude_oil_ts) + 
-  ggtitle("ACF Plot for Refiner Acquisition Cost of Crude Oil") + 
+crude_oil_acf <- ggAcf(oil_log_ts) + 
+  ggtitle("ACF Plot for Crude Oil (Log)") + 
   theme_bw() +
   geom_segment(lineend = "butt", color = "#99494d") +
   geom_hline(yintercept = 0, color = "#99494d") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #PACF Plot for Crude Oil
-crude_oil_pacf <- ggPacf(composite_crude_oil_ts) + 
-  ggtitle("PACF Plot for Refiner Acquisition Cost of Crude Oil") + 
+crude_oil_pacf <- ggPacf(oil_log_ts) + 
+  ggtitle("PACF Plot for Crude Oil (Log)") + 
   theme_bw() +
   geom_segment(lineend = "butt", color = "#99494d") +
   geom_hline(yintercept = 0, color = "#99494d")+
@@ -123,6 +125,7 @@ crude_oil_pacf <- ggPacf(composite_crude_oil_ts) +
 
 #Arrange the plots
 grid.arrange(crude_oil_acf, crude_oil_pacf, nrow = 2)
+
 
 
 ```
@@ -312,9 +315,10 @@ Now, let's apply these critical techniques of detrending and differencing to our
 #| output: false
 
 # Convert residuals to a ts object
-fit_crude_oil <- lm(Value ~ Date, data = composite_crude_oil_prices, na.action = NULL)
+fit_crude_oil_log <- lm(LOG_Value ~ Date, data = composite_crude_oil_prices, na.action = NULL)
 
-resid_crude_oil_ts <- ts(resid(fit_crude_oil), start=c(start_year, start_month), frequency=12)
+resid_crude_oil_ts_log <- ts(resid(fit_crude_oil_log), start=c(start_year, start_month), frequency=12)
+
 ```
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
@@ -324,19 +328,19 @@ resid_crude_oil_ts <- ts(resid(fit_crude_oil), start=c(start_year, start_month),
 #| output: true
 
 #Plot the residuals
-plot1_crude_oil <- autoplot(resid_crude_oil_ts, series="Detrended Crude Oil", colour = "#499995") + 
+plot1_crude_oil <- autoplot(resid_crude_oil_ts_log, series="Detrended Crude Oil", colour = "#499995") + 
   theme_bw() +
-  xlab("Year") +
+  xlab("Time") +
   ylab("Residuals") +
-  ggtitle("Detrended Crude Oil") +
+  ggtitle("Detrended Crude Oil (Log)") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Differencing plot
-plot2_crude_oil <- autoplot(diff(composite_crude_oil_ts), series = "First Difference Crude Oil", colour = "#99494d") + 
+plot2_crude_oil <- autoplot(diff(oil_log_ts), series = "First Difference Crude Oil", colour = "#99494d") + 
   theme_bw() +
-  xlab("Year") +
+  xlab("Time") +
   ylab("Differences") +
-  ggtitle("First Difference Crude Oil") +
+  ggtitle("First Difference Crude Oil (Log)") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Arrange plots
@@ -616,16 +620,16 @@ This section focuses on a direct comparison between our original time series dat
 #| output: true
 
 #Plot for the original
-plot1 <- ggplot(composite_crude_oil_prices, aes(x = Date, y = Value)) + 
+plot1 <- ggplot(composite_crude_oil_prices, aes(x = Date, y = LOG_Value)) + 
   geom_line(colour = "#207068") + 
   theme_bw() +
   xlab("Year") + 
   ylab("Crude Oil Prices (USD)") +
-  ggtitle("Original Crude Oil Prices Data")+
+  ggtitle("Original Crude Oil Prices (Log)")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Calculate the first differences
-composite_crude_oil_prices$Diff_Value <- c(NA, diff(composite_crude_oil_prices$Value))
+composite_crude_oil_prices$Diff_Value <- c(NA, diff(composite_crude_oil_prices$LOG_Value))
 composite_crude_oil_prices_filtered <- composite_crude_oil_prices %>% 
   filter(!is.na(Diff_Value))
 
@@ -636,7 +640,7 @@ plot2 <- ggplot(composite_crude_oil_prices_filtered, aes(x = Date, y = Diff_Valu
   theme_bw() +
   xlab("Year") + 
   ylab("First Differences") +
-  ggtitle("First Differenced Crude Oil Data")+
+  ggtitle("First Differenced Crude Oil Data (Log)")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Arrange
@@ -815,7 +819,7 @@ After applying various transformations to address the non-stationarity in our ti
 #| output: true
 
 #First difference
-diff_crude_oil_ts <- diff(composite_crude_oil_ts, differences = 1)
+diff_crude_oil_ts <- diff(oil_log_ts, differences = 1)
 
 #Applying ADF test to the differenced time series
 adf_test_diff_crude_oil <- suppressWarnings(
@@ -959,7 +963,7 @@ Differencing operates under the principle of transformation. It is designed to r
 #| output: true
 
 # First Differencing
-first_diff_crude_oil <- diff(composite_crude_oil_ts)
+first_diff_crude_oil <- diff(oil_log_ts)
 ggtsdisplay(first_diff_crude_oil, main = "First Differencing of Crude Oil Prices")
 
 # Second Differencing
@@ -977,7 +981,7 @@ p = 1, 2, (to account for the spike at lag 1 and 2)
 
 q = 0 
 q = 1, 2, 3 (as the first three lags are above the significance level)
-q = 4, 5 
+q = 4
 
 
 
@@ -1129,13 +1133,13 @@ In time series analysis, choosing the right model is paramount for accurate fore
 
 d <- 1 # Degree of differencing
 temp <- data.frame()
-ls <- matrix(rep(NA, 6 * 18), nrow = 18)  # 18 combinations
+ls <- matrix(rep(NA, 6 * 15), nrow = 15)  # 15 combinations
 
 i <- 1
 for (p in 0:2) {
-  for (q in 0:5) {
+  for (q in 0:4) {
     if(p-1+d+q-1<=8) {
-      model <- Arima(composite_crude_oil_ts, order = c(p, d, q), include.drift = TRUE)
+      model <- Arima(oil_log_ts, order = c(p, d, q), include.drift = TRUE)
       ls[i,] <- c(p, d, q, model$aic, model$bic, model$aicc)
       i <- i + 1
     }
@@ -1157,8 +1161,8 @@ temp[which.min(temp$AICc),]
 
 When selecting the best ARIMA model for forecasting crude oil prices, it's common for the AIC and BIC to suggest different models. In such cases, we often prefer the model with the lower AIC. Based on the results, we've can select two models for further consideration:
 
-- Best Model by AIC (and AICc): ARIMA(2,1,4)
-- Best Model by BIC: ARIMA(2,1,1)
+- Best Model by AIC (and AICc) and BIC is : ARIMA(2,1,0)
+- Second Best would be (2,1,1)
 
 
 
@@ -1392,32 +1396,26 @@ Here,
 #| output: true
 
 #Fitting ARIMA
-fit_crudeoil <- Arima(diff(composite_crude_oil_ts), order=c(2, 1, 4),include.drift = TRUE) 
+fit_crudeoil <- Arima(diff(oil_log_ts), order=c(2, 1, 0),include.drift = TRUE) 
 summary(fit_crudeoil)
 ```
 
-**Coefficients:** The model includes two autoregressive terms (ar1, ar2) and four moving average terms (ma1, ma2, ma3, ma4), with all coefficients having significant values.
+**Coefficients:** The model includes two autoregressive terms (ar1, ar2) and zero moving average terms, with all coefficients having significant values.
 **Drift:** The drift coefficient is effectively zero, suggesting no consistent linear trend in the differenced series.
 
 
-For the Best Model (ARIMA(2,1,4)):
+For the Best Model (ARIMA(2,1,0)):
 Given the coefficients:
 
-- AR1: -0.7645
-- AR2: -0.3345
-- MA1: 0.3231
-- MA2: -0.3344
-- MA3: -0.6574
-- MA4: -0.3313
+- AR1: -0.1203
+- AR2: -0.2649
 
-The equation for the ARIMA(2,1,4) model, ignoring the drift since it's 0, would be:
+
+The equation for the ARIMA(2,1,0) model, ignoring the drift since it's 0, would be:
 
 $$
-x_t = -0.7645x_{t-1} - 0.3345x_{t-2} + w_t + 0.3231w_{t-1} - 0.3344w_{t-2} - 0.6574w_{t-3} - 0.3313w_{t-4}
+y_t = -0.1203y_{t-1} -0.2649y_{t-2} + w_t 
 $$
-
-
-
 
 
 ## Natural Gas
@@ -1450,7 +1448,7 @@ Given the coefficients:
 The equation for the ARIMA(2,1,1) model, ignoring the drift since it's 0, would be:
 
 $$
-x_t = -0.2626x_{t-1} - 0.1480x_{t-2} + w_t - 1.0w_{t-1}
+y_t = -0.2626y_{t-1} - 0.1480y_{t-2} + w_t - 1.0w_{t-1}
 $$
 
 
@@ -1489,7 +1487,7 @@ Given the coefficients:
 The equation for the ARIMA(2,1,2) model:
 
 $$
-x_t = 1.3161x_{t-1} - 0.6405x_{t-2} + w_t - 1.8537w_{t-1} + 0.8630w_{t-2}
+y_t = 1.3161y_{t-1} - 0.6405y_{t-2} + w_t - 1.8537w_{t-1} + 0.8630w_{t-2}
 $$
 
 
@@ -1524,7 +1522,7 @@ Given the coefficients:
 The equation for the ARIMA(1,1,2) model:
 
 $$
-x_t = 0.5077x_{t-1} + w_t - 1.2832w_{t-1} + 0.3072w_{t-2}
+y_t = 0.5077y_{t-1} + w_t - 1.2832w_{t-1} + 0.3072w_{t-2}
 $$
 
 
@@ -1562,7 +1560,7 @@ Given the coefficients:
 The equation for the ARIMA(3,1,4) model:
 
 $$
-x_t = - 0.6173x_{t-1} - 0.7741x_{t-2} + 0.2142x_{t-3} + w_t + 0.0696w_{t-1} + 0.2021w_{t-2}-0.8341w_{t-2}-0.0649w_{t-4}
+y_t = - 0.6173y_{t-1} - 0.7741y_{t-2} + 0.2142y_{t-3} + w_t + 0.0696w_{t-1} + 0.2021w_{t-2}-0.8341w_{t-3}-0.0649w_{t-4}
 $$
 
 
@@ -1585,7 +1583,7 @@ $$
 #| output: true
 
 #Fitting ARIMA
-fit_crudeoil2 <- Arima(diff(composite_crude_oil_ts), order=c(2, 1, 1),include.drift = TRUE) 
+fit_crudeoil2 <- Arima(diff(oil_log_ts), order=c(2, 1, 1),include.drift = TRUE) 
 summary(fit_crudeoil2)
 ```
 
@@ -1597,19 +1595,19 @@ summary(fit_crudeoil2)
 For the Best Model (ARIMA(2,1,1)):
 Given the coefficients:
 
-- AR1: 0.5655
-- AR2: -0.1200
+- AR1: 0.5844
+- AR2: -0.2242
 - MA1: -1.0000
 
 The equation for the ARIMA(2,1,1) model, ignoring the drift since it's 0, would be:
 
 $$
-x_t = 0.5655x_{t-1} - 0.1200x_{t-2} + w_t - 1.00 w_{t-1}
+y_t = 0.5844y_{t-1} - 0.2242y_{t-2} + w_t - 1.00 w_{t-1}
 $$
 
 
 
-Given these points, the ARIMA(2,1,4) model appears to have a slight edge in terms of the goodness of fit (based on AIC and error metrics).
+Given these points, the ARIMA(2,1,1) model appears to have a slight edge in terms of the goodness of fit (based on AIC and error metrics).
 
 
 
@@ -1778,11 +1776,9 @@ $$
 #| output: true
 
 set.seed(222)
-diag_crudeoil <- capture.output(sarima(composite_crude_oil_ts, 2,1,4))
+diag_crudeoil <- capture.output(sarima(oil_log_ts, 2,1,0))
 
 ```
-
-
 
 
 **Standardized Residuals**: The plot shows some fluctuation, but there don't appear to be any clear patterns or trends.
@@ -1791,10 +1787,10 @@ diag_crudeoil <- capture.output(sarima(composite_crude_oil_ts, 2,1,4))
 
 **Q-Q Plot of Std Residuals**: which assesses the normality of the residuals, shows an acceptable alignment
 
-**Ljung-Box test**: While the p-values at various lags are notably low, suggesting the presence of significant autocorrelation, this does not align with the ACF plot which did not show such correlations. 
+**Ljung-Box test**: The p-values in the plot are well above the 0.05 threshold, indicating that we fail to reject the null hypothesis of no autocorrelation among residuals at different lags. 
 
 
-The diagnostic plots suggest that the ARIMA(2,1,4) model is a reasonably good fit for the data. The residuals are mostly random, implying that the model is capturing the underlying process well. The Q-Q plot does suggest some minor issues with normality, particularly with possible outliers or extreme values. The presence of significant autocorrelation as indicated by the low p-values in the Ljung-Box test means the model may need to be improved. 
+The diagnostic plots suggest that the ARIMA(2,1,0) model is a reasonably good fit for the data.
 
 
 ## Natural Gas
@@ -1867,11 +1863,11 @@ diag_cpi <- capture.output(sarima(cpi_log_ts, 1,1,2))
 #| warning: false
 #| output: true
 
-auto.arima(composite_crude_oil_ts)
+auto.arima(oil_log_ts)
 
 ```
 
-We used auto.arima() to pick the best model, and it chose ARIMA(2,1,4). Interestingly, this is the same model we thought was best earlier. 
+We used auto.arima() to pick the best model, and it chose ARIMA(2,1,0). Interestingly, this is the same model we thought was best earlier. 
 So, while it's great that auto.arima() confirmed our model choice, we should be a bit cautious. It's always good to double-check the model's predictions and not rely solely on what the automated tool suggests.
 
 
@@ -2012,14 +2008,14 @@ The forecasting model has designed to predict future trends for our datasets. Ut
 #| warning: false
 #| output: true
 
-autoplot(composite_crude_oil_ts) +
-  autolayer(meanf(composite_crude_oil_ts, h=36),
+autoplot(oil_log_ts) +
+  autolayer(meanf(oil_log_ts, h=36),
             series="Mean", PI=FALSE) +
-  autolayer(naive(composite_crude_oil_ts, h=36),
+  autolayer(naive(oil_log_ts, h=36),
             series="Naïve", PI=FALSE) +
-  autolayer(snaive(composite_crude_oil_ts, h=36),
+  autolayer(snaive(oil_log_ts, h=36),
             series="SNaïve", PI=FALSE)+
-  autolayer(rwf(composite_crude_oil_ts, h=36, drift=TRUE),
+  autolayer(rwf(oil_log_ts, h=36, drift=TRUE),
             series="Drift", PI=FALSE)+
   autolayer(forecast(fit_crudeoil,36), 
             series="fit",PI=FALSE) +

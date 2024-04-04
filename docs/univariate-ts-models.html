@@ -255,16 +255,16 @@ window.Quarto = {
 <details class="code-fold">
 <summary>ACF-PACF Plot</summary>
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#ACF Plot for Crude Oil</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>crude_oil_acf <span class="ot">&lt;-</span> <span class="fu">ggAcf</span>(composite_crude_oil_ts) <span class="sc">+</span> </span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"ACF Plot for Refiner Acquisition Cost of Crude Oil"</span>) <span class="sc">+</span> </span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>crude_oil_acf <span class="ot">&lt;-</span> <span class="fu">ggAcf</span>(oil_log_ts) <span class="sc">+</span> </span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"ACF Plot for Crude Oil (Log)"</span>) <span class="sc">+</span> </span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="at">lineend =</span> <span class="st">"butt"</span>, <span class="at">color =</span> <span class="st">"#99494d"</span>) <span class="sc">+</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">"#99494d"</span>) <span class="sc">+</span></span>
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="co">#PACF Plot for Crude Oil</span></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>crude_oil_pacf <span class="ot">&lt;-</span> <span class="fu">ggPacf</span>(composite_crude_oil_ts) <span class="sc">+</span> </span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"PACF Plot for Refiner Acquisition Cost of Crude Oil"</span>) <span class="sc">+</span> </span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>crude_oil_pacf <span class="ot">&lt;-</span> <span class="fu">ggPacf</span>(oil_log_ts) <span class="sc">+</span> </span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"PACF Plot for Crude Oil (Log)"</span>) <span class="sc">+</span> </span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="at">lineend =</span> <span class="st">"butt"</span>, <span class="at">color =</span> <span class="st">"#99494d"</span>) <span class="sc">+</span></span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> <span class="dv">0</span>, <span class="at">color =</span> <span class="st">"#99494d"</span>)<span class="sc">+</span></span>
@@ -436,19 +436,19 @@ window.Quarto = {
 <details class="code-fold">
 <summary>Plot</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Plot the residuals</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>plot1_crude_oil <span class="ot">&lt;-</span> <span class="fu">autoplot</span>(resid_crude_oil_ts, <span class="at">series=</span><span class="st">"Detrended Crude Oil"</span>, <span class="at">colour =</span> <span class="st">"#499995"</span>) <span class="sc">+</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>plot1_crude_oil <span class="ot">&lt;-</span> <span class="fu">autoplot</span>(resid_crude_oil_ts_log, <span class="at">series=</span><span class="st">"Detrended Crude Oil"</span>, <span class="at">colour =</span> <span class="st">"#499995"</span>) <span class="sc">+</span> </span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Year"</span>) <span class="sc">+</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Time"</span>) <span class="sc">+</span></span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Residuals"</span>) <span class="sc">+</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Detrended Crude Oil"</span>) <span class="sc">+</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Detrended Crude Oil (Log)"</span>) <span class="sc">+</span></span>
 <span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
 <span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a><span class="co">#Differencing plot</span></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>plot2_crude_oil <span class="ot">&lt;-</span> <span class="fu">autoplot</span>(<span class="fu">diff</span>(composite_crude_oil_ts), <span class="at">series =</span> <span class="st">"First Difference Crude Oil"</span>, <span class="at">colour =</span> <span class="st">"#99494d"</span>) <span class="sc">+</span> </span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>plot2_crude_oil <span class="ot">&lt;-</span> <span class="fu">autoplot</span>(<span class="fu">diff</span>(oil_log_ts), <span class="at">series =</span> <span class="st">"First Difference Crude Oil"</span>, <span class="at">colour =</span> <span class="st">"#99494d"</span>) <span class="sc">+</span> </span>
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Year"</span>) <span class="sc">+</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Time"</span>) <span class="sc">+</span></span>
 <span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Differences"</span>) <span class="sc">+</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"First Difference Crude Oil"</span>) <span class="sc">+</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"First Difference Crude Oil (Log)"</span>) <span class="sc">+</span></span>
 <span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
 <span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co">#Arrange plots</span></span>
@@ -631,16 +631,16 @@ window.Quarto = {
 <details class="code-fold">
 <summary>Plot</summary>
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Plot for the original</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>plot1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(composite_crude_oil_prices, <span class="fu">aes</span>(<span class="at">x =</span> Date, <span class="at">y =</span> Value)) <span class="sc">+</span> </span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>plot1 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(composite_crude_oil_prices, <span class="fu">aes</span>(<span class="at">x =</span> Date, <span class="at">y =</span> LOG_Value)) <span class="sc">+</span> </span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">colour =</span> <span class="st">"#207068"</span>) <span class="sc">+</span> </span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Year"</span>) <span class="sc">+</span> </span>
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"Crude Oil Prices (USD)"</span>) <span class="sc">+</span></span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Original Crude Oil Prices Data"</span>)<span class="sc">+</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Original Crude Oil Prices (Log)"</span>)<span class="sc">+</span></span>
 <span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
 <span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="co">#Calculate the first differences</span></span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>composite_crude_oil_prices<span class="sc">$</span>Diff_Value <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="fu">diff</span>(composite_crude_oil_prices<span class="sc">$</span>Value))</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>composite_crude_oil_prices<span class="sc">$</span>Diff_Value <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="fu">diff</span>(composite_crude_oil_prices<span class="sc">$</span>LOG_Value))</span>
 <span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>composite_crude_oil_prices_filtered <span class="ot">&lt;-</span> composite_crude_oil_prices <span class="sc">%&gt;%</span> </span>
 <span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(Diff_Value))</span>
 <span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a></span>
@@ -651,7 +651,7 @@ window.Quarto = {
 <span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
 <span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">"Year"</span>) <span class="sc">+</span> </span>
 <span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">"First Differences"</span>) <span class="sc">+</span></span>
-<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"First Differenced Crude Oil Data"</span>)<span class="sc">+</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"First Differenced Crude Oil Data (Log)"</span>)<span class="sc">+</span></span>
 <span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
 <span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a><span class="co">#Arrange</span></span>
@@ -840,7 +840,7 @@ window.Quarto = {
 <details class="code-fold">
 <summary>ADF Test</summary>
 <div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co">#First difference</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>diff_crude_oil_ts <span class="ot">&lt;-</span> <span class="fu">diff</span>(composite_crude_oil_ts, <span class="at">differences =</span> <span class="dv">1</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>diff_crude_oil_ts <span class="ot">&lt;-</span> <span class="fu">diff</span>(oil_log_ts, <span class="at">differences =</span> <span class="dv">1</span>)</span>
 <span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Applying ADF test to the differenced time series</span></span>
 <span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>adf_test_diff_crude_oil <span class="ot">&lt;-</span> <span class="fu">suppressWarnings</span>(</span>
@@ -854,7 +854,7 @@ window.Quarto = {
     Augmented Dickey-Fuller Test
 
 data:  diff_crude_oil_ts
-Dickey-Fuller = -9.3996, Lag order = 8, p-value = 0.01
+Dickey-Fuller = -8.6128, Lag order = 8, p-value = 0.01
 alternative hypothesis: stationary</code></pre>
 </div>
 </div>
@@ -987,7 +987,7 @@ alternative hypothesis: stationary</code></pre>
 <details class="code-fold">
 <summary>Plot</summary>
 <div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># First Differencing</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>first_diff_crude_oil <span class="ot">&lt;-</span> <span class="fu">diff</span>(composite_crude_oil_ts)</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>first_diff_crude_oil <span class="ot">&lt;-</span> <span class="fu">diff</span>(oil_log_ts)</span>
 <span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggtsdisplay</span>(first_diff_crude_oil, <span class="at">main =</span> <span class="st">"First Differencing of Crude Oil Prices"</span>)</span></code></pre></div>
 </details>
 <div class="cell-output-display">
@@ -1014,7 +1014,7 @@ alternative hypothesis: stationary</code></pre>
 <p>Based on these graphs, second differencing does not seem necessary. The first differencing appears to have sufficiently stabilized the mean of the time series, as there is no visible trend or seasonality, and the autocorrelation in the data seems to be addressed.</p>
 <p>Examining the ACF and PACF plots for the first differencing of crude oil prices, we can suggest a range of values for p and q:</p>
 <p>p = 0 (since after the first lag, PACF cuts off which suggests no autoregressive terms) p = 1, 2, (to account for the spike at lag 1 and 2)</p>
-<p>q = 0 q = 1, 2, 3 (as the first three lags are above the significance level) q = 4, 5</p>
+<p>q = 0 q = 1, 2, 3 (as the first three lags are above the significance level) q = 4</p>
 </div>
 <div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
 <div class="cell">
@@ -1172,13 +1172,13 @@ q = 1, 2, 3 (considering the first few significant lags)</p>
 <summary>AIC-BIC</summary>
 <div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="co"># Degree of differencing</span></span>
 <span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>temp <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>ls <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">6</span> <span class="sc">*</span> <span class="dv">18</span>), <span class="at">nrow =</span> <span class="dv">18</span>)  <span class="co"># 18 combinations</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>ls <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">6</span> <span class="sc">*</span> <span class="dv">15</span>), <span class="at">nrow =</span> <span class="dv">15</span>)  <span class="co"># 15 combinations</span></span>
 <span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>i <span class="ot">&lt;-</span> <span class="dv">1</span></span>
 <span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">2</span>) {</span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (q <span class="cf">in</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">5</span>) {</span>
+<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (q <span class="cf">in</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">4</span>) {</span>
 <span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(p<span class="dv">-1</span><span class="sc">+</span>d<span class="sc">+</span>q<span class="dv">-1</span><span class="sc">&lt;=</span><span class="dv">8</span>) {</span>
-<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>      model <span class="ot">&lt;-</span> <span class="fu">Arima</span>(composite_crude_oil_ts, <span class="at">order =</span> <span class="fu">c</span>(p, d, q), <span class="at">include.drift =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>      model <span class="ot">&lt;-</span> <span class="fu">Arima</span>(oil_log_ts, <span class="at">order =</span> <span class="fu">c</span>(p, d, q), <span class="at">include.drift =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb36-10"><a href="#cb36-10" aria-hidden="true" tabindex="-1"></a>      ls[i,] <span class="ot">&lt;-</span> <span class="fu">c</span>(p, d, q, model<span class="sc">$</span>aic, model<span class="sc">$</span>bic, model<span class="sc">$</span>aicc)</span>
 <span id="cb36-11"><a href="#cb36-11" aria-hidden="true" tabindex="-1"></a>      i <span class="ot">&lt;-</span> i <span class="sc">+</span> <span class="dv">1</span></span>
 <span id="cb36-12"><a href="#cb36-12" aria-hidden="true" tabindex="-1"></a>    }</span>
@@ -1207,145 +1207,121 @@ q = 1, 2, 3 (considering the first few significant lags)</p>
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">3283.262</td>
-<td style="text-align: right;">3292.053</td>
-<td style="text-align: right;">3283.282</td>
+<td style="text-align: right;">-1339.656</td>
+<td style="text-align: right;">-1330.866</td>
+<td style="text-align: right;">-1339.636</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">3128.995</td>
-<td style="text-align: right;">3142.181</td>
-<td style="text-align: right;">3129.036</td>
+<td style="text-align: right;">-1507.041</td>
+<td style="text-align: right;">-1493.855</td>
+<td style="text-align: right;">-1507.000</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">2</td>
-<td style="text-align: right;">3101.221</td>
-<td style="text-align: right;">3118.802</td>
-<td style="text-align: right;">3101.288</td>
+<td style="text-align: right;">-1515.368</td>
+<td style="text-align: right;">-1497.787</td>
+<td style="text-align: right;">-1515.301</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">3</td>
-<td style="text-align: right;">3102.883</td>
-<td style="text-align: right;">3124.859</td>
-<td style="text-align: right;">3102.984</td>
+<td style="text-align: right;">-1513.400</td>
+<td style="text-align: right;">-1491.423</td>
+<td style="text-align: right;">-1513.299</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">0</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">4</td>
-<td style="text-align: right;">3102.419</td>
-<td style="text-align: right;">3128.790</td>
-<td style="text-align: right;">3102.561</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">3103.764</td>
-<td style="text-align: right;">3134.531</td>
-<td style="text-align: right;">3103.953</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">0</td>
-<td style="text-align: right;">3110.728</td>
-<td style="text-align: right;">3123.914</td>
-<td style="text-align: right;">3110.768</td>
+<td style="text-align: right;">-1517.195</td>
+<td style="text-align: right;">-1490.824</td>
+<td style="text-align: right;">-1517.053</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">3106.339</td>
-<td style="text-align: right;">3123.920</td>
-<td style="text-align: right;">3106.407</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-1490.761</td>
+<td style="text-align: right;">-1477.576</td>
+<td style="text-align: right;">-1490.721</td>
 </tr>
 <tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">-1513.592</td>
+<td style="text-align: right;">-1496.011</td>
+<td style="text-align: right;">-1513.525</td>
+</tr>
+<tr class="even">
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">2</td>
-<td style="text-align: right;">3102.999</td>
-<td style="text-align: right;">3124.976</td>
-<td style="text-align: right;">3103.100</td>
+<td style="text-align: right;">-1513.380</td>
+<td style="text-align: right;">-1491.404</td>
+<td style="text-align: right;">-1513.279</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">3</td>
-<td style="text-align: right;">3098.002</td>
-<td style="text-align: right;">3124.373</td>
-<td style="text-align: right;">3098.144</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">3096.531</td>
-<td style="text-align: right;">3127.298</td>
-<td style="text-align: right;">3096.721</td>
+<td style="text-align: right;">-1518.334</td>
+<td style="text-align: right;">-1491.962</td>
+<td style="text-align: right;">-1518.192</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">3098.350</td>
-<td style="text-align: right;">3133.513</td>
-<td style="text-align: right;">3098.595</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">-1517.780</td>
+<td style="text-align: right;">-1487.013</td>
+<td style="text-align: right;">-1517.590</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">0</td>
-<td style="text-align: right;">3103.853</td>
-<td style="text-align: right;">3121.434</td>
-<td style="text-align: right;">3103.920</td>
+<td style="text-align: right;">-1519.843</td>
+<td style="text-align: right;">-1502.262</td>
+<td style="text-align: right;">-1519.775</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">1</td>
-<td style="text-align: right;">3095.071</td>
-<td style="text-align: right;">3117.047</td>
-<td style="text-align: right;">3095.172</td>
+<td style="text-align: right;">-1519.371</td>
+<td style="text-align: right;">-1497.395</td>
+<td style="text-align: right;">-1519.270</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">2</td>
-<td style="text-align: right;">3104.067</td>
-<td style="text-align: right;">3130.438</td>
-<td style="text-align: right;">3104.209</td>
+<td style="text-align: right;">-1518.979</td>
+<td style="text-align: right;">-1492.608</td>
+<td style="text-align: right;">-1518.837</td>
 </tr>
 <tr class="even">
 <td style="text-align: right;">2</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">3</td>
-<td style="text-align: right;">3096.578</td>
-<td style="text-align: right;">3127.345</td>
-<td style="text-align: right;">3096.768</td>
+<td style="text-align: right;">-1517.131</td>
+<td style="text-align: right;">-1486.364</td>
+<td style="text-align: right;">-1516.942</td>
 </tr>
 <tr class="odd">
 <td style="text-align: right;">2</td>
 <td style="text-align: right;">1</td>
 <td style="text-align: right;">4</td>
-<td style="text-align: right;">3091.399</td>
-<td style="text-align: right;">3126.561</td>
-<td style="text-align: right;">3091.643</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">3093.397</td>
-<td style="text-align: right;">3132.955</td>
-<td style="text-align: right;">3093.703</td>
+<td style="text-align: right;">-1516.894</td>
+<td style="text-align: right;">-1481.732</td>
+<td style="text-align: right;">-1516.650</td>
 </tr>
 </tbody>
 </table>
@@ -1356,30 +1332,30 @@ q = 1, 2, 3 (considering the first few significant lags)</p>
 <span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>temp[<span class="fu">which.min</span>(temp<span class="sc">$</span>AIC),]</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>   p d q      AIC      BIC     AICc
-17 2 1 4 3091.399 3126.561 3091.643</code></pre>
+<pre><code>   p d q       AIC       BIC      AICc
+11 2 1 0 -1519.843 -1502.262 -1519.775</code></pre>
 </div>
 <details class="code-fold">
 <summary>AIC-BIC</summary>
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>temp[<span class="fu">which.min</span>(temp<span class="sc">$</span>BIC),]</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>   p d q      AIC      BIC     AICc
-14 2 1 1 3095.071 3117.047 3095.172</code></pre>
+<pre><code>   p d q       AIC       BIC      AICc
+11 2 1 0 -1519.843 -1502.262 -1519.775</code></pre>
 </div>
 <details class="code-fold">
 <summary>AIC-BIC</summary>
 <div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>temp[<span class="fu">which.min</span>(temp<span class="sc">$</span>AICc),]</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>   p d q      AIC      BIC     AICc
-17 2 1 4 3091.399 3126.561 3091.643</code></pre>
+<pre><code>   p d q       AIC       BIC      AICc
+11 2 1 0 -1519.843 -1502.262 -1519.775</code></pre>
 </div>
 </div>
 <p>When selecting the best ARIMA model for forecasting crude oil prices, it’s common for the AIC and BIC to suggest different models. In such cases, we often prefer the model with the lower AIC. Based on the results, we’ve can select two models for further consideration:</p>
 <ul>
-<li>Best Model by AIC (and AICc): ARIMA(2,1,4)</li>
-<li>Best Model by BIC: ARIMA(2,1,1)</li>
+<li>Best Model by AIC (and AICc) and BIC is : ARIMA(2,1,0)</li>
+<li>Second Best would be (2,1,1)</li>
 </ul>
 </div>
 <div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
@@ -2184,39 +2160,35 @@ x_t = \sum_{i=1}^{p} \phi_i x_{t-i} + \sum_{j=1}^{q} \theta_j w_{t-j} + w_t
 <details class="code-fold">
 <summary>Fitting ARIMA</summary>
 <div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Fitting ARIMA</span></span>
-<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>fit_crudeoil <span class="ot">&lt;-</span> <span class="fu">Arima</span>(<span class="fu">diff</span>(composite_crude_oil_ts), <span class="at">order=</span><span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">4</span>),<span class="at">include.drift =</span> <span class="cn">TRUE</span>) </span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>fit_crudeoil <span class="ot">&lt;-</span> <span class="fu">Arima</span>(<span class="fu">diff</span>(oil_log_ts), <span class="at">order=</span><span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">0</span>),<span class="at">include.drift =</span> <span class="cn">TRUE</span>) </span>
 <span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_crudeoil)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Series: diff(composite_crude_oil_ts) 
-ARIMA(2,1,4) with drift 
+<pre><code>Series: diff(oil_log_ts) 
+ARIMA(2,1,0) with drift 
 
 Coefficients:
-          ar1      ar2     ma1      ma2      ma3      ma4   drift
-      -0.7645  -0.3345  0.3231  -0.3344  -0.6574  -0.3313  0.0000
-s.e.   0.2055   0.1564  0.2002   0.1316   0.1249   0.0782  0.0013
+          ar1      ar2    drift
+      -0.1203  -0.2649  -0.0003
+s.e.   0.0395   0.0395   0.0023
 
-sigma^2 = 10.28:  log likelihood = -1544.47
-AIC=3104.93   AICc=3105.17   BIC=3140.08
+sigma^2 = 0.006028:  log likelihood = 681.19
+AIC=-1354.37   AICc=-1354.31   BIC=-1336.8
 
 Training set error measures:
-                       ME     RMSE      MAE MPE MAPE      MASE        ACF1
-Training set -0.008203546 3.184115 1.958849 NaN  Inf 0.6398439 0.004101244</code></pre>
+                        ME       RMSE       MAE MPE MAPE      MASE        ACF1
+Training set -5.153578e-05 0.07738115 0.0523112 NaN  Inf 0.7014048 -0.05433654</code></pre>
 </div>
 </div>
-<p><strong>Coefficients:</strong> The model includes two autoregressive terms (ar1, ar2) and four moving average terms (ma1, ma2, ma3, ma4), with all coefficients having significant values. <strong>Drift:</strong> The drift coefficient is effectively zero, suggesting no consistent linear trend in the differenced series.</p>
-<p>For the Best Model (ARIMA(2,1,4)): Given the coefficients:</p>
+<p><strong>Coefficients:</strong> The model includes two autoregressive terms (ar1, ar2) and zero moving average terms, with all coefficients having significant values. <strong>Drift:</strong> The drift coefficient is effectively zero, suggesting no consistent linear trend in the differenced series.</p>
+<p>For the Best Model (ARIMA(2,1,0)): Given the coefficients:</p>
 <ul>
-<li>AR1: -0.7645</li>
-<li>AR2: -0.3345</li>
-<li>MA1: 0.3231</li>
-<li>MA2: -0.3344</li>
-<li>MA3: -0.6574</li>
-<li>MA4: -0.3313</li>
+<li>AR1: -0.1203</li>
+<li>AR2: -0.2649</li>
 </ul>
-<p>The equation for the ARIMA(2,1,4) model, ignoring the drift since it’s 0, would be:</p>
+<p>The equation for the ARIMA(2,1,0) model, ignoring the drift since it’s 0, would be:</p>
 <p><span class="math display">\[
-x_t = -0.7645x_{t-1} - 0.3345x_{t-2} + w_t + 0.3231w_{t-1} - 0.3344w_{t-2} - 0.6574w_{t-3} - 0.3313w_{t-4}
+y_t = -0.1203y_{t-1} -0.2649y_{t-2} + w_t
 \]</span></p>
 </div>
 <div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
@@ -2254,7 +2226,7 @@ Training set 0.006749335 0.7048646 0.3521306 NaN  Inf 0.6943128 -0.004716988</co
 </ul>
 <p>The equation for the ARIMA(2,1,1) model, ignoring the drift since it’s 0, would be:</p>
 <p><span class="math display">\[
-x_t = -0.2626x_{t-1} - 0.1480x_{t-2} + w_t - 1.0w_{t-1}
+y_t = -0.2626y_{t-1} - 0.1480y_{t-2} + w_t - 1.0w_{t-1}
 \]</span></p>
 </div>
 <div id="tabset-7-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-3-tab">
@@ -2293,7 +2265,7 @@ Training set -0.0002118954 0.1614378 0.1195182 NaN  Inf 1.411243 -0.01705683</co
 </ul>
 <p>The equation for the ARIMA(2,1,2) model:</p>
 <p><span class="math display">\[
-x_t = 1.3161x_{t-1} - 0.6405x_{t-2} + w_t - 1.8537w_{t-1} + 0.8630w_{t-2}
+y_t = 1.3161y_{t-1} - 0.6405y_{t-2} + w_t - 1.8537w_{t-1} + 0.8630w_{t-2}
 \]</span></p>
 </div>
 <div id="tabset-7-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-4-tab">
@@ -2333,7 +2305,7 @@ Training set -0.02679624</code></pre>
 </ul>
 <p>The equation for the ARIMA(1,1,2) model:</p>
 <p><span class="math display">\[
-x_t = 0.5077x_{t-1} + w_t - 1.2832w_{t-1} + 0.3072w_{t-2}
+y_t = 0.5077y_{t-1} + w_t - 1.2832w_{t-1} + 0.3072w_{t-2}
 \]</span></p>
 </div>
 <div id="tabset-7-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-5-tab">
@@ -2382,7 +2354,7 @@ Training set -0.0003899181</code></pre>
 </ul>
 <p>The equation for the ARIMA(3,1,4) model:</p>
 <p><span class="math display">\[
-x_t = - 0.6173x_{t-1} - 0.7741x_{t-2} + 0.2142x_{t-3} + w_t + 0.0696w_{t-1} + 0.2021w_{t-2}-0.8341w_{t-2}-0.0649w_{t-4}
+y_t = - 0.6173y_{t-1} - 0.7741y_{t-2} + 0.2142y_{t-3} + w_t + 0.0696w_{t-1} + 0.2021w_{t-2}-0.8341w_{t-3}-0.0649w_{t-4}
 \]</span></p>
 </div>
 <div id="tabset-7-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-6-tab">
@@ -2401,38 +2373,38 @@ x_t = - 0.6173x_{t-1} - 0.7741x_{t-2} + 0.2142x_{t-3} + w_t + 0.0696w_{t-1} + 0.
 <details class="code-fold">
 <summary>Fitting ARIMA</summary>
 <div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Fitting ARIMA</span></span>
-<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>fit_crudeoil2 <span class="ot">&lt;-</span> <span class="fu">Arima</span>(<span class="fu">diff</span>(composite_crude_oil_ts), <span class="at">order=</span><span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>),<span class="at">include.drift =</span> <span class="cn">TRUE</span>) </span>
+<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>fit_crudeoil2 <span class="ot">&lt;-</span> <span class="fu">Arima</span>(<span class="fu">diff</span>(oil_log_ts), <span class="at">order=</span><span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">1</span>),<span class="at">include.drift =</span> <span class="cn">TRUE</span>) </span>
 <span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_crudeoil2)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>Series: diff(composite_crude_oil_ts) 
+<pre><code>Series: diff(oil_log_ts) 
 ARIMA(2,1,1) with drift 
 
 Coefficients:
-         ar1      ar2      ma1   drift
-      0.5655  -0.1200  -1.0000  0.0000
-s.e.  0.0406   0.0407   0.0045  0.0014
+         ar1      ar2      ma1  drift
+      0.5844  -0.2242  -1.0000      0
+s.e.  0.0399   0.0400   0.0047      0
 
-sigma^2 = 10.36:  log likelihood = -1548.45
-AIC=3106.91   AICc=3107.01   BIC=3128.87
+sigma^2 = 0.004603:  log likelihood = 759.48
+AIC=-1508.96   AICc=-1508.86   BIC=-1486.99
 
 Training set error measures:
-                       ME    RMSE      MAE MPE MAPE      MASE        ACF1
-Training set -0.007727752 3.20586 1.972593 NaN  Inf 0.6443334 -0.01156425</code></pre>
+                       ME       RMSE       MAE MPE MAPE      MASE         ACF1
+Training set -0.001554347 0.06756183 0.0471001 NaN  Inf 0.6315327 -0.007294652</code></pre>
 </div>
 </div>
 <p><strong>Coefficients:</strong> This model is simpler, with two AR and one MA parameters. Notably, the MA coefficient is -1. <strong>Drift:</strong> Similar to the best model, the drift is zero.</p>
 <p>For the Best Model (ARIMA(2,1,1)): Given the coefficients:</p>
 <ul>
-<li>AR1: 0.5655</li>
-<li>AR2: -0.1200</li>
+<li>AR1: 0.5844</li>
+<li>AR2: -0.2242</li>
 <li>MA1: -1.0000</li>
 </ul>
 <p>The equation for the ARIMA(2,1,1) model, ignoring the drift since it’s 0, would be:</p>
 <p><span class="math display">\[
-x_t = 0.5655x_{t-1} - 0.1200x_{t-2} + w_t - 1.00 w_{t-1}
+y_t = 0.5844y_{t-1} - 0.2242y_{t-2} + w_t - 1.00 w_{t-1}
 \]</span></p>
-<p>Given these points, the ARIMA(2,1,4) model appears to have a slight edge in terms of the goodness of fit (based on AIC and error metrics).</p>
+<p>Given these points, the ARIMA(2,1,1) model appears to have a slight edge in terms of the goodness of fit (based on AIC and error metrics).</p>
 </div>
 <div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
 <div class="cell">
@@ -2616,8 +2588,8 @@ x_t = 0.1208 x_{t-1} + w_t -0.6728w_{t-1} -0.1731w_{t-2}
 <p><strong>Standardized Residuals</strong>: The plot shows some fluctuation, but there don’t appear to be any clear patterns or trends.</p>
 <p><strong>ACF of Residuals</strong>: We observe no apparent autocorrelation amongst the residuals. The absence of significant spikes outside the confidence bounds suggests that the residuals are essentially white noise</p>
 <p><strong>Q-Q Plot of Std Residuals</strong>: which assesses the normality of the residuals, shows an acceptable alignment</p>
-<p><strong>Ljung-Box test</strong>: While the p-values at various lags are notably low, suggesting the presence of significant autocorrelation, this does not align with the ACF plot which did not show such correlations.</p>
-<p>The diagnostic plots suggest that the ARIMA(2,1,4) model is a reasonably good fit for the data. The residuals are mostly random, implying that the model is capturing the underlying process well. The Q-Q plot does suggest some minor issues with normality, particularly with possible outliers or extreme values. The presence of significant autocorrelation as indicated by the low p-values in the Ljung-Box test means the model may need to be improved.</p>
+<p><strong>Ljung-Box test</strong>: The p-values in the plot are well above the 0.05 threshold, indicating that we fail to reject the null hypothesis of no autocorrelation among residuals at different lags.</p>
+<p>The diagnostic plots suggest that the ARIMA(2,1,0) model is a reasonably good fit for the data.</p>
 </div>
 <div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
 <div class="cell">
@@ -2677,19 +2649,19 @@ x_t = 0.1208 x_{t-1} + w_t -0.6728w_{t-1} -0.1731w_{t-2}
 <div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>Series: composite_crude_oil_ts 
-ARIMA(2,1,4) 
+<pre><code>Series: oil_log_ts 
+ARIMA(2,1,0) 
 
 Coefficients:
-          ar1     ar2     ma1      ma2      ma3      ma4
-      -0.0088  0.8146  0.5565  -0.6067  -0.5002  -0.2805
-s.e.   0.0632  0.0635  0.0686   0.0823   0.0464   0.0413
+         ar1      ar2
+      0.5842  -0.2243
+s.e.  0.0399   0.0399
 
-sigma^2 = 10.06:  log likelihood = -1538.82
-AIC=3091.64   AICc=3091.83   BIC=3122.41</code></pre>
+sigma^2 = 0.004588:  log likelihood = 763.5
+AIC=-1521.01   AICc=-1520.97   BIC=-1507.82</code></pre>
 </div>
 </div>
-<p>We used auto.arima() to pick the best model, and it chose ARIMA(2,1,4). Interestingly, this is the same model we thought was best earlier. So, while it’s great that auto.arima() confirmed our model choice, we should be a bit cautious. It’s always good to double-check the model’s predictions and not rely solely on what the automated tool suggests.</p>
+<p>We used auto.arima() to pick the best model, and it chose ARIMA(2,1,0). Interestingly, this is the same model we thought was best earlier. So, while it’s great that auto.arima() confirmed our model choice, we should be a bit cautious. It’s always good to double-check the model’s predictions and not rely solely on what the automated tool suggests.</p>
 </div>
 <div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
 <div class="cell">

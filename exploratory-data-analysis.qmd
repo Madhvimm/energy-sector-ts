@@ -509,6 +509,9 @@ Lag plots are essential tools in time series analysis, offering insights into th
 start_year <- as.numeric(format(min(composite_crude_oil_prices$Date), "%Y"))
 start_month <- as.numeric(format(min(composite_crude_oil_prices$Date), "%m"))
 composite_crude_oil_ts <- ts(composite_crude_oil_prices$Value, start=c(start_year, start_month), frequency=12)
+# Log-transform Value
+composite_crude_oil_prices$LOG_Value <- log(composite_crude_oil_prices$Value)
+oil_log_ts <- ts(composite_crude_oil_prices$LOG_Value, start=c(start_year, start_month), frequency=12)
 
 # For Natural Gas
 start_year_gas <- as.numeric(format(min(citygate_gas_prices$Date), "%Y"))
@@ -548,10 +551,10 @@ cpi_log_ts <- ts(cpi_data$LOG_CPI, start = c(start_year_cpi, start_month_cpi), f
 #| output: true
 
 #Create lag plot
-gglagplot(composite_crude_oil_ts, do.lines=FALSE) + 
+gglagplot(oil_log_ts, do.lines=FALSE) + 
   xlab("Lags") + 
   ylab("Value (USD)") + 
-  ggtitle("Lag Plot for Refiner Acquisition Cost of Crude Oil") + 
+  ggtitle("Lag Plot for Cost of Crude Oil (Log)") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -701,7 +704,7 @@ Decomposition plots are powerful tools in time series analysis, allowing us to d
 #| output: true
 
 # Plot the decomposed ts
-decomposed_crude_oil <- ts_decompose(composite_crude_oil_ts, "multiplicative",showline = TRUE)
+decomposed_crude_oil <- ts_decompose(oil_log_ts, "multiplicative",showline = TRUE)
 decomposed_crude_oil
 
 ```
@@ -854,16 +857,16 @@ In this section, we'll explore the ACF and PACF plots for our datasets delving i
 #| output: true
 
 #ACF Plot for Crude Oil
-crude_oil_acf <- ggAcf(composite_crude_oil_ts) + 
-  ggtitle("ACF Plot for Refiner Acquisition Cost of Crude Oil") + 
+crude_oil_acf <- ggAcf(oil_log_ts) + 
+  ggtitle("ACF Plot for Crude Oil (Log)") + 
   theme_bw() +
   geom_segment(lineend = "butt", color = "#99494d") +
   geom_hline(yintercept = 0, color = "#99494d") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #PACF Plot for Crude Oil
-crude_oil_pacf <- ggPacf(composite_crude_oil_ts) + 
-  ggtitle("PACF Plot for Refiner Acquisition Cost of Crude Oil") + 
+crude_oil_pacf <- ggPacf(oil_log_ts) + 
+  ggtitle("PACF Plot for Crude Oil (Log)") + 
   theme_bw() +
   geom_segment(lineend = "butt", color = "#99494d") +
   geom_hline(yintercept = 0, color = "#99494d")+
@@ -1055,7 +1058,7 @@ The Dickey-Fuller test is a statistical test used to determine the presence of u
 #| output: true
 
 # Dickey-Fuller Test for Crude Oil
-adf_test_crude_oil <- tseries::adf.test(composite_crude_oil_ts)
+adf_test_crude_oil <- tseries::adf.test(oil_log_ts)
 
 # Display the test results
 adf_test_crude_oil
@@ -1180,9 +1183,9 @@ Detrending typically subtracts the estimated trend component from the original s
 #| output: false
 
 # Convert residuals to a ts object
-fit_crude_oil <- lm(Value ~ Date, data = composite_crude_oil_prices, na.action = NULL)
+fit_crude_oil_log <- lm(LOG_Value ~ Date, data = composite_crude_oil_prices, na.action = NULL)
 
-resid_crude_oil_ts <- ts(resid(fit_crude_oil), start=c(start_year, start_month), frequency=12)
+resid_crude_oil_ts_log <- ts(resid(fit_crude_oil_log), start=c(start_year, start_month), frequency=12)
 ```
 
 
@@ -1195,19 +1198,19 @@ resid_crude_oil_ts <- ts(resid(fit_crude_oil), start=c(start_year, start_month),
 #| output: true
 
 #Plot the residuals
-plot1_crude_oil <- autoplot(resid_crude_oil_ts, series="Detrended Crude Oil", colour = "#499995") + 
+plot1_crude_oil <- autoplot(resid_crude_oil_ts_log, series="Detrended Crude Oil", colour = "#499995") + 
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
-  ggtitle("Detrended Crude Oil") +
+  ggtitle("Detrended Crude Oil (Log)") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Differencing plot
-plot2_crude_oil <- autoplot(diff(composite_crude_oil_ts), series = "First Difference Crude Oil", colour = "#99494d") + 
+plot2_crude_oil <- autoplot(diff(oil_log_ts), series = "First Difference Crude Oil", colour = "#99494d") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
-  ggtitle("First Difference Crude Oil") +
+  ggtitle("First Difference Crude Oil (Log)") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Arrange plots
@@ -1499,15 +1502,15 @@ Long-Term Trends: With 20- and 30-period moving averages (20-MA and 30-MA), we d
 
 # Prepare the data frame with the correct start date
 crude_oil_df <- data.frame(
-  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(composite_crude_oil_ts)),
-  Value = as.vector(composite_crude_oil_ts)
+  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(oil_log_ts)),
+  LOG_Value = as.vector(oil_log_ts)
 )
 
 # Calculate moving averages with the specified window sizes
-crude_oil_df$ma5 <- zoo::rollmean(crude_oil_df$Value, 5, mean, fill = NA, align = "right")
-crude_oil_df$ma15 <- zoo::rollmean(crude_oil_df$Value, 15, mean, fill = NA, align = "right")
-crude_oil_df$ma20 <- zoo::rollmean(crude_oil_df$Value, 20, mean, fill = NA, align = "right")
-crude_oil_df$ma30 <- zoo::rollmean(crude_oil_df$Value, 30, mean, fill = NA, align = "right")
+crude_oil_df$ma5 <- zoo::rollmean(crude_oil_df$LOG_Value, 5, mean, fill = NA, align = "right")
+crude_oil_df$ma15 <- zoo::rollmean(crude_oil_df$LOG_Value, 15, mean, fill = NA, align = "right")
+crude_oil_df$ma20 <- zoo::rollmean(crude_oil_df$LOG_Value, 20, mean, fill = NA, align = "right")
+crude_oil_df$ma30 <- zoo::rollmean(crude_oil_df$LOG_Value, 30, mean, fill = NA, align = "right")
 
 
 ```
@@ -1525,13 +1528,13 @@ crude_oil_df$ma30 <- zoo::rollmean(crude_oil_df$Value, 30, mean, fill = NA, alig
 
 #Ggplot
 p <- ggplot(crude_oil_df, aes(x = Date)) + 
-  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = LOG_Value, color = "Actual Data")) +
   geom_line(aes(y = ma5, color = "5-MA")) +
   geom_line(aes(y = ma15, color = "15-MA")) +
   geom_line(aes(y = ma20, color = "20-MA")) +
   geom_line(aes(y = ma30, color = "30-MA")) +
   xlab("Time") + ylab("Value (USD)") +
-  ggtitle('Crude Oil Price with Moving Averages') +
+  ggtitle('Crude Oil Price with Moving Averages (Log)') +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
