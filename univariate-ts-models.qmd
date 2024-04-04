@@ -59,12 +59,19 @@ citygate_gas_prices$Date <- as.Date(citygate_gas_prices$Date)
 start_year_gas <- as.numeric(format(min(citygate_gas_prices$Date), "%Y"))
 start_month_gas <- as.numeric(format(min(citygate_gas_prices$Date), "%m"))
 citygate_gas_ts <- ts(citygate_gas_prices$Value, start=c(start_year_gas, start_month_gas), frequency=12)
+# Log-transform Value
+citygate_gas_prices$LOG_Value <- log(citygate_gas_prices$Value)
+gas_log_ts <- ts(citygate_gas_prices$LOG_Value, start=c(start_year, start_month), frequency=12)
 
 # For Electricity
 total_electricity_prices$Date <- as.Date(total_electricity_prices$Date, format = "%Y-%m-%d")
 start_year_elec <- as.numeric(format(min(total_electricity_prices$Date), "%Y"))
 start_month_elec <- as.numeric(format(min(total_electricity_prices$Date), "%m"))
 total_electricity_ts <- ts(total_electricity_prices$Value, start = c(start_year_elec, start_month_elec), frequency = 12)
+# Log-transform Value
+total_electricity_prices$LOG_Value <- log(total_electricity_prices$Value)
+electricity_log_ts <- ts(total_electricity_prices$LOG_Value, start=c(start_year, start_month), frequency=12)
+
 
 # For GDP (it's quarterly)
 gdp_data$DATE <- as.Date(gdp_data$DATE, format = "%Y-%m-%d")
@@ -146,15 +153,15 @@ The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1 and 2
 #| output: true
 
 # ACF and PACF for Natural Gas
-natural_gas_acf <- ggAcf(citygate_gas_ts) + 
-  ggtitle("ACF Plot for Natural Gas Price") + 
+natural_gas_acf <- ggAcf(gas_log_ts) + 
+  ggtitle("ACF Plot for Natural Gas Price (Log)") + 
   theme_bw() +
   geom_segment(lineend = "butt", color = "#99494d") +
   geom_hline(yintercept = 0, color = "#99494d") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-natural_gas_pacf <- ggPacf(citygate_gas_ts) + 
-  ggtitle("PACF Plot for Natural Gas Price") + 
+natural_gas_pacf <- ggPacf(gas_log_ts) + 
+  ggtitle("PACF Plot for Natural Gas Price (Log)") + 
   theme_bw() +
   geom_segment(lineend = "butt", color = "#99494d") +
   geom_hline(yintercept = 0, color = "#99494d") +
@@ -183,15 +190,15 @@ The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1 and 2
 #| output: true
 
 # ACF and PACF for Electricity
-electricity_acf <- ggAcf(total_electricity_ts) + 
-  ggtitle("ACF Plot for Average Price of Electricity to Ultimate Customers") + 
+electricity_acf <- ggAcf(electricity_log_ts) + 
+  ggtitle("ACF Plot for Average Price of Electricity to Ultimate Customers (Log)") + 
   theme_bw() +
   geom_segment(lineend = "butt", color = "#99494d") +
   geom_hline(yintercept = 0, color = "#99494d")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-electricity_pacf <- ggPacf(total_electricity_ts) + 
-  ggtitle("PACF Plot for Average Price of Electricity to Ultimate Customers") + 
+electricity_pacf <- ggPacf(electricity_log_ts) + 
+  ggtitle("PACF Plot for Average Price of Electricity to Ultimate Customers (Log)") + 
   theme_bw() +
   geom_segment(lineend = "butt", color = "#99494d") +
   geom_hline(yintercept = 0, color = "#99494d")+
@@ -366,10 +373,10 @@ The series shows fluctuations that average out around zero, suggesting enhanced 
 #| output: false
 
 # Detrending using the original data frame
-fit_natural_gas <- lm(Value ~ Date, data = citygate_gas_prices, na.action = NULL)
+fit_natural_gas <- lm(LOG_Value ~ Date, data = citygate_gas_prices, na.action = NULL)
 
 # Convert residuals to a ts object for plotting
-resid_natural_gas_ts <- ts(resid(fit_natural_gas), start=c(start_year_gas, start_month_gas), frequency=12)
+resid_natural_gas_ts_log <- ts(resid(fit_natural_gas), start=c(start_year_gas, start_month_gas), frequency=12)
 ```
 
 
@@ -380,19 +387,19 @@ resid_natural_gas_ts <- ts(resid(fit_natural_gas), start=c(start_year_gas, start
 #| output: true
 
 #Plot the residuals
-plot1_natural_gas <- autoplot(resid_natural_gas_ts, series="Detrended Natural Gas", colour = "#499995") + 
+plot1_natural_gas <- autoplot(resid_natural_gas_ts_log, series="Detrended Natural Gas (Log)", colour = "#499995") + 
   theme_bw() +
   xlab("Year") +
   ylab("Residuals") +
-  ggtitle("Detrended Natural Gas") +
+  ggtitle("Detrended Natural Gas (Log)") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Differencing plot
-plot2_natural_gas <- autoplot(diff(citygate_gas_ts), series = "First Difference Natural Gas", colour = "#99494d") + 
+plot2_natural_gas <- autoplot(diff(gas_log_ts), series = "First Difference Natural Gas (Log)", colour = "#99494d") + 
   theme_bw() +
   xlab("Year") +
   ylab("Differences") +
-  ggtitle("First Difference Natural Gas") +
+  ggtitle("First Difference Natural Gas (Log)") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Arrange plots
@@ -421,10 +428,10 @@ The series maintains a consistent mean, though volatility persists, with noticea
 #| output: false
 
 # Detrending using the original data frame
-fit_electricity <- lm(Value ~ Date, data = total_electricity_prices, na.action = NULL)
+fit_electricity <- lm(LOG_Value ~ Date, data = total_electricity_prices, na.action = NULL)
 
 # Convert residuals to a ts object for plotting
-resid_electricity_ts <- ts(resid(fit_electricity), start=c(start_year_elec, start_month_elec), frequency=12)
+resid_electricity_ts_log <- ts(resid(fit_electricity), start=c(start_year_elec, start_month_elec), frequency=12)
 ```
 
 
@@ -435,19 +442,19 @@ resid_electricity_ts <- ts(resid(fit_electricity), start=c(start_year_elec, star
 #| output: true
 
 #Plot the residuals
-plot1_electricity <- autoplot(resid_electricity_ts, series="Detrended Electricity", colour = "#499995") + 
+plot1_electricity <- autoplot(resid_electricity_ts_log, series="Detrended Electricity Log", colour = "#499995") + 
   theme_bw() +
   xlab("Year") +
   ylab("Residuals") +
-  ggtitle("Detrended Electricity") +
+  ggtitle("Detrended Electricity (Log)") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Differencing plot
-plot2_electricity <- autoplot(diff(total_electricity_ts), series = "First Difference Electricity", colour = "#99494d") + 
+plot2_electricity <- autoplot(diff(electricity_log_ts), series = "First Difference Electricity Log", colour = "#99494d") + 
   theme_bw() +
   xlab("Year") +
   ylab("Differences") +
-  ggtitle("First Difference Electricity") +
+  ggtitle("First Difference Electricity (Log)") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Arrange plots
@@ -658,16 +665,16 @@ grid.arrange(plot1, plot2, nrow = 2)
 #| output: true
 
 #Plot for the original
-plot1_ng <- ggplot(citygate_gas_prices, aes(x = Date, y = Value)) + 
+plot1_ng <- ggplot(citygate_gas_prices, aes(x = Date, y = LOG_Value)) + 
   geom_line(colour = "#207068") + 
   theme_bw() +
   xlab("Year") + 
   ylab("Natural Gas Prices") +
-  ggtitle("Original Natural Gas Data")+
+  ggtitle("Original Natural Gas (Log)")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Calculate the first differences
-citygate_gas_prices$Diff_Value <- c(NA, diff(citygate_gas_prices$Value))
+citygate_gas_prices$Diff_Value <- c(NA, diff(citygate_gas_prices$LOG_Value))
 citygate_gas_prices_filtered <- citygate_gas_prices %>% 
   filter(!is.na(Diff_Value))
 
@@ -677,7 +684,7 @@ plot2_ng <- ggplot(citygate_gas_prices_filtered, aes(x = Date, y = Diff_Value)) 
   theme_bw() +
   xlab("Year") + 
   ylab("First Differences") +
-  ggtitle("First Differenced Natural Gas Data")+
+  ggtitle("First Differenced Natural Gas (Log)")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 # Arrange
@@ -695,16 +702,16 @@ grid.arrange(plot1_ng, plot2_ng, nrow = 2)
 #| output: true
 
 #Plot for the original
-plot1_elec <- ggplot(total_electricity_prices, aes(x = Date, y = Value)) + 
+plot1_elec <- ggplot(total_electricity_prices, aes(x = Date, y = LOG_Value)) + 
   geom_line(colour = "#207068") + 
   theme_bw() +
   xlab("Year") + 
-  ylab("Electricity Prices") +
-  ggtitle("Original Electricity Data")+
+  ylab("Electricity Prices (Log)") +
+  ggtitle("Original Electricity Data (Log)")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Calculate the first differences
-total_electricity_prices$Diff_Value <- c(NA, diff(total_electricity_prices$Value))
+total_electricity_prices$Diff_Value <- c(NA, diff(total_electricity_prices$LOG_Value))
 total_electricity_prices_filtered <- total_electricity_prices %>% 
   filter(!is.na(Diff_Value))
 
@@ -715,7 +722,7 @@ plot2_elec <- ggplot(total_electricity_prices_filtered, aes(x = Date, y = Diff_V
   theme_bw() +
   xlab("Year") + 
   ylab("First Differences") +
-  ggtitle("First Differenced Electricity Data")+
+  ggtitle("First Differenced Electricity Data (Log)")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Arrange
@@ -843,7 +850,7 @@ In the adjusted test we can clearly see the p-value is significantly less than 0
 #| output: true
 
 #First difference
-diff_citygate_gas_ts <- diff(citygate_gas_ts, differences = 1)
+diff_citygate_gas_ts <- diff(gas_log_ts, differences = 1)
 diff_citygate_gas_ts <- na.omit(diff_citygate_gas_ts)
 
 #Applying ADF test to the differenced time series
@@ -868,7 +875,7 @@ In the adjusted test we can clearly see the p-value is significantly less than 0
 #| output: true
 
 #First difference
-diff_total_electricity_ts <- diff(total_electricity_ts, differences = 1)
+diff_total_electricity_ts <- diff(electricity_log_ts, differences = 1)
 diff_total_electricity_ts <- na.omit(diff_total_electricity_ts)
 
 #Applying ADF test to the differenced time series
@@ -964,11 +971,11 @@ Differencing operates under the principle of transformation. It is designed to r
 
 # First Differencing
 first_diff_crude_oil <- diff(oil_log_ts)
-ggtsdisplay(first_diff_crude_oil, main = "First Differencing of Crude Oil Prices")
+ggtsdisplay(first_diff_crude_oil, main = "First Differencing of Crude Oil Prices (Log)")
 
 # Second Differencing
 second_diff_crude_oil <- diff(first_diff_crude_oil)
-ggtsdisplay(second_diff_crude_oil, main = "Second Differencing of Crude Oil Prices")
+ggtsdisplay(second_diff_crude_oil, main = "Second Differencing of Crude Oil Prices (Log)")
 ```
 
 Based on these graphs, second differencing does not seem necessary. The first differencing appears to have sufficiently stabilized the mean of the time series, as there is no visible trend or seasonality, and the autocorrelation in the data seems to be addressed.
@@ -994,12 +1001,12 @@ q = 4
 #| output: true
 
 # First Differencing
-first_diff_natural_gas <- diff(citygate_gas_ts)
-ggtsdisplay(first_diff_natural_gas, main = "First Differencing of Natural Gas Prices")
+first_diff_natural_gas <- diff(gas_log_ts)
+ggtsdisplay(first_diff_natural_gas, main = "First Differencing of Natural Gas Prices (Log)")
 
 # Second Differencing
 second_diff_natural_gas <- diff(first_diff_natural_gas)
-ggtsdisplay(second_diff_natural_gas, main = "Second Differencing of Natural Gas Prices")
+ggtsdisplay(second_diff_natural_gas, main = "Second Differencing of Natural Gas Prices (Log)")
 
 ```
 
@@ -1008,10 +1015,8 @@ We can clearly observe second differencing doesn’t appear to provide additiona
 
 Examining the ACF and PACF plots for the first differencing of natural gas prices, we can suggest a range of values for p and q:
 
-p = 0,1,2
-q = 1 (considering the first significant lag)
-q = 2,3 (gradual decay and a second significant lag)
-
+p = 1,2
+q = 1,2 (considering the first significant lag)
 
 
 ## Electricity
@@ -1023,12 +1028,12 @@ q = 2,3 (gradual decay and a second significant lag)
 #| output: true
 
 # First Differencing
-first_diff_electricity <- diff(total_electricity_ts)
-ggtsdisplay(first_diff_electricity, main = "First Differencing of Electricity Prices")
+first_diff_electricity <- diff(electricity_log_ts)
+ggtsdisplay(first_diff_electricity, main = "First Differencing of Electricity Prices (Log)")
 
 # Second Differencing
 second_diff_electricity <- diff(first_diff_electricity)
-ggtsdisplay(second_diff_electricity, main = "Second Differencing of Electricity Prices")
+ggtsdisplay(second_diff_electricity, main = "Second Differencing of Electricity Prices (Log)")
 
 ```
 
@@ -1038,8 +1043,8 @@ It seems that first differencing might have been adequate to stabilize the mean 
 
 Examining the ACF and PACF plots for the first differencing of electricity prices, we can suggest a range of values for p and q:
 
-p = 0, 1, 2 (considering the significant spike at the first lag)
-q = 1, 2, 3, 4 
+p = 1, 2, 3, 4 (considering the significant spike at the first lag)
+q = 1, 2, 3, 4, 5, 6, 7, 8, 9
 
 
 ## GDP
@@ -1168,6 +1173,7 @@ When selecting the best ARIMA model for forecasting crude oil prices, it's commo
 
 ## Natural Gas
 
+
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'AIC-BIC'
@@ -1179,10 +1185,10 @@ temp <- data.frame()
 ls <- matrix(rep(NA, 6 * 9), nrow = 9)  #  9 combinations: p (3 options) * q (3 options)
 
 i <- 1
-for (p in 0:2) {
+for (p in 1:3) {
   for (q in 1:3) {
     if(p-1+d+q-1<=8) {
-      model <- Arima(citygate_gas_ts, order = c(p, d, q), include.drift = TRUE)
+      model <- Arima(gas_log_ts, order = c(p, d, q), include.drift = TRUE)
       ls[i,] <- c(p, d, q, model$aic, model$bic, model$aicc)
       i <- i + 1
     }
@@ -1204,8 +1210,8 @@ temp[which.min(temp$AICc),]
 
 When selecting the best ARIMA model for forecasting natural gas prices, it's common for the AIC and BIC to suggest different models. In such cases, we often prefer the model with the lower AIC. Based on the results, we've can select two models for further consideration:
 
-- Best Model by AIC (and AICc): ARIMA(2,1,1)
-- Best Model by BIC: ARIMA(0,1,1)
+- Best Model by AIC (and AICc): ARIMA(3,1,1)
+- Best Model by BIC: ARIMA(1,1,1)
 
 
 
@@ -1221,13 +1227,13 @@ When selecting the best ARIMA model for forecasting natural gas prices, it's com
 
 d <- 1 # Degree of differencing
 temp <- data.frame()
-ls <- matrix(rep(NA, 6 * 12), nrow = 12)  # p (3 options) * q (4 options) = 12 combinations
+ls <- matrix(rep(NA, 6 * 26), nrow = 26)  # p (4 options) * q (9 options) = 36 combinations
 
 i <- 1
-for (p in 0:2) {
-  for (q in 1:4) {
+for (p in 1:4) {
+  for (q in 1:9) {
     if(p-1+d+q-1<=8) {
-      model <- Arima(total_electricity_ts, order = c(p, d, q), include.drift = TRUE)
+      model <- Arima(electricity_log_ts, order = c(p, d, q), include.drift = TRUE)
       ls[i,] <- c(p, d, q, model$aic, model$bic, model$aicc)
       i <- i + 1
     }
@@ -1250,8 +1256,8 @@ temp[which.min(temp$AICc),]
 
 When selecting the best ARIMA model for forecasting electricity prices, it's common for the AIC and BIC to suggest different models. In such cases, we often prefer the model with the lower AIC. Based on the results, we've can select two models for further consideration:
 
-- Best Model by AIC, BIC, and AICc (ARIMA(2,1,2))
-- ARIMA(2,1,4)
+- Best Model by AIC, BIC, and AICc (ARIMA(2,1,7))
+- ARIMA(3,1,2)
 
 
 
@@ -1427,29 +1433,31 @@ $$
 #| output: true
 
 #Fitting ARIMA
-fit_NaturalGas <- Arima(diff(citygate_gas_ts), order=c(2, 1, 1),include.drift = TRUE) 
+fit_NaturalGas <- Arima(diff(gas_log_ts), order=c(3, 1, 1),include.drift = TRUE) 
 summary(fit_NaturalGas)
 
 ```
 
 
-**Coefficients:** The model includes two autoregressive terms (ar1, ar2) and one moving average terms (ma1), with all coefficients having significant values.
+**Coefficients:** The model includes three autoregressive terms (ar1, ar2) and one moving average terms (ma1), with all coefficients having significant values.
 **Drift:** The drift coefficient is effectively zero, suggesting no consistent linear trend in the differenced series.
 
 
-For the Best Model (ARIMA(2,1,1)):
+For the Best Model (ARIMA(3,1,1)):
 
 Given the coefficients:
 
-- AR1: -0.2626
-- AR2: -0.1480
+- AR1: -0.2333
+- AR2: -0.1575
+- AR3: -0.0137
 - MA1: -1.0000
 
 The equation for the ARIMA(2,1,1) model, ignoring the drift since it's 0, would be:
 
 $$
-y_t = -0.2626y_{t-1} - 0.1480y_{t-2} + w_t - 1.0w_{t-1}
+y_t = -0.2333y_{t-1} - 0.1575y_{t-2} - 0.0137y_{t-3} + w_t - 1.0w_{t-1}
 $$
+
 
 
 
@@ -1466,28 +1474,33 @@ $$
 #| output: true
 
 #Fitting ARIMA
-fit_electricity <- Arima(diff(total_electricity_ts), order=c(2, 1, 2),include.drift = TRUE) 
+fit_electricity <- Arima(diff(electricity_log_ts), order=c(2, 1, 7),include.drift = TRUE) 
 summary(fit_electricity)
 
 ```
 
-**Coefficients:** The model includes two autoregressive terms (ar1, ar2) and two moving average terms (ma1, ma2), with all coefficients having significant values.
+**Coefficients:** The model includes two autoregressive terms (ar1, ar2) and seven moving average terms with all coefficients having significant values.
 **Drift:** The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.
 
 
-For the Best Model (ARIMA(2,1,2)):
+For the Best Model (ARIMA(2,1,7)):
 
 Given the coefficients:
 
-- AR1: 1.3161
-- AR2: -0.6405
-- MA1: -1.8537
-- MA2: 0.8630
+- AR1: 0.8665 
+- AR2: -0.8255
+- MA1: -1.5081
+- MA2: 1.1396
+- MA3: -0.6100  
+- MA4: -0.2225
+- MA5: 0.0819 
+- MA6: -0.0818 
+- MA7:  0.2288
 
-The equation for the ARIMA(2,1,2) model:
+The equation for the ARIMA(2,1,7) model:
 
 $$
-y_t = 1.3161y_{t-1} - 0.6405y_{t-2} + w_t - 1.8537w_{t-1} + 0.8630w_{t-2}
+y_t = 0.8665y_{t-1} -0.8255y_{t-2}+ w_t -1.5081w_{t-1} + 1.1396w_{t-2} - 0.6100w_{t-3} - 0.2225w_{t-4} + 0.0819w_{t-5} -0.0818w_{t-6} +  0.2288w_{t-7}
 $$
 
 
@@ -1621,7 +1634,7 @@ Given these points, the ARIMA(2,1,1) model appears to have a slight edge in term
 #| output: true
 
 #Fitting ARIMA
-fit_NaturalGas2 <- Arima(diff(citygate_gas_ts), order=c(1, 1, 1),include.drift = TRUE) 
+fit_NaturalGas2 <- Arima(diff(gas_log_ts), order=c(1, 1, 1),include.drift = TRUE) 
 summary(fit_NaturalGas2)
 
 ```
@@ -1634,14 +1647,14 @@ For the Best Model (ARIMA(1,1,1)):
 
 Given the coefficients:
 
-- AR1: -0.2283 
+- AR1: -0.1999 
 - MA1: -1.0
 
 
 The equation for the ARIMA(1,1,1) model:
 
 $$
-x_t = - 0.2283x_{t-1} + w_t - 1.0w_{t-1}
+x_t = - 0.1999x_{t-1} + w_t - 1.0w_{t-1}
 $$
 
 
@@ -1656,30 +1669,30 @@ $$
 #| output: true
 
 #Fitting ARIMA
-fit_electricity2 <- Arima(diff(total_electricity_ts), order=c(2, 1, 4),include.drift = TRUE) 
+fit_electricity2 <- Arima(diff(electricity_log_ts), order=c(3, 1, 2),include.drift = TRUE) 
 summary(fit_electricity2)
 
 ```
 
-**Coefficients:** The model includes two autoregressive terms (ar1, ar2) and four moving average terms (ma1, ma2, ma3, ma4), with all coefficients having significant values.
+**Coefficients:** The model includes three autoregressive terms (ar1, ar2) and two moving average terms (ma1, ma2), with all coefficients having significant values.
 **Drift:** The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.
 
 
-For the Best Model (ARIMA(2,1,4)):
+For the Best Model (ARIMA(3,1,2)):
 
 Given the coefficients:
 
-- AR1: -0.2486
-- AR2: -0.5019
-- MA1: -0.1576
-- MA2: 0.0838
-- MA3: -0.5582
-- MA4: -0.3680
+- AR1: 1.2344
+- AR2: -0.4796
+- AR3: -0.1080 
+- MA1: -1.8302
+- MA2: 0.8422
 
-The equation for the ARIMA(2,1,4) model:
+
+The equation for the ARIMA(3,1,2) model:
 
 $$
-x_t = -0.2486x_{t-1} -0.5019x_{t-2}+ w_t -0.1576w_{t-1} + 0.0838w_{t-2}-0.5582w_{t-2}-0.3680w_{t-4}
+x_t = 1.2344x_{t-1} - 0.4796x_{t-2} - 0.1080 x_{t-3} + w_t - 1.8302w_{t-1} + 0.8422w_{t-2}
 $$
 
 
@@ -1802,7 +1815,7 @@ The diagnostic plots suggest that the ARIMA(2,1,0) model is a reasonably good fi
 #| output: true
 
 set.seed(222)
-diag_ng <- capture.output(sarima(citygate_gas_ts, 2,1,1))
+diag_ng <- capture.output(sarima(oil_log_ts, 3,1,1))
 
 
 ```
@@ -1816,7 +1829,7 @@ diag_ng <- capture.output(sarima(citygate_gas_ts, 2,1,1))
 #| output: true
 
 set.seed(222)
-diag_electricity <- capture.output(sarima(total_electricity_ts, 2,1,2))
+diag_electricity <- capture.output(sarima(electricity_log_ts, 2,1,7))
 
 ```
 
@@ -1880,7 +1893,7 @@ So, while it's great that auto.arima() confirmed our model choice, we should be 
 #| warning: false
 #| output: true
 
-auto.arima(citygate_gas_ts)
+auto.arima(oil_log_ts)
 ```
 
 ## Electricity
@@ -1891,7 +1904,7 @@ auto.arima(citygate_gas_ts)
 #| warning: false
 #| output: true
 
-auto.arima(total_electricity_ts)
+auto.arima(electricity_log_ts)
 
 ```
 
@@ -2031,14 +2044,14 @@ autoplot(oil_log_ts) +
 #| warning: false
 #| output: true
 
-autoplot(citygate_gas_ts) +
-  autolayer(meanf(citygate_gas_ts, h=36),
+autoplot(gas_log_ts) +
+  autolayer(meanf(gas_log_ts, h=36),
             series="Mean", PI=FALSE) +
-  autolayer(naive(citygate_gas_ts, h=36),
+  autolayer(naive(gas_log_ts, h=36),
             series="Naïve", PI=FALSE) +
-  autolayer(snaive(citygate_gas_ts, h=36),
+  autolayer(snaive(gas_log_ts, h=36),
             series="SNaïve", PI=FALSE)+
-  autolayer(rwf(citygate_gas_ts, h=36, drift=TRUE),
+  autolayer(rwf(gas_log_ts, h=36, drift=TRUE),
             series="Drift", PI=FALSE)+
   autolayer(forecast(fit_NaturalGas,36), 
             series="fit",PI=FALSE) +
@@ -2054,14 +2067,14 @@ autoplot(citygate_gas_ts) +
 #| warning: false
 #| output: true
 
-autoplot(total_electricity_ts) +
-  autolayer(meanf(total_electricity_ts, h=36),
+autoplot(electricity_log_ts) +
+  autolayer(meanf(electricity_log_ts, h=36),
             series="Mean", PI=FALSE) +
-  autolayer(naive(total_electricity_ts, h=36),
+  autolayer(naive(electricity_log_ts, h=36),
             series="Naïve", PI=FALSE) +
-  autolayer(snaive(total_electricity_ts, h=36),
+  autolayer(snaive(electricity_log_ts, h=36),
             series="SNaïve", PI=FALSE)+
-  autolayer(rwf(total_electricity_ts, h=36, drift=TRUE),
+  autolayer(rwf(electricity_log_ts, h=36, drift=TRUE),
             series="Drift", PI=FALSE)+
   autolayer(forecast(fit_electricity,36), 
             series="fit",PI=FALSE) +
