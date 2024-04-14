@@ -61,7 +61,7 @@ start_month_gas <- as.numeric(format(min(citygate_gas_prices$Date), "%m"))
 citygate_gas_ts <- ts(citygate_gas_prices$Value, start=c(start_year_gas, start_month_gas), frequency=12)
 # Log-transform Value
 citygate_gas_prices$LOG_Value <- log(citygate_gas_prices$Value)
-gas_log_ts <- ts(citygate_gas_prices$LOG_Value, start=c(start_year, start_month), frequency=12)
+gas_log_ts <- ts(citygate_gas_prices$LOG_Value, start=c(start_year_gas, start_month_gas), frequency=12)
 
 # For Electricity
 total_electricity_prices$Date <- as.Date(total_electricity_prices$Date, format = "%Y-%m-%d")
@@ -70,7 +70,7 @@ start_month_elec <- as.numeric(format(min(total_electricity_prices$Date), "%m"))
 total_electricity_ts <- ts(total_electricity_prices$Value, start = c(start_year_elec, start_month_elec), frequency = 12)
 # Log-transform Value
 total_electricity_prices$LOG_Value <- log(total_electricity_prices$Value)
-electricity_log_ts <- ts(total_electricity_prices$LOG_Value, start=c(start_year, start_month), frequency=12)
+electricity_log_ts <- ts(total_electricity_prices$LOG_Value, start=c(start_year_elec, start_month_elec), frequency=12)
 
 
 # For GDP (it's quarterly)
@@ -176,7 +176,7 @@ The **ACF plot** for natural gas prices shows a very slow decay, suggesting non-
 
 The **PACF plot** shows a significant spike at lag 1, followed by a drop-off.
 
-The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1 and 2. The slow decay in the ACF implies that differencing (d > 0) may be necessary to achieve stationarity.
+The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1, 2 and 3. The slow decay in the ACF implies that differencing (d > 0) may be necessary to achieve stationarity.
 
 
 
@@ -983,12 +983,10 @@ Based on these graphs, second differencing does not seem necessary. The first di
 
 Examining the ACF and PACF plots for the first differencing of crude oil prices, we can suggest a range of values for p and q:
 
-p = 0 (since after the first lag, PACF cuts off which suggests no autoregressive terms)
-p = 1, 2, (to account for the spike at lag 1 and 2)
+p =  1, 2, (to account for the spike at lag 1 and 2)
 
-q = 0 
-q = 1, 2, 3 (as the first three lags are above the significance level)
-q = 4
+q = 1, 2, 3, 4 (as the first three lags are above the significance level)
+
 
 
 
@@ -1043,7 +1041,7 @@ It seems that first differencing might have been adequate to stabilize the mean 
 
 Examining the ACF and PACF plots for the first differencing of electricity prices, we can suggest a range of values for p and q:
 
-p = 1, 2, 3, 4 (considering the significant spike at the first lag)
+p = 1 to 12 (considering the significant spike at the first lag)
 q = 1, 2, 3, 4, 5, 6, 7, 8, 9
 
 
@@ -1069,7 +1067,7 @@ The first differencing of GDP may be sufficient for stationarity, as the time se
 
 Examining the ACF and PACF plots for the first differencing of GDP, we can suggest a range of values for p and q:
 
-p = 1, 2,  
+p = 1, 2, 3 
 q = 1, 2, 3 (considering the first few significant lags)
 
 
@@ -1096,7 +1094,7 @@ The second differencing of CPI doesn't show a noticeable trend, the first differ
 
 Examining the ACF and PACF plots for the first differencing of CPI, we can suggest a range of values for p and q:
 
-p = 1, 2, 3, 4, 5, 6 (significant spike at lag 1)
+p = 1 to 12 (significant spike at lag 1)
 q = 1, 2, 3, 4, 5, 6, 7, 8, 9 (to capture the initial significant lags)
 
 
@@ -1129,6 +1127,10 @@ In time series analysis, choosing the right model is paramount for accurate fore
 
 ## Crude Oil
 
+p =  1, 2 (to account for the spike at lag 1 and 2)
+
+q = 1, 2, 3, 4 
+
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'AIC-BIC'
@@ -1138,11 +1140,11 @@ In time series analysis, choosing the right model is paramount for accurate fore
 
 d <- 1 # Degree of differencing
 temp <- data.frame()
-ls <- matrix(rep(NA, 6 * 15), nrow = 15)  # 15 combinations
+ls <- matrix(rep(NA, 6 * 8), nrow = 8)  # 8 combinations
 
 i <- 1
-for (p in 0:2) {
-  for (q in 0:4) {
+for (p in 1:2) {
+  for (q in 1:4) {
     if(p-1+d+q-1<=8) {
       model <- Arima(oil_log_ts, order = c(p, d, q), include.drift = TRUE)
       ls[i,] <- c(p, d, q, model$aic, model$bic, model$aicc)
@@ -1166,13 +1168,15 @@ temp[which.min(temp$AICc),]
 
 When selecting the best ARIMA model for forecasting crude oil prices, it's common for the AIC and BIC to suggest different models. In such cases, we often prefer the model with the lower AIC. Based on the results, we've can select two models for further consideration:
 
-- Best Model by AIC (and AICc) and BIC is : ARIMA(2,1,0)
-- Second Best would be (2,1,1)
+- Best Model by AIC (and AICc) and BIC is : ARIMA(2,1,1)
+- Second Best would be (2,1,2)
 
 
 
 ## Natural Gas
 
+p = 1,2,3
+q = 1,2 (considering the first significant lag)
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
@@ -1211,12 +1215,15 @@ temp[which.min(temp$AICc),]
 When selecting the best ARIMA model for forecasting natural gas prices, it's common for the AIC and BIC to suggest different models. In such cases, we often prefer the model with the lower AIC. Based on the results, we've can select two models for further consideration:
 
 - Best Model by AIC (and AICc): ARIMA(3,1,1)
-- Best Model by BIC: ARIMA(1,1,1)
+- Second Best Model by BIC: ARIMA(1,1,1)
 
 
 
 
 ## Electricity
+
+p = 1 to 12 (considering the significant spike at the first lag)
+q = 1, 2, 3, 4, 5, 6, 7, 8, 9
 
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
@@ -1227,10 +1234,10 @@ When selecting the best ARIMA model for forecasting natural gas prices, it's com
 
 d <- 1 # Degree of differencing
 temp <- data.frame()
-ls <- matrix(rep(NA, 6 * 26), nrow = 26)  # p (4 options) * q (9 options) = 36 combinations
+ls <- matrix(rep(NA, 6 * 36), nrow = 36)  # p (12 options) * q (9 options) = 108 combinations - threshold
 
 i <- 1
-for (p in 1:4) {
+for (p in 1:12) {
   for (q in 1:9) {
     if(p-1+d+q-1<=8) {
       model <- Arima(electricity_log_ts, order = c(p, d, q), include.drift = TRUE)
@@ -1254,17 +1261,20 @@ temp[which.min(temp$AICc),]
 ```
 
 
+
+
 When selecting the best ARIMA model for forecasting electricity prices, it's common for the AIC and BIC to suggest different models. In such cases, we often prefer the model with the lower AIC. Based on the results, we've can select two models for further consideration:
 
-- Best Model by AIC, BIC, and AICc (ARIMA(2,1,7))
-- ARIMA(3,1,2)
+- Best Model by AIC, BIC, and AICc (ARIMA(4,1,4))
+- Second best model: ARIMA(7,1,2)
 
 
 
 
 ## GDP
 
-
+p = 1, 2, 3 
+q = 1, 2, 3 (considering the first few significant lags)
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
@@ -1274,10 +1284,10 @@ When selecting the best ARIMA model for forecasting electricity prices, it's com
 
 d <- 1 # Degree of differencing
 temp <- data.frame()
-ls <- matrix(rep(NA, 6 * 6), nrow = 6)  # p (2 options) * q (3 options) = 6 combinations
+ls <- matrix(rep(NA, 6 * 9), nrow = 9)  # p (3 options) * q (3 options) = 9 combinations
 
 i <- 1
-for (p in 1:2) {
+for (p in 1:3) {
   for (q in 1:3) {
     if(p-1+d+q-1<=8) {
       model <- Arima(gdp_log_ts, order = c(p, d, q), include.drift = TRUE)
@@ -1303,15 +1313,16 @@ temp[which.min(temp$AICc),]
 
 When selecting the best ARIMA model for forecasting GDP, it's common for the AIC and BIC to suggest different models. In such cases, we often prefer the model with the lower AIC. Based on the results, we've can select two models for further consideration:
 
-- Best Model by AIC: ARIMA(1,1,2)
-- Best Model by BIC: ARIMA(1,1,1)
+- Best Model by AIC, BIC and AICc: ARIMA(1,1,1)
+- Second Best Model: ARIMA(3,1,2)
 
 
 
 ## CPI
 
 
-
+p = 1 to 12 (significant spike at lag 1)
+q = 1, 2, 3, 4, 5, 6, 7, 8, 9 (to capture the initial significant lags)
 
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
@@ -1323,10 +1334,10 @@ When selecting the best ARIMA model for forecasting GDP, it's common for the AIC
 
 d <- 1 # Degree of differencing
 temp <- data.frame()
-ls <- matrix(rep(NA, 6 * 33), nrow = 33)  
+ls <- matrix(rep(NA, 6 * 36), nrow = 36)  
 
 i <- 1
-for (p in 1:6) {
+for (p in 1:12) {
   for (q in 1:9) {
     if (p-1+d+q-1<=8) {
       model <- Arima(cpi_log_ts, order = c(p, d, q), include.drift = TRUE)
@@ -1352,8 +1363,8 @@ temp[which.min(temp$AICc),]
 
 When selecting the best ARIMA model for forecasting CPI, it's common for the AIC and BIC to suggest different models. In such cases, we often prefer the model with the lower AIC. Based on the results, we've can select two models for further consideration:
 
-- Best Model by AIC: ARIMA(3,1,4)
-- Best Model by BIC: ARIMA(1,1,2)
+- Best Model by AIC and AICc: ARIMA(3,1,2)
+- Second Best Model: ARIMA(3,1,3)
 
 
 ## 
@@ -1393,7 +1404,10 @@ Here,
 
 ::: panel-tabset
 
-## Crude Oil
+### Crude Oil
+
+- Best Model by AIC (and AICc) and BIC is : ARIMA(2,1,1)
+- Second Best would be (2,1,2)
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
@@ -1402,29 +1416,34 @@ Here,
 #| output: true
 
 #Fitting ARIMA
-fit_crudeoil <- Arima(diff(oil_log_ts), order=c(2, 1, 0),include.drift = TRUE) 
+fit_crudeoil <- Arima(diff(oil_log_ts), order=c(2, 1, 1),include.drift = TRUE) 
 summary(fit_crudeoil)
 ```
 
-**Coefficients:** The model includes two autoregressive terms (ar1, ar2) and zero moving average terms, with all coefficients having significant values.
+**Coefficients:** The model includes two autoregressive terms (ar1, ar2) and one moving average terms, with all coefficients having significant values (based on their small standard errors (s.e.))
 **Drift:** The drift coefficient is effectively zero, suggesting no consistent linear trend in the differenced series.
 
 
-For the Best Model (ARIMA(2,1,0)):
+For the Best Model (ARIMA(2,1,1)):
 Given the coefficients:
 
-- AR1: -0.1203
-- AR2: -0.2649
+- AR1: 0.5693 
+- AR2: -0.2302
+- MA1: -1
 
 
-The equation for the ARIMA(2,1,0) model, ignoring the drift since it's 0, would be:
+The equation for the ARIMA(2,1,1) model, ignoring the drift since it's 0, would be:
 
 $$
-y_t = -0.1203y_{t-1} -0.2649y_{t-2} + w_t 
+y_t = 0.5693y_{t-1} - 0.2302y_{t-2} + w_t - 1.0w_{t-1}
 $$
 
 
-## Natural Gas
+### Natural Gas
+
+
+- Best Model by AIC (and AICc): ARIMA(3,1,1)
+- Second Best Model by BIC: ARIMA(1,1,1)
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
@@ -1439,7 +1458,7 @@ summary(fit_NaturalGas)
 ```
 
 
-**Coefficients:** The model includes three autoregressive terms (ar1, ar2) and one moving average terms (ma1), with all coefficients having significant values.
+**Coefficients:** The model includes three autoregressive terms (ar1, ar2, ar3) and one moving average terms (ma1), with all coefficients having significant values.
 **Drift:** The drift coefficient is effectively zero, suggesting no consistent linear trend in the differenced series.
 
 
@@ -1447,25 +1466,24 @@ For the Best Model (ARIMA(3,1,1)):
 
 Given the coefficients:
 
-- AR1: -0.2333
+- AR1: -0.2356
 - AR2: -0.1575
-- AR3: -0.0137
+- AR3: -0.0109
 - MA1: -1.0000
 
-The equation for the ARIMA(2,1,1) model, ignoring the drift since it's 0, would be:
+The equation for the ARIMA(3,1,1) model, ignoring the drift since it's 0, would be:
 
 $$
-y_t = -0.2333y_{t-1} - 0.1575y_{t-2} - 0.0137y_{t-3} + w_t - 1.0w_{t-1}
+y_t = -0.2356y_{t-1} - 0.1575y_{t-2} - 0.0109y_{t-3} + w_t - 1.0w_{t-1}
 $$
 
 
 
 
+### Electricity
 
-
-
-
-## Electricity
+- Best Model by AIC, BIC, and AICc (ARIMA(4,1,4))
+- Second best model: ARIMA(7,1,2)
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
@@ -1474,39 +1492,41 @@ $$
 #| output: true
 
 #Fitting ARIMA
-fit_electricity <- Arima(diff(electricity_log_ts), order=c(2, 1, 7),include.drift = TRUE) 
+fit_electricity <- Arima(diff(electricity_log_ts), order=c(4, 1, 4),include.drift = TRUE) 
 summary(fit_electricity)
 
 ```
 
-**Coefficients:** The model includes two autoregressive terms (ar1, ar2) and seven moving average terms with all coefficients having significant values.
+**Coefficients:** The model includes four autoregressive terms (ar1, ar2, ar3, ar4) and four moving average terms with all coefficients having significant values.
 **Drift:** The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.
 
 
-For the Best Model (ARIMA(2,1,7)):
+For the Best Model (ARIMA(4,1,4)):
 
 Given the coefficients:
 
-- AR1: 0.8665 
-- AR2: -0.8255
-- MA1: -1.5081
-- MA2: 1.1396
-- MA3: -0.6100  
-- MA4: -0.2225
-- MA5: 0.0819 
-- MA6: -0.0818 
-- MA7:  0.2288
+- AR1: 2.3940
+- AR2: -3.0152
+- AR3: 2.0155
+- AR4: -0.6215
+- MA1: -2.8848
+- MA2: 3.7759
+- MA3: -2.7851
+- MA4: 0.9013
 
-The equation for the ARIMA(2,1,7) model:
+The equation for the ARIMA(4,1,4) model:
 
 $$
-y_t = 0.8665y_{t-1} -0.8255y_{t-2}+ w_t -1.5081w_{t-1} + 1.1396w_{t-2} - 0.6100w_{t-3} - 0.2225w_{t-4} + 0.0819w_{t-5} -0.0818w_{t-6} +  0.2288w_{t-7}
+y_t = 2.3940 y_{t-1} - 3.0152 y_{t-2} + 2.0155 y_{t-3} - 0.6215 y_{t-4} + w_t - 2.8848 w_{t-1} + 3.7759 w_{t-2} - 2.7851 w_{t-3} + 0.9013 w_{t-4}
 $$
 
 
 
 
-## GDP
+### GDP
+
+- Best Model by AIC, BIC and AICc: ARIMA(1,1,1)
+- Second Best Model: ARIMA(3,1,2)
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
@@ -1515,32 +1535,35 @@ $$
 #| output: true
 
 #Fitting ARIMA
-fit_gdp_a <- Arima(diff(gdp_log_ts), order=c(1, 1, 2),include.drift = TRUE) 
+fit_gdp_a <- Arima(diff(gdp_log_ts), order=c(1, 1, 1),include.drift = TRUE) 
 summary(fit_gdp_a)
 
 ```
 
-**Coefficients:** The model includes one autoregressive terms (ar1) and two moving average terms (ma1, ma2), with all coefficients having significant values.
+**Coefficients:** The model includes one autoregressive terms (ar1) and one moving average terms (ma1), with all coefficients having significant values.
 **Drift:** The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.
 
 
-For the Best Model (ARIMA(1,1,2)):
+For the Best Model (ARIMA(1,1,1)):
 
 Given the coefficients:
 
-- AR1: 0.5077
-- MA1: -1.2832
-- MA2: 0.3072
+- AR1: -0.0656
+- MA1: -1.000
 
-The equation for the ARIMA(1,1,2) model:
+
+The equation for the ARIMA(1,1,1) model:
 
 $$
-y_t = 0.5077y_{t-1} + w_t - 1.2832w_{t-1} + 0.3072w_{t-2}
+y_t = -0.0656y_{t-1} + w_t - 1.00w_{t-1} 
 $$
 
 
 
-## CPI
+### CPI
+
+- Best Model by AIC and AICc: ARIMA(3,1,2)
+- Second Best Model: ARIMA(3,1,3)
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
@@ -1549,31 +1572,29 @@ $$
 #| output: true
 
 #Fitting ARIMA
-fit_cpi_a <- Arima(diff(cpi_log_ts), order=c(3, 1, 4),include.drift = TRUE) 
+fit_cpi_a <- Arima(diff(cpi_log_ts), order=c(3, 1, 2),include.drift = TRUE) 
 summary(fit_cpi_a)
 
 ```
 
-**Coefficients:** The model includes three autoregressive terms (ar1, ar2, ar3) and four moving average terms (ma1, ma2, ma3, ma4), with all coefficients having significant values.
+**Coefficients:** The model includes three autoregressive terms (ar1, ar2, ar3) and two moving average terms (ma1, ma2), with all coefficients having significant values.
 **Drift:** The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.
 
 
-For the Best Model (ARIMA(3,1,4)):
+For the Best Model (ARIMA(3,1,2)):
 
 Given the coefficients:
 
-- AR1: -0.6173
-- AR2: -0.7741
-- AR3: 0.2142
-- MA1: 0.0696
-- MA2: 0.2021
-- MA3: -0.8341
-- MA4: -0.0649
+- AR1: 0.8004 
+- AR2: -0.3574
+- AR3: 0.1405
+- MA1: -1.2473
+- MA2: 0.2672
 
-The equation for the ARIMA(3,1,4) model:
+The equation for the ARIMA(3,1,2) model:
 
 $$
-y_t = - 0.6173y_{t-1} - 0.7741y_{t-2} + 0.2142y_{t-3} + w_t + 0.0696w_{t-1} + 0.2021w_{t-2}-0.8341w_{t-3}-0.0649w_{t-4}
+y_t = 0.8004y_{t-1} - 0.3574y_{t-2} + 0.1405y_{t-3} + w_t - 1.2473w_{t-1} + 0.2672w_{t-2}
 $$
 
 
@@ -1587,7 +1608,10 @@ $$
 
 ::: panel-tabset
 
-## Crude Oil
+### Crude Oil
+
+- Best Model by AIC (and AICc) and BIC is : ARIMA(2,1,1)
+- Second Best would be (2,1,2)
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
@@ -1596,26 +1620,27 @@ $$
 #| output: true
 
 #Fitting ARIMA
-fit_crudeoil2 <- Arima(diff(oil_log_ts), order=c(2, 1, 1),include.drift = TRUE) 
+fit_crudeoil2 <- Arima(diff(oil_log_ts), order=c(2, 1, 2),include.drift = TRUE) 
 summary(fit_crudeoil2)
 ```
 
 
-**Coefficients:** This model is simpler, with two AR and one MA parameters. Notably, the MA coefficient is -1.
+**Coefficients:** This model is simpler, with two AR and two MA parameters
 **Drift:** Similar to the best model, the drift is zero.
 
 
-For the Best Model (ARIMA(2,1,1)):
+For the Best Model (ARIMA(2,1,2)):
 Given the coefficients:
 
-- AR1: 0.5844
-- AR2: -0.2242
-- MA1: -1.0000
+- AR1: 0.9519
+- AR2: -0.4028
+- MA1: -1.4107 
+- MA2: 0.4107 
 
-The equation for the ARIMA(2,1,1) model, ignoring the drift since it's 0, would be:
+The equation for the ARIMA(2,1,2) model, ignoring the drift since it's 0, would be:
 
 $$
-y_t = 0.5844y_{t-1} - 0.2242y_{t-2} + w_t - 1.00 w_{t-1}
+y_t = 0.9519y_{t-1} - 0.4028y_{t-2} + w_t - 1.4107w_{t-1} + 0.4107w_{t-2}
 $$
 
 
@@ -1625,7 +1650,10 @@ Given these points, the ARIMA(2,1,1) model appears to have a slight edge in term
 
 
 
-## Natural Gas
+### Natural Gas
+
+- Best Model by AIC (and AICc): ARIMA(3,1,1)
+- Second Best Model by BIC: ARIMA(1,1,1)
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
@@ -1647,20 +1675,23 @@ For the Best Model (ARIMA(1,1,1)):
 
 Given the coefficients:
 
-- AR1: -0.1999 
+- AR1: -0.2018
 - MA1: -1.0
 
 
 The equation for the ARIMA(1,1,1) model:
 
 $$
-x_t = - 0.1999x_{t-1} + w_t - 1.0w_{t-1}
+x_t = - 0.2018x_{t-1} + w_t - 1.0w_{t-1}
 $$
 
 
 
 
-## Electricity
+### Electricity
+
+- Best Model by AIC, BIC, and AICc (ARIMA(4,1,4))
+- Second best model: ARIMA(7,1,2)
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
@@ -1669,12 +1700,58 @@ $$
 #| output: true
 
 #Fitting ARIMA
-fit_electricity2 <- Arima(diff(electricity_log_ts), order=c(3, 1, 2),include.drift = TRUE) 
+fit_electricity2 <- Arima(diff(electricity_log_ts), order=c(7, 1, 2),include.drift = TRUE) 
 summary(fit_electricity2)
 
 ```
 
-**Coefficients:** The model includes three autoregressive terms (ar1, ar2) and two moving average terms (ma1, ma2), with all coefficients having significant values.
+**Coefficients:** The model includes seven autoregressive terms and two moving average terms (ma1, ma2), with all coefficients having significant values.
+**Drift:** The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.
+
+
+For the Best Model (ARIMA(7,1,2)):
+
+Given the coefficients:
+
+- AR1: 0.9323
+- AR2: -0.4164 
+- AR3: -0.2322
+- AR4: -0.1740
+- AR5: 0.0383
+- AR6: 0.1052
+- AR7: -0.5193
+- MA1: -1.7405
+- MA2: 0.9597
+
+
+The equation for the ARIMA(7,1,2) model:
+
+$$
+x_t = 0.9323x_{t-1} - 0.4164x_{t-2} - 0.2322x_{t-3} - 0.1740x_{t-4} + 0.0383x_{t-5} + 0.1052x_{t-6} - 0.5193x_{t-7} + w_t - 1.7405w_{t-1} + 0.9597w_{t-2}
+$$
+
+
+
+
+### GDP
+
+- Best Model by AIC, BIC and AICc: ARIMA(1,1,1)
+- Second Best Model: ARIMA(3,1,2)
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Fitting ARIMA'
+#| warning: false
+#| output: true
+
+#Fitting ARIMA
+fit_gdp_a2 <- Arima(diff(gdp_log_ts), order=c(3, 1, 2),include.drift = TRUE) 
+summary(fit_gdp_a2)
+
+```
+
+
+**Coefficients:** The model includes three autoregressive terms (ar1, ar2, ar3) and two moving average terms (ma1, ma2), with all coefficients having significant values.
 **Drift:** The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.
 
 
@@ -1682,23 +1759,23 @@ For the Best Model (ARIMA(3,1,2)):
 
 Given the coefficients:
 
-- AR1: 1.2344
-- AR2: -0.4796
-- AR3: -0.1080 
-- MA1: -1.8302
-- MA2: 0.8422
+- AR1: 0.3440
+- AR2: 0.1100
+- AR3: 0.0416
+- MA1: -1.4101
+- MA2: 0.4101
 
 
 The equation for the ARIMA(3,1,2) model:
 
 $$
-x_t = 1.2344x_{t-1} - 0.4796x_{t-2} - 0.1080 x_{t-3} + w_t - 1.8302w_{t-1} + 0.8422w_{t-2}
+x_t = 0.3440x_{t-1} + 0.1100x_{t-2} + 0.0416x_{t-3} + w_t - 1.4101w_{t-1} + 0.4101w_{t-2} 
 $$
 
+### CPI
 
-
-
-## GDP
+- Best Model by AIC and AICc: ARIMA(3,1,2)
+- Second Best Model: ARIMA(3,1,3)
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
@@ -1707,63 +1784,31 @@ $$
 #| output: true
 
 #Fitting ARIMA
-fit_gdp_a2 <- Arima(diff(gdp_log_ts), order=c(1, 1, 1),include.drift = TRUE) 
-summary(fit_gdp_a2)
-
-```
-
-
-**Coefficients:** The model includes one autoregressive terms (ar1) and one moving average terms (ma1), with all coefficients having significant values.
-**Drift:** The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.
-
-
-For the Best Model (ARIMA(1,1,1)):
-
-Given the coefficients:
-
-- AR1: 0.1754
-- MA1: -0.9547
-
-
-The equation for the ARIMA(1,1,1) model:
-
-$$
-x_t = 0.1754x_{t-1} + w_t -0.9547w_{t-1} 
-$$
-
-## CPI
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Fitting ARIMA'
-#| warning: false
-#| output: true
-
-#Fitting ARIMA
-fit_cpi_a2 <- Arima(diff(cpi_log_ts), order=c(1, 1, 2),include.drift = TRUE) 
+fit_cpi_a2 <- Arima(diff(cpi_log_ts), order=c(3, 1, 3),include.drift = TRUE) 
 summary(fit_cpi_a2)
 
 ```
 
-
-
-**Coefficients:** The model includes one autoregressive terms (ar1) and two moving average terms (ma1, ma2), with all coefficients having significant values.
+**Coefficients:** The model includes three autoregressive terms (ar1, ar2, ar3) and three moving average terms (ma1, ma2, ma3), with all coefficients having significant values.
 **Drift:** The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.
 
 
-For the Best Model (ARIMA(1,1,2)):
+For the Best Model (ARIMA(3,1,3)):
 
 Given the coefficients:
 
-- AR1: 0.1208 
-- MA1: -0.6728
-- MA2: -0.1731
+- AR1: 0.0195 
+- AR2: -0.6767
+- AR3: 0.3641 
+- MA1: -0.4767
+- MA2: 0.2965 
+- MA3: -0.7575
 
 
-The equation for the ARIMA(1,1,2) model:
+The equation for the ARIMA(3,1,3) model:
 
 $$
-x_t = 0.1208 x_{t-1} + w_t -0.6728w_{t-1} -0.1731w_{t-2}
+x_t = 0.0195 x_{t-1} - 0.6767 x_{t-2} + 0.3641 x_{t-3} + w_t - 0.4767 w_{t-1} + 0.2965 w_{t-2} - 0.7575 w_{t-3}
 $$
 
 
@@ -1789,7 +1834,7 @@ $$
 #| output: true
 
 set.seed(222)
-diag_crudeoil <- capture.output(sarima(oil_log_ts, 2,1,0))
+diag_crudeoil <- capture.output(sarima(oil_log_ts, 2,1,1))
 
 ```
 
@@ -1829,7 +1874,7 @@ diag_ng <- capture.output(sarima(oil_log_ts, 3,1,1))
 #| output: true
 
 set.seed(222)
-diag_electricity <- capture.output(sarima(electricity_log_ts, 2,1,7))
+diag_electricity <- capture.output(sarima(electricity_log_ts, 4,1,4))
 
 ```
 
@@ -1842,7 +1887,7 @@ diag_electricity <- capture.output(sarima(electricity_log_ts, 2,1,7))
 #| output: true
 
 set.seed(222)
-diag_gdp <- capture.output(sarima(gdp_log_ts, 1,1,2))
+diag_gdp <- capture.output(sarima(gdp_log_ts, 1,1,1))
 
 ```
 
@@ -1855,7 +1900,7 @@ diag_gdp <- capture.output(sarima(gdp_log_ts, 1,1,2))
 #| output: true
 
 set.seed(222)
-diag_cpi <- capture.output(sarima(cpi_log_ts, 1,1,2))
+diag_cpi <- capture.output(sarima(cpi_log_ts, 3,1,2))
 
 ```
 
@@ -2128,6 +2173,10 @@ autoplot(cpi_log_ts) +
   guides(colour=guide_legend(title="Forecast"))
 
 ```
+
+
+
+
 
 
 ## 

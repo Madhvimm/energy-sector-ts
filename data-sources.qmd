@@ -314,7 +314,7 @@ options("getSymbols.warning4.0"=FALSE)
 options("getSymbols.yahoo.warning"=FALSE)
 
 #Fetching stock data for Exxon Mobil
-exxon_data <- getSymbols("XOM", from = "1984-10-01", to = "2024-01-01", auto.assign = TRUE)
+exxon_data <- getSymbols("XOM", from = "1990-01-01", to = "2024-01-01", auto.assign = TRUE)
 xom_stock <- data.frame(Date = index(XOM), XOM.Adjusted = XOM$XOM.Adjusted)
 
 
@@ -348,7 +348,7 @@ options("getSymbols.warning4.0"=FALSE)
 options("getSymbols.yahoo.warning"=FALSE)
 
 #Fetching stock data for Chevron Corporation
-chevron_data <- getSymbols("CVX", from = "1984-10-01", to = "2024-01-01", auto.assign = TRUE)
+chevron_data <- getSymbols("CVX", from = "1990-01-01", to = "2024-01-01", auto.assign = TRUE)
 cvx_stock <- data.frame(Date = index(CVX), CVX.Adjusted = CVX$CVX.Adjusted)
 
 

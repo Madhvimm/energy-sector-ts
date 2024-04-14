@@ -81,6 +81,8 @@ description_counts
 
 ```
 
+
+
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
 #| code-summary: 'Importing Libraries'
@@ -139,9 +141,6 @@ The time series plot for crude oil showcases the historical refiner acquisition 
 #| warning: false
 #| output: false
 
-
-# Set the working directory
-setwd("/Users/madhvimalhotra/Downloads/Spring 2024/Energy Time Series Poject/energy-sector")
 
 # Construct the file path
 file_path <- file.path(getwd(), "MER_T09_10_NATURAL GAS PRICES.csv")
@@ -336,6 +335,9 @@ gdp_data <- read.csv("GDP.csv")
 
 colnames(gdp_data)
 
+str(gdp_data)
+
+gdp_data$DATE <- as.Date(gdp_data$DATE, format = "%m/%d/%y")
 
 # Convert DATE column to Date format if necessary
 gdp_data$DATE <- as.Date(gdp_data$DATE)
@@ -402,9 +404,12 @@ We can also observe that the log-transformed graph has linearized the exponentia
 cpi_data <- read.csv("CPIAUCSL.csv")
 
 colnames(cpi_data)
+str(cpi_data)
+
 
 # Convert DATE column to Date format if necessary
-cpi_data$DATE <- as.Date(cpi_data$DATE)
+cpi_data$DATE <- as.Date(cpi_data$DATE, format = "%m/%d/%y")
+
 
 # Handle NA values by removing rows with NA if you haven't done it already
 cpi_data <- na.omit(cpi_data)
@@ -517,11 +522,19 @@ oil_log_ts <- ts(composite_crude_oil_prices$LOG_Value, start=c(start_year, start
 start_year_gas <- as.numeric(format(min(citygate_gas_prices$Date), "%Y"))
 start_month_gas <- as.numeric(format(min(citygate_gas_prices$Date), "%m"))
 citygate_gas_ts <- ts(citygate_gas_prices$Value, start=c(start_year_gas, start_month_gas), frequency=12)
+# Log-transform Value
+citygate_gas_prices$LOG_Value <- log(citygate_gas_prices$Value)
+gas_log_ts <- ts(citygate_gas_prices$LOG_Value, start=c(start_year_gas, start_month_gas), frequency=12)
 
 # For Electricity
 start_year_elec <- as.numeric(format(min(total_electricity_prices$Date), "%Y"))
 start_month_elec <- as.numeric(format(min(total_electricity_prices$Date), "%m"))
 total_electricity_ts <- ts(total_electricity_prices$Value, start=c(start_year_elec, start_month_elec), frequency=12)
+# Log-transform Value
+total_electricity_prices$LOG_Value <- log(total_electricity_prices$Value)
+elect_log_ts <- ts(total_electricity_prices$LOG_Value, start=c(start_year_elec, start_month_elec), frequency=12)
+
+
 
 # For GDP (it's quarterly)
 start_year_gdp <- as.numeric(format(min(gdp_data$DATE), "%Y"))
@@ -578,10 +591,10 @@ The lag plots for the Cost of Crude Oil reveal a positive autocorrelation. The p
 #| output: true
 
 #Create lag plot
-gglagplot(citygate_gas_ts, do.lines=FALSE) + 
+gglagplot(gas_log_ts, do.lines=FALSE) + 
   xlab("Lags") + 
   ylab("Price (USD)") + 
-  ggtitle("Lag Plot for Natural Gas Price") + 
+  ggtitle("Lag Plot for Natural Gas Price (Log)") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -605,10 +618,10 @@ Natural Gas Price lag plots display a positive autocorrelation, especially evide
 #| output: true
 
 # Create lag plot
-gglagplot(total_electricity_ts, do.lines=FALSE) + 
+gglagplot(elect_log_ts, do.lines=FALSE) + 
   xlab("Lags") + 
   ylab("Price (Cents per Kilowatthour)") + 
-  ggtitle("Lag Plot for Average Price of Electricity to Ultimate Customers") + 
+  ggtitle("Lag Plot for Average Price of Electricity (Log)") + 
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) + 
   theme_bw()+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -732,7 +745,7 @@ The decomposition plot for the Cost of Crude Oil offers a comprehensive view of 
 #| output: true
 
 #Plot the decomposed ts
-decomposed_natural_gas <- ts_decompose(citygate_gas_ts, "multiplicative",showline = TRUE)
+decomposed_natural_gas <- ts_decompose(gas_log_ts, "multiplicative",showline = TRUE)
 decomposed_natural_gas
 ```
 
@@ -756,7 +769,7 @@ The decomposition plot for the Natural Gas Price offers a comprehensive view of 
 #| output: true
 
 #Plot the decomposed ts
-decomposed_electricity <- ts_decompose(total_electricity_ts, "multiplicative",showline = TRUE)
+decomposed_electricity <- ts_decompose(elect_log_ts, "multiplicative",showline = TRUE)
 decomposed_electricity
 
 ```
@@ -896,15 +909,15 @@ The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1 and 2
 #| output: true
 
 # ACF and PACF for Natural Gas
-natural_gas_acf <- ggAcf(citygate_gas_ts) + 
-  ggtitle("ACF Plot for Natural Gas Price") + 
+natural_gas_acf <- ggAcf(gas_log_ts) + 
+  ggtitle("ACF Plot for Natural Gas Price (Log)") + 
   theme_bw() +
   geom_segment(lineend = "butt", color = "#99494d") +
   geom_hline(yintercept = 0, color = "#99494d") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-natural_gas_pacf <- ggPacf(citygate_gas_ts) + 
-  ggtitle("PACF Plot for Natural Gas Price") + 
+natural_gas_pacf <- ggPacf(gas_log_ts) + 
+  ggtitle("PACF Plot for Natural Gas Price (Log)") + 
   theme_bw() +
   geom_segment(lineend = "butt", color = "#99494d") +
   geom_hline(yintercept = 0, color = "#99494d") +
@@ -933,22 +946,21 @@ The ACF and PACF plots suggest considering an ARIMA model with 'p' to be 1 and 2
 #| output: true
 
 # ACF and PACF for Electricity
-electricity_acf <- ggAcf(total_electricity_ts) + 
-  ggtitle("ACF Plot for Average Price of Electricity to Ultimate Customers") + 
+electricity_acf <- ggAcf(elect_log_ts) + 
+  ggtitle("ACF Plot for Average Price of Electricity (Log)") + 
   theme_bw() +
   geom_segment(lineend = "butt", color = "#99494d") +
   geom_hline(yintercept = 0, color = "#99494d")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-electricity_pacf <- ggPacf(total_electricity_ts) + 
-  ggtitle("PACF Plot for Average Price of Electricity to Ultimate Customers") + 
+electricity_pacf <- ggPacf(elect_log_ts) + 
+  ggtitle("PACF Plot for Average Price of Electricity (Log)") + 
   theme_bw() +
   geom_segment(lineend = "butt", color = "#99494d") +
   geom_hline(yintercept = 0, color = "#99494d")+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 grid.arrange(electricity_acf, electricity_pacf, nrow = 2)
-
 
 ```
 
@@ -1078,7 +1090,7 @@ Since the p-value is greater than 0.05, we do not reject the null hypothesis and
 #| output: true
 
 # Dickey-Fuller Test for Natural Gas
-adf_test_natural_gas <- tseries::adf.test(citygate_gas_ts)
+adf_test_natural_gas <- tseries::adf.test(gas_log_ts)
 
 # Display the test results
 adf_test_natural_gas
@@ -1099,7 +1111,7 @@ The p-value suggests that the natural gas price series is non-stationary, reinfo
 #| output: true
 
 # Dickey-Fuller Test for Electricity
-adf_test_electricity <- tseries::adf.test(total_electricity_ts)
+adf_test_electricity <- tseries::adf.test(elect_log_ts)
 
 # Display the test results
 adf_test_electricity
@@ -1236,7 +1248,7 @@ The differenced series shows fluctuations around zero, indicative of improved st
 #| output: false
 
 # Detrending using the original data frame
-fit_natural_gas <- lm(Value ~ Date, data = citygate_gas_prices, na.action = NULL)
+fit_natural_gas <- lm(LOG_Value ~ Date, data = citygate_gas_prices, na.action = NULL)
 
 # Convert residuals to a ts object for plotting
 resid_natural_gas_ts <- ts(resid(fit_natural_gas), start=c(start_year_gas, start_month_gas), frequency=12)
@@ -1254,15 +1266,15 @@ plot1_natural_gas <- autoplot(resid_natural_gas_ts, series="Detrended Natural Ga
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
-  ggtitle("Detrended Natural Gas") +
+  ggtitle("Detrended Natural Gas (Log)") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Differencing plot
-plot2_natural_gas <- autoplot(diff(citygate_gas_ts), series = "First Difference Natural Gas", colour = "#99494d") + 
+plot2_natural_gas <- autoplot(diff(gas_log_ts), series = "First Difference Natural Gas", colour = "#99494d") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
-  ggtitle("First Difference Natural Gas") +
+  ggtitle("First Difference Natural Gas (Log)") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Arrange plots
@@ -1291,7 +1303,7 @@ Consistent mean but varying volatility and a spike around 2020, which could be d
 #| output: false
 
 # Detrending using the original data frame
-fit_electricity <- lm(Value ~ Date, data = total_electricity_prices, na.action = NULL)
+fit_electricity <- lm(LOG_Value ~ Date, data = total_electricity_prices, na.action = NULL)
 
 # Convert residuals to a ts object for plotting
 resid_electricity_ts <- ts(resid(fit_electricity), start=c(start_year_elec, start_month_elec), frequency=12)
@@ -1309,15 +1321,15 @@ plot1_electricity <- autoplot(resid_electricity_ts, series="Detrended Electricit
   theme_bw() +
   xlab("Time") +
   ylab("Residuals") +
-  ggtitle("Detrended Electricity") +
+  ggtitle("Detrended Electricity (Log)") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Differencing plot
-plot2_electricity <- autoplot(diff(total_electricity_ts), series = "First Difference Electricity", colour = "#99494d") + 
+plot2_electricity <- autoplot(diff(elect_log_ts), series = "First Difference Electricity", colour = "#99494d") + 
   theme_bw() +
   xlab("Time") +
   ylab("Differences") +
-  ggtitle("First Difference Electricity") +
+  ggtitle("First Difference Electricity (Log)") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #Arrange plots
@@ -1560,15 +1572,17 @@ plotly::ggplotly(p)
 #| output: true
 
 natural_gas_df <- data.frame(
-  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(citygate_gas_ts)),
-  Value = as.vector(citygate_gas_ts)
+  Date = seq(as.Date("1973-10-01"), by = "month", length.out = length(gas_log_ts)),
+  LOG_Value = as.vector(gas_log_ts)
 )
 
+#head(natural_gas_df)
+
 # Calculate moving averages with the specified window sizes
-natural_gas_df$ma5 <- zoo::rollmean(natural_gas_df$Value, 5, mean, fill = NA, align = "right")
-natural_gas_df$ma15 <- zoo::rollmean(natural_gas_df$Value, 15, mean, fill = NA, align = "right")
-natural_gas_df$ma20 <- zoo::rollmean(natural_gas_df$Value, 20, mean, fill = NA, align = "right")
-natural_gas_df$ma30 <- zoo::rollmean(natural_gas_df$Value, 30, mean, fill = NA, align = "right")
+natural_gas_df$ma5 <- zoo::rollmean(natural_gas_df$LOG_Value, 5, mean, fill = NA, align = "right")
+natural_gas_df$ma15 <- zoo::rollmean(natural_gas_df$LOG_Value, 15, mean, fill = NA, align = "right")
+natural_gas_df$ma20 <- zoo::rollmean(natural_gas_df$LOG_Value, 20, mean, fill = NA, align = "right")
+natural_gas_df$ma30 <- zoo::rollmean(natural_gas_df$LOG_Value, 30, mean, fill = NA, align = "right")
 
 ```
 
@@ -1582,13 +1596,13 @@ natural_gas_df$ma30 <- zoo::rollmean(natural_gas_df$Value, 30, mean, fill = NA, 
 
 #Ggplot
 p_ng <- ggplot(natural_gas_df, aes(x = Date)) + 
-  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = LOG_Value, color = "Actual Data")) +
   geom_line(aes(y = ma5, color = "5-MA")) +
   geom_line(aes(y = ma15, color = "15-MA")) +
   geom_line(aes(y = ma20, color = "20-MA")) +
   geom_line(aes(y = ma30, color = "30-MA")) +
   xlab("Time") + ylab("Value (Price)") +
-  ggtitle('Natural Gas Price with Moving Averages') +
+  ggtitle('Natural Gas Price with Moving Averages (Log)') +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
@@ -1608,10 +1622,10 @@ plotly::ggplotly(p_ng)
 #| output: true
 
 # Calculate moving averages with the specified window sizes
-total_electricity_prices$ma5 <- zoo::rollmean(total_electricity_prices$Value, 5, mean, fill = NA, align = "right")
-total_electricity_prices$ma15 <- zoo::rollmean(total_electricity_prices$Value, 15, mean, fill = NA, align = "right")
-total_electricity_prices$ma20 <- zoo::rollmean(total_electricity_prices$Value, 20, mean, fill = NA, align = "right")
-total_electricity_prices$ma30 <- zoo::rollmean(total_electricity_prices$Value, 30, mean, fill = NA, align = "right")
+total_electricity_prices$ma5 <- zoo::rollmean(total_electricity_prices$LOG_Value, 5, mean, fill = NA, align = "right")
+total_electricity_prices$ma15 <- zoo::rollmean(total_electricity_prices$LOG_Value, 15, mean, fill = NA, align = "right")
+total_electricity_prices$ma20 <- zoo::rollmean(total_electricity_prices$LOG_Value, 20, mean, fill = NA, align = "right")
+total_electricity_prices$ma30 <- zoo::rollmean(total_electricity_prices$LOG_Value, 30, mean, fill = NA, align = "right")
 ```
 
 
@@ -1624,13 +1638,13 @@ total_electricity_prices$ma30 <- zoo::rollmean(total_electricity_prices$Value, 3
 
 #Ggplot
 p_electricity <- ggplot(total_electricity_prices, aes(x = Date)) + 
-  geom_line(aes(y = Value, color = "Actual Data")) +
+  geom_line(aes(y = LOG_Value, color = "Actual Data")) +
   geom_line(aes(y = ma5, color = "5-MA")) +
   geom_line(aes(y = ma15, color = "15-MA")) +
   geom_line(aes(y = ma20, color = "20-MA")) +
   geom_line(aes(y = ma30, color = "30-MA")) +
   xlab("Time") + ylab("Price (Cents per Kilowatthour)") +
-  ggtitle('Electricity Price with Moving Averages') +
+  ggtitle('Electricity Price with Moving Averages (Log)') +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
