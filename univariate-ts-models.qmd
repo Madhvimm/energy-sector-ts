@@ -2408,7 +2408,7 @@ autoplot(cpi_log_ts) +
 :::
 
 
-#SARIMA
+# SARIMA
 
 We can observe that in some of the datasets, there is clear seasonality. The three seasonal datasets are: Crude Oil, Electricity, and CPI. For these datasets, we need seasonal differencing and thus we will use SARIMA model.
 
