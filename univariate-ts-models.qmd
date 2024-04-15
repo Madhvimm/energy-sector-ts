@@ -1223,6 +1223,8 @@ When selecting the best ARIMA model for forecasting natural gas prices, it's com
 ## Electricity
 
 p = 1, 2, 3 (considering the significant spike at the first lag)
+
+
 q = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 
 
@@ -1775,7 +1777,7 @@ $$
 - ARIMA(3,1,6) includes additional autoregressive terms which seem to capture more complexity in the data dynamics
 
 
-Given these considerations, the **ARIMA(3,1,6)** model is better for the series
+Considering everything, even though the ARIMA(3,1,6) model seems to have a slight edge as shown by its lower AIC and slightly more accurate predictions, I would opt for **ARIMA(2,1,3)** model. ARIMA(2,1,3) model is less complex, which can make it more reliable when we use it to predict future prices.
 
 
 ### GDP
@@ -1982,7 +1984,6 @@ Based on these diagnostics, the ARIMA(3,1,1) model seems to be adequately fittin
 
 ## Electricity
 
-ARIMA(3,1,6)
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
@@ -1992,15 +1993,15 @@ ARIMA(3,1,6)
 
 set.seed(222)
 ## Fit the Best Model
-diag_electricity <- capture.output(sarima(electricity_log_ts, 3,1,6))
+diag_electricity <- capture.output(sarima(electricity_log_ts, 2,1,3))
 #print(diag_electricity)
-cat(diag_electricity[79:98], diag_electricity[length(diag_electricity)], sep = "\n")
+cat(diag_electricity[64:79], diag_electricity[length(diag_electricity)], sep = "\n")
 ```
 
 
 **Standardized Residuals**: The plot of standardized residuals doesn't exhibit any obvious patterns, trends, or seasonality, which suggests that the model has captured the underlying process well. The residuals fluctuate around the zero line within a consistent range, indicating that the variance of the residuals is stable over time.
 
-**ACF of Residuals**: The autocorrelation function (ACF) plot for the residuals exhibits no spikes outside the blue dashed confidence intervals, suggesting that the residuals are white noise, which means they do not exhibit autocorrelation.
+**ACF of Residuals**: The autocorrelation function (ACF) plot for the residuals does exhibits spikes outside the blue dashed confidence intervals, suggesting that there is autocorrelation.
 
 **Q-Q Plot of Std Residuals**: which assesses the normality of the residuals, shows an acceptable alignment
 
@@ -2008,9 +2009,10 @@ cat(diag_electricity[79:98], diag_electricity[length(diag_electricity)], sep = "
 
 **Model Coefficients**: The coefficients of the ARIMA model are statistically significant, with p-values below the 0.05 threshold, indicating they contribute meaningfully to the model.
 
+
 Considering the log likelihood and the information criteria (AIC, AICc, BIC), the model seems to be well-fitted. A higher log likelihood and lower information criteria values generally indicate a better model fit.
 
-Based on these diagnostics, the ARIMA(3,1,6) model seems to be adequately fitting the data.
+Based on these diagnostics, we need further analysis for our model ARIMA(2,1,3)
 
 
 
@@ -2227,15 +2229,30 @@ The actual forecast (the line within the shaded area) appears to stay around the
 
 ## Electricity
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Forecasting'
 #| warning: false
 #| output: true
 
-fit_electricity %>% forecast(h=36) %>% autoplot()
+
+#Forecasting the next 36
+forecast_elect2 <- forecast(fit_electricity, h=36)
+
+#Plotting the forecast
+autoplot(forecast_elect2) + 
+  labs(title="Forecast for Electricty Prices", 
+       x="Year", y="Logged Prices", 
+       caption="Forecast using ARIMA(2,1,3)") +
+  theme_minimal()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
 
 ```
+
+
+The forecast line (within the shaded area) staying around the level of the most recent observations indicates that the ARIMA(2,1,3) model doesn't project any significant increase or decrease in prices. The wide confidence intervals suggest there is a considerable amount of uncertainty in the forecast. This uncertainty might arise from the natural volatility in electricity prices or seasonality.
+
 
 ## GDP
 
@@ -2376,29 +2393,63 @@ These accuracy measures indicate that the ARIMA(3,1,1) model is providing foreca
 
 
 
-
 ## Electricity
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Comparing Benchmark'
 #| warning: false
 #| output: true
 
-autoplot(electricity_log_ts) +
-  autolayer(meanf(electricity_log_ts, h=36),
-            series="Mean", PI=FALSE) +
-  autolayer(naive(electricity_log_ts, h=36),
-            series="Naïve", PI=FALSE) +
-  autolayer(snaive(electricity_log_ts, h=36),
-            series="SNaïve", PI=FALSE)+
-  autolayer(rwf(electricity_log_ts, h=36, drift=TRUE),
-            series="Drift", PI=FALSE)+
-  autolayer(forecast(fit_electricity,36), 
-            series="fit",PI=FALSE) +
-  guides(colour=guide_legend(title="Forecast"))
+
+#Generate forecasts
+forecast_meanf_elec <- meanf(electricity_log_ts, h=36)
+forecast_naive_elec <- naive(electricity_log_ts, h=36)
+forecast_snaive_elec <- snaive(electricity_log_ts, h=36)
+forecast_rwf_elec <- rwf(electricity_log_ts, drift=TRUE, h=36) 
+forecast_arima_elec <- forecast(fit_electricity, h=36)
+
+#Plotting the forecasts
+autoplot(electricity_log_ts, series="Data") +
+  autolayer(forecast_meanf_elec, series="Mean Forecast", PI=FALSE) +
+  autolayer(forecast_naive_elec, series="Naive Forecast", PI=FALSE) +
+  autolayer(forecast_snaive_elec, series="Seasonal Naive Forecast", PI=FALSE) +
+  autolayer(forecast_rwf_elec, series="Drift", PI=FALSE) +
+  autolayer(forecast_arima_elec, series="ARIMA(2,1,3) Forecast", PI=FALSE) +
+  labs(title="Comparative Forecast for Electricity Prices",
+       x="Year", y="Logged Prices",
+       caption="Comparing ARIMA(2,1,3) with Benchmark Methods") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) +
+  guides(colour=guide_legend(title="Forecast Method")) +
+  scale_color_manual(values=c("Data"="#000000", "Mean Forecast"="red",
+                              "Naive Forecast"="green", "Seasonal Naive Forecast"="purple",
+                              "Drift"="orange", "ARIMA(2,1,3) Forecast"="blue"),
+                     breaks=c("Data", "Mean Forecast", "Naive Forecast",
+                              "Seasonal Naive Forecast", "Drift", "ARIMA(2,1,3) Forecast"))
+
+
+accuracy(forecast_arima_elec)
 
 ```
+
+We can observe the forecasts generated by different methods are quite close to each other, with only slight variations in their predicted future values. 
+
+- The mean forecast (Mean Forecast) is a flat red line suggesting that,electricity prices will remain at the last observed average level.
+
+- The naïve forecast (Naive Forecast) similar to the mean forecast, the naive method carries forward the last observed value. This forecast is also flat, indicating no change from the last observed price level.
+
+- Seasonal naïve forecast (Seasonal Naive Forecast) suggest a continuation of the last observed patterns. 
+
+- The random walk with drift forecast (Drift) shows a slight upward trend, indicating an expected gradual increase over time, likely accounting for the upward trend seen in the historical data. 
+
+These accuracy measures indicate that the ARIMA(2,1,3) model is providing forecasts that are consistent with the historical data, not deviating significantly from the patterns already observed, and is performing well against standard benchmarks.
+
+
+ACF1 close to zero would indicate no autocorrelation; however, a value of 0.223077 suggests some autocorrelation in the model residuals.
+
+The ARIMA(2,1,3) model generally captures the central tendency of the historical data, the presence of autocorrelation in the residuals indicates that there may be more information in the data.
+
 
 ## GDP
 
@@ -2458,12 +2509,12 @@ autoplot(cpi_log_ts) +
 We can observe that in some of the datasets, there is clear seasonality. The three seasonal datasets are: Crude Oil, Electricity, and CPI. For these datasets, we need seasonal differencing and thus we will use SARIMA model.
 
 
-## SARIMA ACF and PACF Plots
+# SARIMA ACF and PACF Plots
 
 
 ::: panel-tabset
 
-### Crude Oil
+## Crude Oil
 
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
@@ -2486,17 +2537,43 @@ D = 1
 Q = 1, 2
 
 
+
+
+## Electricity
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'SARIMA ACF-PACF'
+#| warning: false
+#| output: true
+
+#Seasonal differencing
+seasonally_diff_elec_log_ts <- diff(electricity_log_ts, lag=12)
+#ACF and PACF plots
+ggtsdisplay(seasonally_diff_elec_log_ts, main='Seasonally Differenced Electricity Prices')
+
+```
+
+Based on these graphs and examining the ACF and PACF plots, we can suggest a range of values for P and Q:
+
+P = 1, 2
+D = 1
+Q = 1, 2
+
+
+
 :::
 
 
 
-## Finding SARIMA Parameters (p, d, q)
+# Finding SARIMA Parameters (p, d, q)
 
 
 
 ::: panel-tabset
 
-### Crude Oil
+## Crude Oil
 
 p = 1, 2
 q = 1, 2, 3
@@ -2571,6 +2648,79 @@ and lowest BIC is ARIMA(0,1,1)[0,1,1]12.
 
 
 
+## Electricity
+
+p = 1, 2, 3
+q = 1 to 7
+d = 1
+D = 1
+P = 1, 2
+Q = 1, 2
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Parameters'
+#| warning: false
+#| output: true
+
+SARIMA.c=function(p1,p2,q1,q2,P1,P2,Q1,Q2,data){
+  
+  #K=(p2+1)*(q2+1)*(P2+1)*(Q2+1)
+  temp=c()
+  d = 1
+  D = 1
+  s = 12
+  
+  i=1
+  temp= data.frame()
+  ls=matrix(rep(NA,9*24),nrow=24)
+  
+  
+  for (p in p1:p2)
+  {
+    for(q in q1:q2)
+    {
+      for(P in P1:P2)
+      {
+        for(Q in Q1:Q2)
+        {
+          if(p+d+q+P+D+Q<=9)
+          {
+            model<- Arima(data,order=c(p-1,d,q-1),seasonal=c(P-1,D,Q-1))
+            ls[i,]= c(p-1,d,q-1,P-1,D,Q-1,model$aic,model$bic,model$aicc)
+            i=i+1
+            #print(i)
+            
+          }
+          
+        }
+      }
+    }
+    
+  }
+  
+  temp= as.data.frame(ls)
+  names(temp)= c("p","d","q","P","D","Q","AIC","BIC","AICc")
+  
+  temp
+}
+
+output=SARIMA.c(p1=1,p2=3,q1=1,q2=7,P1=1,P2=2,Q1=1,Q2=2,data=electricity_log_ts)
+
+
+knitr::kable(output)
+
+output[which.min(output$AIC),]
+output[which.min(output$BIC),]
+output[which.min(output$AICc),]
+
+```
+
+
+
+The model with the lowest AIC and AICc is ARIMA(1,1,0)(0,1,1)[12].
+and lowest BIC is ARIMA(0,1,0)(0,1,1)[12].
+
 
 
 :::
@@ -2578,12 +2728,12 @@ and lowest BIC is ARIMA(0,1,1)[0,1,1]12.
 
 
 
-## SARIMA Full Model Diagnostics
+# SARIMA Full Model Diagnostics
 
 ::: panel-tabset
 
 
-### Crude Oil
+## Crude Oil
 
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
@@ -2606,20 +2756,43 @@ $$
 
 
 
+## Electricity
+ARIMA(1,1,0)(0,1,1)[12].
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'SARIMA Fit'
+#| warning: false
+#| output: true
+
+set.seed(222)
+model_output_e <- capture.output(sarima(electricity_log_ts, 1,1,0,0,1,1,12))
+#model_output_e
+cat(model_output_e[21:32], model_output_e[length(model_output_e)], sep = "\n") 
+
+```
+Equation:
+
+$$
+x_t = - 0.0944 x_{t-1} - 0.7530 + a_t
+$$
+
+
+
 :::
 
 
-## Auto ARIMA
+# Auto ARIMA
 
 ::: panel-tabset
 
 
-### Crude Oil
+## Crude Oil
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Auto Arima'
 #| warning: false
 #| output: true
 
@@ -2630,21 +2803,34 @@ auto.arima(oil_log_ts)
 
 
 
+## Electricity
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Auto Arima'
+#| warning: false
+#| output: true
+
+auto.arima(electricity_log_ts)
+
+```
+
 
 
 :::
 
 
-## Forecasting
+# Forecasting SARIMA
 
 ::: panel-tabset
 
 
-### Crude Oil
+## Crude Oil
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Forecasting SARIMA'
 #| warning: false
 #| output: true
 
@@ -2657,20 +2843,41 @@ fit_oil_s %>% forecast(h=36) %>% autoplot()+theme_bw()
 
 
 
+## Electricity
+
+ARIMA(1,1,0)(0,1,1)[12].
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Forecasting SARIMA'
+#| warning: false
+#| output: true
+
+
+fit_elec_s <- Arima(electricity_log_ts, order=c(1,1,0), seasonal=c(0,1,1))
+
+# forecast next three years
+fit_elec_s %>% forecast(h=36) %>% autoplot()+theme_bw() 
+```
+
+
+
+
+
 :::
 
 
 
-## Comparing SARIMA With Benchmark
+# Comparing SARIMA With Benchmark
 
 ::: panel-tabset
 
 
-### Crude Oil
+## Crude Oil
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Comparing SARIMA Benchmark'
 #| warning: false
 #| output: true
 
@@ -2693,25 +2900,53 @@ SNaive benchmark appears to have a trend line most similar to the previous years
 
 
 
+## Electricity
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Comparing SARIMA Benchmark'
+#| warning: false
+#| output: true
+
+autoplot(electricity_log_ts) +
+  autolayer(meanf(electricity_log_ts, h=36),
+            series="Mean", PI=FALSE) +
+  autolayer(naive(electricity_log_ts, h=36),
+            series="Naïve", PI=FALSE) +
+  autolayer(snaive(electricity_log_ts, h=36),
+            series="SNaïve", PI=FALSE)+
+  autolayer(rwf(electricity_log_ts, h=36, drift=TRUE),
+            series="Drift", PI=FALSE)+
+  autolayer(forecast(fit_elec_s,36), 
+            series="fit",PI=FALSE) +
+  guides(colour=guide_legend(title="Forecast")) +theme_bw() 
+```
+
+SNaive benchmark appears to have a trend line most similar to the previous years
+
+
+
+
+
 
 :::
 
 
 
 
-## Cross-Validation
+# Cross-Validation
 
 ::: panel-tabset
 
 
-### Crude Oil
+## Crude Oil
 
 The best model for this dataset using manual selection is ARIMA(0,1,2)(0,1,1)[12], while the auto arima model is ARIMA(2,1,0)(1,0,0)[12].
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'CV'
 #| warning: false
 #| output: true
 
@@ -2735,6 +2970,54 @@ for(i in 1:5)
   fcast <- forecast(fit, h=12)
   # Auto Arima
   fit2 <- Arima(xtrain, order=c(2,1,0), seasonal=list(order=c(1,0,0), period=12),
+                include.drift=TRUE, method="ML")
+  fcast2 <- forecast(fit2, h=12)
+  
+  mae1[i,] <- abs(fcast$mean-xtest)
+  mae2[i,] <- abs(fcast2$mean-xtest)
+  
+}
+
+plot(1:12, colMeans(mae1,na.rm=TRUE), type="l", col=2, xlab="horizon", ylab="MAE")
+lines(1:12, colMeans(mae2,na.rm=TRUE), type="l",col=3)
+legend("topleft",legend=c("Manual Model","Auto Arima"),col=2:4,lty=1)
+```
+
+
+
+
+
+## Electricity
+
+The best model for this dataset using manual selection is ARIMA(1,1,0)(0,1,1)[12], while the auto arima model is ARIMA(0,1,1)(0,1,1)[12].
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'CV'
+#| warning: false
+#| output: true
+
+
+#n=length(electricity_log_ts)
+#n-k=50; 96/12=5; 
+k=51
+mae1 <- matrix(NA, 5,12) # change to 5
+mae2 <- matrix(NA,5,12)
+
+st <- tsp(electricity_log_ts)[1]+(k-1)/12 #48 observations
+# put up to 5 because 96/12 = 5
+for(i in 1:5)
+{
+  #xtrain <- window(a10, start=st+(i-k+1)/12, end=st+i/12)
+  xtrain <- window(electricity_log_ts, end=st + i-1)
+  xtest <- window(electricity_log_ts, start=st + (i-1) + 1/12, end=st + i)
+  # Manual model
+  fit <- Arima(xtrain, order=c(1,1,0), seasonal=list(order=c(0,1,1), period=12),
+                include.drift=TRUE, method="ML")
+  fcast <- forecast(fit, h=12)
+  # Auto Arima
+  fit2 <- Arima(xtrain, order=c(0,1,1), seasonal=list(order=c(0,1,1), period=12),
                 include.drift=TRUE, method="ML")
   fcast2 <- forecast(fit2, h=12)
   
