@@ -216,7 +216,16 @@ window.Quarto = {
   <li><a href="#model-diagnostics" id="toc-model-diagnostics" class="nav-link" data-scroll-target="#model-diagnostics">Model Diagnostics</a></li>
   <li><a href="#auto.arima" id="toc-auto.arima" class="nav-link" data-scroll-target="#auto.arima">Auto.Arima()</a></li>
   <li><a href="#forecasting" id="toc-forecasting" class="nav-link" data-scroll-target="#forecasting">Forecasting</a></li>
-  <li><a href="#comparing-with-benchmark-methods" id="toc-comparing-with-benchmark-methods" class="nav-link" data-scroll-target="#comparing-with-benchmark-methods">Comparing with Benchmark Methods</a></li>
+  <li><a href="#comparing-with-benchmark-methods" id="toc-comparing-with-benchmark-methods" class="nav-link" data-scroll-target="#comparing-with-benchmark-methods">Comparing with Benchmark Methods</a>
+  <ul class="collapse">
+  <li><a href="#sarima-acf-and-pacf-plots" id="toc-sarima-acf-and-pacf-plots" class="nav-link" data-scroll-target="#sarima-acf-and-pacf-plots">SARIMA ACF and PACF Plots</a></li>
+  <li><a href="#finding-sarima-parameters-p-d-q" id="toc-finding-sarima-parameters-p-d-q" class="nav-link" data-scroll-target="#finding-sarima-parameters-p-d-q">Finding SARIMA Parameters (p, d, q)</a></li>
+  <li><a href="#sarima-full-model-diagnostics" id="toc-sarima-full-model-diagnostics" class="nav-link" data-scroll-target="#sarima-full-model-diagnostics">SARIMA Full Model Diagnostics</a></li>
+  <li><a href="#auto-arima" id="toc-auto-arima" class="nav-link" data-scroll-target="#auto-arima">Auto ARIMA</a></li>
+  <li><a href="#forecasting-1" id="toc-forecasting-1" class="nav-link" data-scroll-target="#forecasting-1">Forecasting</a></li>
+  <li><a href="#comparing-sarima-with-benchmark" id="toc-comparing-sarima-with-benchmark" class="nav-link" data-scroll-target="#comparing-sarima-with-benchmark">Comparing SARIMA With Benchmark</a></li>
+  <li><a href="#cross-validation" id="toc-cross-validation" class="nav-link" data-scroll-target="#cross-validation">Cross-Validation</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -1080,7 +1089,7 @@ alternative hypothesis: stationary</code></pre>
 </div>
 <p>It seems that first differencing might have been adequate to stabilize the mean of the series and to reduce the autocorrelation, the second differencing does not appear to provide additional necessary correction, as evidenced by the ACF and PACF plots which do not show significant autocorrelation after the first differencing.</p>
 <p>Examining the ACF and PACF plots for the first differencing of electricity prices, we can suggest a range of values for p and q:</p>
-<p>p = 1 to 12 (considering the significant spike at the first lag) q = 1, 2, 3, 4, 5, 6, 7, 8, 9</p>
+<p>p = 1, 2, 3 (considering the significant spike at the first lag) q = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10</p>
 </div>
 <div id="tabset-5-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-4-tab">
 <div class="cell">
@@ -1450,17 +1459,17 @@ alternative hypothesis: stationary</code></pre>
 </ul>
 </div>
 <div id="tabset-6-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-3-tab">
-<p>p = 1 to 12 (considering the significant spike at the first lag) q = 1, 2, 3, 4, 5, 6, 7, 8, 9</p>
+<p>p = 1, 2, 3 (considering the significant spike at the first lag) q = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10</p>
 <div class="cell">
 <details class="code-fold">
 <summary>AIC-BIC</summary>
 <div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="co"># Degree of differencing</span></span>
 <span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>temp <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
-<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>ls <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">6</span> <span class="sc">*</span> <span class="dv">36</span>), <span class="at">nrow =</span> <span class="dv">36</span>)  <span class="co"># p (12 options) * q (9 options) = 108 combinations - threshold</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>ls <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">rep</span>(<span class="cn">NA</span>, <span class="dv">6</span> <span class="sc">*</span> <span class="dv">21</span>), <span class="at">nrow =</span> <span class="dv">21</span>)  <span class="co"># p (3 options) * q (10 options) = 30 combinations - threshold</span></span>
 <span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>i <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>) {</span>
-<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (q <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>) {</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (q <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>) {</span>
 <span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span>(p<span class="dv">-1</span><span class="sc">+</span>d<span class="sc">+</span>q<span class="dv">-1</span><span class="sc">&lt;=</span><span class="dv">8</span>) {</span>
 <span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>      model <span class="ot">&lt;-</span> <span class="fu">Arima</span>(electricity_log_ts, <span class="at">order =</span> <span class="fu">c</span>(p, d, q), <span class="at">include.drift =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>      ls[i,] <span class="ot">&lt;-</span> <span class="fu">c</span>(p, d, q, model<span class="sc">$</span>aic, model<span class="sc">$</span>bic, model<span class="sc">$</span>aicc)</span>
@@ -1656,126 +1665,6 @@ alternative hypothesis: stationary</code></pre>
 <td style="text-align: right;">-2077.151</td>
 <td style="text-align: right;">-2120.551</td>
 </tr>
-<tr class="even">
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">-2064.753</td>
-<td style="text-align: right;">-2036.709</td>
-<td style="text-align: right;">-2064.472</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">-2062.722</td>
-<td style="text-align: right;">-2030.672</td>
-<td style="text-align: right;">-2062.360</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">-2230.447</td>
-<td style="text-align: right;">-2194.390</td>
-<td style="text-align: right;">-2229.993</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">-2413.688</td>
-<td style="text-align: right;">-2373.625</td>
-<td style="text-align: right;">-2413.131</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">-2118.699</td>
-<td style="text-align: right;">-2074.629</td>
-<td style="text-align: right;">-2118.029</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">-2067.657</td>
-<td style="text-align: right;">-2035.606</td>
-<td style="text-align: right;">-2067.294</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">-2065.823</td>
-<td style="text-align: right;">-2029.765</td>
-<td style="text-align: right;">-2065.368</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">-2103.896</td>
-<td style="text-align: right;">-2063.833</td>
-<td style="text-align: right;">-2103.339</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">-2155.382</td>
-<td style="text-align: right;">-2111.312</td>
-<td style="text-align: right;">-2154.712</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">-2105.926</td>
-<td style="text-align: right;">-2069.869</td>
-<td style="text-align: right;">-2105.472</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">-2294.192</td>
-<td style="text-align: right;">-2254.128</td>
-<td style="text-align: right;">-2293.635</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">3</td>
-<td style="text-align: right;">-2066.786</td>
-<td style="text-align: right;">-2022.716</td>
-<td style="text-align: right;">-2066.116</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">7</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">-2166.909</td>
-<td style="text-align: right;">-2126.846</td>
-<td style="text-align: right;">-2166.352</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">7</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">2</td>
-<td style="text-align: right;">-2297.111</td>
-<td style="text-align: right;">-2253.041</td>
-<td style="text-align: right;">-2296.441</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">1</td>
-<td style="text-align: right;">-2201.088</td>
-<td style="text-align: right;">-2157.018</td>
-<td style="text-align: right;">-2200.418</td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -1786,7 +1675,7 @@ alternative hypothesis: stationary</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>   p d q       AIC       BIC      AICc
-25 4 1 4 -2413.688 -2373.625 -2413.131</code></pre>
+11 2 1 3 -2140.066 -2112.021 -2139.784</code></pre>
 </div>
 <details class="code-fold">
 <summary>AIC-BIC</summary>
@@ -1794,7 +1683,7 @@ alternative hypothesis: stationary</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>   p d q       AIC       BIC      AICc
-25 4 1 4 -2413.688 -2373.625 -2413.131</code></pre>
+11 2 1 3 -2140.066 -2112.021 -2139.784</code></pre>
 </div>
 <details class="code-fold">
 <summary>AIC-BIC</summary>
@@ -1802,13 +1691,13 @@ alternative hypothesis: stationary</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>   p d q       AIC       BIC      AICc
-25 4 1 4 -2413.688 -2373.625 -2413.131</code></pre>
+11 2 1 3 -2140.066 -2112.021 -2139.784</code></pre>
 </div>
 </div>
 <p>When selecting the best ARIMA model for forecasting electricity prices, it’s common for the AIC and BIC to suggest different models. In such cases, we often prefer the model with the lower AIC. Based on the results, we’ve can select two models for further consideration:</p>
 <ul>
-<li>Best Model by AIC, BIC, and AICc (ARIMA(4,1,4))</li>
-<li>Second best model: ARIMA(7,1,2)</li>
+<li>Best Model by AIC, BIC, and AICc (ARIMA(2,1,3))</li>
+<li>Second best model: ARIMA(3,1,6)</li>
 </ul>
 </div>
 <div id="tabset-6-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-4-tab">
@@ -2430,49 +2319,49 @@ y_t = -0.2356y_{t-1} - 0.1575y_{t-2} - 0.0109y_{t-3} + w_t - 1.0w_{t-1}
 </div>
 <div id="tabset-7-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-3-tab">
 <ul>
-<li>Best Model by AIC, BIC, and AICc (ARIMA(4,1,4))</li>
-<li>Second best model: ARIMA(7,1,2)</li>
+<li>Best Model by AIC, BIC, and AICc (ARIMA(2,1,3))</li>
+<li>Second best model: ARIMA(3,1,6)</li>
 </ul>
 <div class="cell">
 <details class="code-fold">
 <summary>Fitting ARIMA</summary>
 <div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Fitting ARIMA</span></span>
-<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>fit_electricity <span class="ot">&lt;-</span> <span class="fu">Arima</span>(<span class="fu">diff</span>(electricity_log_ts), <span class="at">order=</span><span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">1</span>, <span class="dv">4</span>),<span class="at">include.drift =</span> <span class="cn">TRUE</span>) </span>
+<span id="cb75-2"><a href="#cb75-2" aria-hidden="true" tabindex="-1"></a>fit_electricity <span class="ot">&lt;-</span> <span class="fu">Arima</span>(<span class="fu">diff</span>(electricity_log_ts), <span class="at">order=</span><span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">3</span>),<span class="at">include.drift =</span> <span class="cn">TRUE</span>) </span>
 <span id="cb75-3"><a href="#cb75-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_electricity)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Series: diff(electricity_log_ts) 
-ARIMA(4,1,4) with drift 
+ARIMA(2,1,3) with drift 
 
 Coefficients:
-         ar1      ar2     ar3      ar4      ma1     ma2      ma3     ma4  drift
-      2.3940  -3.0152  2.0155  -0.6215  -2.8848  3.7759  -2.7851  0.9013  0e+00
-s.e.  0.0412   0.0781  0.0780   0.0407   0.0181  0.0346   0.0384  0.0208  1e-04
+         ar1      ar2      ma1     ma2      ma3  drift
+      0.9728  -0.9217  -1.6812  1.6054  -0.9242  0e+00
+s.e.  0.0219   0.0217   0.0243  0.0394   0.0237  1e-04
 
-sigma^2 = 0.0002716:  log likelihood = 1086.63
-AIC=-2153.26   AICc=-2152.71   BIC=-2113.23
+sigma^2 = 0.0003533:  log likelihood = 1033.41
+AIC=-2052.82   AICc=-2052.54   BIC=-2024.79
 
 Training set error measures:
-                        ME      RMSE        MAE MPE MAPE     MASE       ACF1
-Training set -0.0001318904 0.0162767 0.01256644 NaN  Inf 1.332309 -0.2216408</code></pre>
+                        ME       RMSE        MAE MPE MAPE     MASE     ACF1
+Training set -0.0003363715 0.01863433 0.01469179 NaN  Inf 1.557641 0.223077</code></pre>
 </div>
 </div>
-<p><strong>Coefficients:</strong> The model includes four autoregressive terms (ar1, ar2, ar3, ar4) and four moving average terms with all coefficients having significant values. <strong>Drift:</strong> The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.</p>
-<p>For the Best Model (ARIMA(4,1,4)):</p>
+<p><strong>Coefficients:</strong> The model includes four autoregressive terms (ar1, ar2) and three moving average terms with all coefficients having significant values. <strong>Drift:</strong> The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.</p>
+<p>For the Best Model (ARIMA(2,1,3)):</p>
 <p>Given the coefficients:</p>
 <ul>
-<li>AR1: 2.3940</li>
-<li>AR2: -3.0152</li>
-<li>AR3: 2.0155</li>
-<li>AR4: -0.6215</li>
-<li>MA1: -2.8848</li>
-<li>MA2: 3.7759</li>
-<li>MA3: -2.7851</li>
-<li>MA4: 0.9013</li>
+<li>AR1: 0.9728</li>
+<li>AR2: -0.9217</li>
+<li>MA1: -1.6812</li>
+<li>MA2: 1.6054</li>
+<li>MA3: -0.9242</li>
 </ul>
-<p>The equation for the ARIMA(4,1,4) model:</p>
+<p>The equation for the ARIMA(2,1,3) model:</p>
 <p><span class="math display">\[
-y_t = 2.3940 y_{t-1} - 3.0152 y_{t-2} + 2.0155 y_{t-3} - 0.6215 y_{t-4} + w_t - 2.8848 w_{t-1} + 3.7759 w_{t-2} - 2.7851 w_{t-3} + 0.9013 w_{t-4}
+\begin{aligned}
+y_t = &amp;\ 0.9728 y_{t-1} - 0.9217 y_{t-2} \\
+      &amp;\ + w_t - 1.6812 w_{t-1} + 1.6054 w_{t-2} - 0.9242 w_{t-3}
+\end{aligned}
 \]</span></p>
 </div>
 <div id="tabset-7-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-4-tab">
@@ -2563,9 +2452,6 @@ Training set -0.001736317</code></pre>
 <p><span class="math display">\[
 y_t = 0.8004y_{t-1} - 0.3574y_{t-2} + 0.1405y_{t-3} + w_t - 1.2473w_{t-1} + 0.2672w_{t-2}
 \]</span></p>
-<section id="section-6" class="level2">
-<h2 class="anchored" data-anchor-id="section-6"></h2>
-</section>
 </div>
 </div>
 </div>
@@ -2684,65 +2570,69 @@ x_t = - 0.2018x_{t-1} + w_t - 1.0w_{t-1}
 </div>
 <div id="tabset-8-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-3-tab">
 <ul>
-<li>Best Model by AIC, BIC, and AICc (ARIMA(4,1,4))</li>
-<li>Second best model: ARIMA(7,1,2)</li>
+<li>Best Model by AIC, BIC, and AICc (ARIMA(2,1,3))</li>
+<li>Second best model: ARIMA(3,1,6)</li>
 </ul>
 <div class="cell">
 <details class="code-fold">
 <summary>Fitting ARIMA</summary>
 <div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Fitting ARIMA</span></span>
-<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>fit_electricity2 <span class="ot">&lt;-</span> <span class="fu">Arima</span>(<span class="fu">diff</span>(electricity_log_ts), <span class="at">order=</span><span class="fu">c</span>(<span class="dv">7</span>, <span class="dv">1</span>, <span class="dv">2</span>),<span class="at">include.drift =</span> <span class="cn">TRUE</span>) </span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a>fit_electricity2 <span class="ot">&lt;-</span> <span class="fu">Arima</span>(<span class="fu">diff</span>(electricity_log_ts), <span class="at">order=</span><span class="fu">c</span>(<span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">6</span>),<span class="at">include.drift =</span> <span class="cn">TRUE</span>) </span>
 <span id="cb85-3"><a href="#cb85-3" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_electricity2)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Series: diff(electricity_log_ts) 
-ARIMA(7,1,2) with drift 
+ARIMA(3,1,6) with drift 
 
 Coefficients:
-         ar1      ar2      ar3      ar4     ar5     ar6      ar7      ma1
-      0.9323  -0.4164  -0.2322  -0.1740  0.0383  0.1052  -0.5193  -1.7405
-s.e.  0.0458   0.0633   0.0661   0.0666  0.0662  0.0642   0.0471   0.0426
-         ma2  drift
-      0.9597  0e+00
-s.e.  0.0300  1e-04
+         ar1     ar2      ar3      ma1      ma2     ma3      ma4      ma5
+      0.0090  0.3478  -0.5904  -0.5779  -0.7449  0.5961  -0.6126  -0.0975
+s.e.  0.0586  0.0690   0.0753   0.0702   0.0943  0.1106   0.1304   0.0782
+         ma6  drift
+      0.4660  0e+00
+s.e.  0.0727  1e-04
 
-sigma^2 = 0.0002136:  log likelihood = 1136.19
-AIC=-2250.37   AICc=-2249.7   BIC=-2206.33
+sigma^2 = 0.0003435:  log likelihood = 1042.41
+AIC=-2062.81   AICc=-2062.14   BIC=-2018.77
 
 Training set error measures:
-                        ME     RMSE        MAE MPE MAPE     MASE       ACF1
-Training set -9.667323e-05 0.014417 0.01101838 NaN  Inf 1.168182 -0.1684629</code></pre>
+                       ME       RMSE        MAE  MPE MAPE    MASE       ACF1
+Training set -0.000237626 0.01828051 0.01416802 -Inf  Inf 1.50211 0.05261022</code></pre>
 </div>
 </div>
-<p><strong>Coefficients:</strong> The model includes seven autoregressive terms and two moving average terms (ma1, ma2), with all coefficients having significant values. <strong>Drift:</strong> The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.</p>
-<p>For the Best Model (ARIMA(7,1,2)):</p>
+<p><strong>Coefficients:</strong> The model includes three autoregressive terms and six moving average terms (ma1, ma2…, ma6), with all coefficients having significant values. <strong>Drift:</strong> The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.</p>
+<p>For the Best Model (ARIMA(3,1,6)):</p>
 <p>Given the coefficients:</p>
 <ul>
-<li>AR1: 0.9323</li>
-<li>AR2: -0.4164</li>
-<li>AR3: -0.2322</li>
-<li>AR4: -0.1740</li>
-<li>AR5: 0.0383</li>
-<li>AR6: 0.1052</li>
-<li>AR7: -0.5193</li>
-<li>MA1: -1.7405</li>
-<li>MA2: 0.9597</li>
+<li>AR1: 0.0090</li>
+<li>AR2: 0.3478</li>
+<li>AR3: -0.5904</li>
+<li>MA1: -0.5779</li>
+<li>MA2: -0.7449</li>
+<li>MA3: 0.5961</li>
+<li>MA4: -0.6126</li>
+<li>MA5: -0.0975</li>
+<li>MA6: 0.4660</li>
 </ul>
-<p>The equation for the ARIMA(7,1,2) model:</p>
+<p>The equation for the ARIMA(3,1,6) model:</p>
 <p><span class="math display">\[
-x_t = 0.9323x_{t-1} - 0.4164x_{t-2} - 0.2322x_{t-3} - 0.1740x_{t-4} + 0.0383x_{t-5} + 0.1052x_{t-6} - 0.5193x_{t-7} + w_t - 1.7405w_{t-1} + 0.9597w_{t-2}
+\begin{aligned}
+x_t = &amp;\ 0.0090 x_{t-1} + 0.3478 x_{t-2} - 0.5904 x_{t-3} + w_t \\
+      &amp;\ - 0.5779 w_{t-1} - 0.7449 w_{t-2} + 0.5961 w_{t-3} \\
+      &amp;\ - 0.6126 w_{t-4} - 0.0975 w_{t-5} + 0.4660 w_{t-6}
+\end{aligned}
 \]</span></p>
 <section id="better-model-2" class="level4">
 <h4 class="anchored" data-anchor-id="better-model-2">Better Model:</h4>
 <ul>
-<li><p>ARIMA(7,1,2) has a lower AIC (-2250.37) compared to ARIMA(4,1,4) (-2153.26)</p></li>
-<li><p>ARIMA(7,1,2) also shows a lower AICc (-2249.7) than ARIMA(4,1,4) (-2152.71)</p></li>
-<li><p>ARIMA(7,1,2) has a lower BIC (-2206.33) compared to ARIMA(4,1,4) (-2113.23)</p></li>
-<li><p>ARIMA(7,1,2) exhibits a higher log likelihood (1136.19) compared to ARIMA(4,1,4) (1086.63), indicating a slightly better fit</p></li>
-<li><p>For ARIMA(7,1,2), both RMSE and MAE are slightly lower than for ARIMA(4,1,4), indicating better predictive performance</p></li>
-<li><p>ARIMA(7,1,2) includes additional autoregressive terms which seem to capture more complexity in the data dynamics</p></li>
+<li><p>ARIMA(3,1,6) has a lower AIC (-2062.81) compared to ARIMA(2,1,3) (-2052.82 )</p></li>
+<li><p>ARIMA(3,1,6) also shows a lower AICc (-2062.14) than ARIMA(2,1,3) (-2052.54)</p></li>
+<li><p>ARIMA(2,1,3) has a lower BIC (-2024.79) compared to ARIMA(3,1,6) (-2018.77)</p></li>
+<li><p>ARIMA(3,1,6) exhibits a higher log likelihood (1042.41) compared to ARIMA(2,1,3) (1033.41), indicating a slightly better fit</p></li>
+<li><p>For ARIMA(3,1,6), both RMSE and MAE are slightly lower than for ARIMA(2,1,3), indicating better predictive performance</p></li>
+<li><p>ARIMA(3,1,6) includes additional autoregressive terms which seem to capture more complexity in the data dynamics</p></li>
 </ul>
-<p>Given these considerations, the <strong>ARIMA(7,1,2)</strong> model is better for the series</p>
+<p>Given these considerations, the <strong>ARIMA(3,1,6)</strong> model is better for the series</p>
 </section>
 </div>
 <div id="tabset-8-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-4-tab">
@@ -2847,7 +2737,10 @@ Training set 0.01748658</code></pre>
 </ul>
 <p>The equation for the ARIMA(3,1,3) model:</p>
 <p><span class="math display">\[
-x_t = 0.0195 x_{t-1} - 0.6767 x_{t-2} + 0.3641 x_{t-3} + w_t - 0.4767 w_{t-1} + 0.2965 w_{t-2} - 0.7575 w_{t-3}
+\begin{aligned}
+x_t = &amp;\ 0.0195 x_{t-1} - 0.6767 x_{t-2} + 0.3641 x_{t-3} \\
+      &amp;\ + w_t - 0.4767 w_{t-1} + 0.2965 w_{t-2} - 0.7575 w_{t-3}
+\end{aligned}
 \]</span></p>
 <section id="better-model-4" class="level4">
 <h4 class="anchored" data-anchor-id="better-model-4">Better Model:</h4>
@@ -2861,8 +2754,8 @@ x_t = 0.0195 x_{t-1} - 0.6767 x_{t-2} + 0.3641 x_{t-3} + w_t - 0.4767 w_{t-1} + 
 </ul>
 <p>Given these considerations, the <strong>ARIMA(3,1,3)</strong> model is better for the series</p>
 </section>
-<section id="section-7" class="level2">
-<h2 class="anchored" data-anchor-id="section-7"></h2>
+<section id="section-6" class="level2">
+<h2 class="anchored" data-anchor-id="section-6"></h2>
 </section>
 </div>
 </div>
@@ -2872,10 +2765,16 @@ x_t = 0.0195 x_{t-1} - 0.6767 x_{t-2} + 0.3641 x_{t-3} + w_t - 0.4767 w_{t-1} + 
 <section id="model-diagnostics" class="level1">
 <h1>Model Diagnostics</h1>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">Crude Oil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">Natural Gas</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-3" role="tab" aria-controls="tabset-9-3" aria-selected="false">Electricity</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-4" role="tab" aria-controls="tabset-9-4" aria-selected="false">GDP</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-5" role="tab" aria-controls="tabset-9-5" aria-selected="false">CPI</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-6" role="tab" aria-controls="tabset-9-6" aria-selected="false"></a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">Crude Oil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">Natural Gas</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-3" role="tab" aria-controls="tabset-9-3" aria-selected="false">Electricity</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-4" role="tab" aria-controls="tabset-9-4" aria-selected="false">GDP</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-5" role="tab" aria-controls="tabset-9-5" aria-selected="false">CPI</a></li></ul>
 <div class="tab-content">
 <div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
 <div class="cell">
+<details class="code-fold">
+<summary>Diagnostics</summary>
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">222</span>)</span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Fit the Best Model</span></span>
+<span id="cb91-3"><a href="#cb91-3" aria-hidden="true" tabindex="-1"></a>diag_crudeoil <span class="ot">&lt;-</span> <span class="fu">capture.output</span>(<span class="fu">sarima</span>(oil_log_ts, <span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">2</span>))</span></code></pre></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -2883,15 +2782,62 @@ x_t = 0.0195 x_{t-1} - 0.6767 x_{t-2} + 0.3641 x_{t-3} + w_t - 0.4767 w_{t-1} + 
 </figure>
 </div>
 </div>
+<details class="code-fold">
+<summary>Diagnostics</summary>
+<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="co">#print(diag_crudeoil)</span></span>
+<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(diag_crudeoil[<span class="dv">25</span><span class="sc">:</span><span class="dv">55</span>], diag_crudeoil[<span class="fu">length</span>(diag_crudeoil)], <span class="at">sep =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>final  value -2.558963 
+converged
+initial  value -2.560066 
+iter   2 value -2.560077
+iter   3 value -2.560116
+iter   4 value -2.560156
+iter   5 value -2.560169
+iter   6 value -2.560211
+iter   7 value -2.560239
+iter   8 value -2.560251
+iter   9 value -2.560258
+iter  10 value -2.560267
+iter  11 value -2.560271
+iter  12 value -2.560271
+iter  12 value -2.560271
+final  value -2.560271 
+converged
+&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;
+ 
+Coefficients: 
+         Estimate     SE t.value p.value
+ar1        1.0764 0.1738  6.1923  0.0000
+ar2       -0.3579 0.0951 -3.7644  0.0002
+ma1       -0.5323 0.1802 -2.9534  0.0033
+ma2       -0.1444 0.1566 -0.9223  0.3569
+constant   0.0033 0.0044  0.7414  0.4589
+
+sigma^2 estimated as 0.005966966 on 402 degrees of freedom 
+ 
+AIC = -2.253182  AICc = -2.252814  BIC = -2.194084 
+ 
+ </code></pre>
+</div>
 </div>
 <p><strong>Standardized Residuals</strong>: The plot shows some fluctuation, but there don’t appear to be any clear patterns or trends.</p>
-<p><strong>ACF of Residuals</strong>: We observe no apparent autocorrelation amongst the residuals. The absence of significant spikes outside the confidence bounds suggests that the residuals are essentially white noise</p>
+<p><strong>ACF of Residuals</strong>: The ACF plot for the residuals displays no significant spikes outside the confidence bounds (blue dashed lines), which implies that the residuals are white noise.</p>
 <p><strong>Q-Q Plot of Std Residuals</strong>: which assesses the normality of the residuals, shows an acceptable alignment</p>
 <p><strong>Ljung-Box test</strong>: The p-values in the plot are well above the 0.05 threshold, indicating that we fail to reject the null hypothesis of no autocorrelation among residuals at different lags.</p>
-<p>The diagnostic plots suggest that the ARIMA(2,1,2) model is a reasonably good fit for the data.</p>
+<p><strong>Model Coefficients</strong>: The coefficients are significant except for the second moving average coefficient (ma2), which has a p-value higher than 0.05. This indicates that while most coefficients contribute meaningfully to the model, the ma2 term may not be adding value.</p>
+<p>Considering the log likelihood and the information criteria (AIC, AICc, BIC), the model seems to be well-fitted. A higher log likelihood and lower information criteria values generally indicate a better model fit.</p>
+<p>Based on these diagnostics, the <strong>ARIMA(2,1,2)</strong> model seems to be adequately fitting the crude oil time series data.</p>
 </div>
 <div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
 <div class="cell">
+<details class="code-fold">
+<summary>Diagnostics</summary>
+<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">222</span>)</span>
+<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Fit the Best Model</span></span>
+<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a>diag_ng <span class="ot">&lt;-</span> <span class="fu">capture.output</span>(<span class="fu">sarima</span>(oil_log_ts, <span class="dv">3</span>,<span class="dv">1</span>,<span class="dv">1</span>))</span></code></pre></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -2899,15 +2845,48 @@ x_t = 0.0195 x_{t-1} - 0.6767 x_{t-2} + 0.3641 x_{t-3} + w_t - 0.4767 w_{t-1} + 
 </figure>
 </div>
 </div>
+<details class="code-fold">
+<summary>Diagnostics</summary>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="co">#print(diag_ng)</span></span>
+<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(diag_ng[<span class="dv">76</span><span class="sc">:</span><span class="dv">91</span>], diag_ng[<span class="fu">length</span>(diag_ng)], <span class="at">sep =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>final  value -2.562297 
+converged
+&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;
+ 
+Coefficients: 
+         Estimate     SE  t.value p.value
+ar1        1.4929 0.0666  22.4023  0.0000
+ar2       -0.7399 0.0867  -8.5312  0.0000
+ar3        0.1772 0.0543   3.2641  0.0012
+ma1       -0.9486 0.0430 -22.0604  0.0000
+constant   0.0034 0.0029   1.1743  0.2410
+
+sigma^2 estimated as 0.005941157 on 402 degrees of freedom 
+ 
+AIC = -2.257233  AICc = -2.256865  BIC = -2.198135 
+ 
+ </code></pre>
 </div>
-<p><strong>Standardized Residuals</strong>: The plot shows some fluctuation, but there don’t appear to be any clear patterns or trends.</p>
-<p><strong>ACF of Residuals</strong>: We observe no apparent autocorrelation amongst the residuals. The absence of significant spikes outside the confidence bounds suggests that the residuals are essentially white noise</p>
+</div>
+<p><strong>Standardized Residuals</strong>: The plot of standardized residuals doesn’t exhibit any obvious patterns, trends, or seasonality, which suggests that the model has captured the underlying process well. The residuals fluctuate around the zero line within a consistent range, indicating that the variance of the residuals is stable over time.</p>
+<p><strong>ACF of Residuals</strong>: The ACF plot for the residuals displays no significant spikes outside the confidence bounds (blue dashed lines), which implies that the residuals are white noise.</p>
 <p><strong>Q-Q Plot of Std Residuals</strong>: which assesses the normality of the residuals, shows an acceptable alignment</p>
-<p><strong>Ljung-Box test</strong>: The p-values in the plot are well above the 0.05 threshold, indicating that we fail to reject the null hypothesis of no autocorrelation among residuals at different lags.</p>
-<p>The diagnostic plots suggest that the ARIMA(3,1,1) model is a reasonably good fit for the data.</p>
+<p><strong>Ljung-Box test</strong>:The p-values in the plot are well above the 0.05 threshold, indicating that we fail to reject the null hypothesis of no autocorrelation among residuals at different lags.</p>
+<p><strong>Model Coefficients</strong>: The coefficients are significant all appear to be statistically significant, as indicated by their p-values being well below the 0.05 threshold. This indicates that all the coefficients contribute meaningfully to the model.</p>
+<p>Considering the log likelihood and the information criteria (AIC, AICc, BIC), the model seems to be well-fitted. A higher log likelihood and lower information criteria values generally indicate a better model fit.</p>
+<p>Based on these diagnostics, the ARIMA(3,1,1) model seems to be adequately fitting the data.</p>
 </div>
 <div id="tabset-9-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-3-tab">
+<p>ARIMA(3,1,6)</p>
 <div class="cell">
+<details class="code-fold">
+<summary>Diagnostics</summary>
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">222</span>)</span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a><span class="do">## Fit the Best Model</span></span>
+<span id="cb97-3"><a href="#cb97-3" aria-hidden="true" tabindex="-1"></a>diag_electricity <span class="ot">&lt;-</span> <span class="fu">capture.output</span>(<span class="fu">sarima</span>(electricity_log_ts, <span class="dv">3</span>,<span class="dv">1</span>,<span class="dv">6</span>))</span></code></pre></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -2915,15 +2894,50 @@ x_t = 0.0195 x_{t-1} - 0.6767 x_{t-2} + 0.3641 x_{t-3} + w_t - 0.4767 w_{t-1} + 
 </figure>
 </div>
 </div>
+<details class="code-fold">
+<summary>Diagnostics</summary>
+<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a><span class="co">#print(diag_electricity)</span></span>
+<span id="cb98-2"><a href="#cb98-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(diag_electricity[<span class="dv">79</span><span class="sc">:</span><span class="dv">98</span>], diag_electricity[<span class="fu">length</span>(diag_electricity)], <span class="at">sep =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>converged
+&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;
+ 
+Coefficients: 
+         Estimate     SE  t.value p.value
+ar1        1.3891 0.1251  11.1019  0.0000
+ar2       -1.3300 0.1212 -10.9765  0.0000
+ar3        0.4593 0.1083   4.2420  0.0000
+ma1       -0.9791 0.1289  -7.5965  0.0000
+ma2        0.9440 0.1041   9.0695  0.0000
+ma3       -0.2522 0.1040  -2.4261  0.0157
+ma4       -0.2780 0.0768  -3.6217  0.0003
+ma5       -0.0575 0.0723  -0.7954  0.4269
+ma6       -0.1227 0.0594  -2.0648  0.0396
+constant   0.0017 0.0005   3.6454  0.0003
+
+sigma^2 estimated as 0.0002918906 on 396 degrees of freedom 
+ 
+AIC = -5.224682  AICc = -5.22331  BIC = -5.116135 
+ 
+ </code></pre>
 </div>
-<p><strong>Standardized Residuals</strong>: The plot shows some fluctuation, but there don’t appear to be any clear patterns or trends.</p>
-<p><strong>ACF of Residuals</strong>: We do observe some apparent autocorrelation amongst the residuals. The absence of significant spikes outside the confidence bounds suggests that the residuals are essentially white noise</p>
+</div>
+<p><strong>Standardized Residuals</strong>: The plot of standardized residuals doesn’t exhibit any obvious patterns, trends, or seasonality, which suggests that the model has captured the underlying process well. The residuals fluctuate around the zero line within a consistent range, indicating that the variance of the residuals is stable over time.</p>
+<p><strong>ACF of Residuals</strong>: The autocorrelation function (ACF) plot for the residuals exhibits no spikes outside the blue dashed confidence intervals, suggesting that the residuals are white noise, which means they do not exhibit autocorrelation.</p>
 <p><strong>Q-Q Plot of Std Residuals</strong>: which assesses the normality of the residuals, shows an acceptable alignment</p>
-<p><strong>Ljung-Box test</strong>: The p-values in the plot are well above the 0.05 threshold, indicating that we fail to reject the null hypothesis of no autocorrelation among residuals at different lags.</p>
-<p>The diagnostic plots suggest that the ARIMA(2,1,2) model is a reasonably good fit for the data.</p>
+<p><strong>Ljung-Box test</strong>: The p-values are very low (close to 0). This would suggest there is evidence of autocorrelation in the residuals.</p>
+<p><strong>Model Coefficients</strong>: The coefficients of the ARIMA model are statistically significant, with p-values below the 0.05 threshold, indicating they contribute meaningfully to the model.</p>
+<p>Considering the log likelihood and the information criteria (AIC, AICc, BIC), the model seems to be well-fitted. A higher log likelihood and lower information criteria values generally indicate a better model fit.</p>
+<p>Based on these diagnostics, the ARIMA(3,1,6) model seems to be adequately fitting the data.</p>
 </div>
 <div id="tabset-9-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-4-tab">
 <div class="cell">
+<details class="code-fold">
+<summary>Diagnostics</summary>
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">222</span>)</span>
+<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a>diag_gdp <span class="ot">&lt;-</span> <span class="fu">capture.output</span>(<span class="fu">sarima</span>(gdp_log_ts, <span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">1</span>))</span></code></pre></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -2931,15 +2945,42 @@ x_t = 0.0195 x_{t-1} - 0.6767 x_{t-2} + 0.3641 x_{t-3} + w_t - 0.4767 w_{t-1} + 
 </figure>
 </div>
 </div>
+<details class="code-fold">
+<summary>Diagnostics</summary>
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="co">#print(diag_gdp)</span></span>
+<span id="cb101-2"><a href="#cb101-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(diag_gdp[<span class="dv">30</span><span class="sc">:</span><span class="dv">41</span>], diag_gdp[<span class="fu">length</span>(diag_gdp)], <span class="at">sep =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;
+ 
+Coefficients: 
+         Estimate     SE t.value p.value
+ar1       -0.3747 0.5198 -0.7208  0.4723
+ma1        0.2973 0.5313  0.5596  0.5767
+constant   0.0116 0.0010 11.3417  0.0000
+
+sigma^2 estimated as 0.0001561057 on 132 degrees of freedom 
+ 
+AIC = -5.867784  AICc = -5.866427  BIC = -5.781702 
+ 
+ </code></pre>
 </div>
-<p><strong>Standardized Residuals</strong>: The plot shows some fluctuation, but there don’t appear to be any clear patterns or trends.</p>
-<p><strong>ACF of Residuals</strong>: We observe no apparent autocorrelation amongst the residuals. The absence of significant spikes outside the confidence bounds suggests that the residuals are essentially white noise</p>
+</div>
+<p><strong>Standardized Residuals</strong>: The plot of standardized residuals doesn’t exhibit any obvious patterns, trends, or seasonality, which suggests that the model has captured the underlying process well. The residuals fluctuate around the zero line within a consistent range, indicating that the variance of the residuals is stable over time.</p>
+<p><strong>ACF of Residuals</strong>: The ACF plot for the residuals displays no significant spikes outside the confidence bounds (blue dashed lines), which implies that the residuals are white noise.</p>
 <p><strong>Q-Q Plot of Std Residuals</strong>: which assesses the normality of the residuals, shows an acceptable alignment</p>
-<p><strong>Ljung-Box test</strong>: The p-values in the plot are well above the 0.05 threshold, indicating that we fail to reject the null hypothesis of no autocorrelation among residuals at different lags.</p>
-<p>The diagnostic plots suggest that the ARIMA(1,1,1) model is a reasonably good fit for the data.</p>
+<p><strong>Ljung-Box test</strong>:The p-values in the plot are well above the 0.05 threshold, indicating that we fail to reject the null hypothesis of no autocorrelation among residuals at different lags.</p>
+<p><strong>Model Coefficients</strong>: The coefficients are significant all appear to be statistically significant, as indicated by their p-values being well below the 0.05 threshold. This indicates that all the coefficients contribute meaningfully to the model.</p>
+<p>Considering the log likelihood and the information criteria (AIC, AICc, BIC), the model seems to be well-fitted. A higher log likelihood and lower information criteria values generally indicate a better model fit.</p>
+<p>Based on these diagnostics, the ARIMA(1,1,1) model seems to be adequately fitting the data.</p>
 </div>
 <div id="tabset-9-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-5-tab">
 <div class="cell">
+<details class="code-fold">
+<summary>Diagnostics</summary>
+<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">222</span>)</span>
+<span id="cb103-2"><a href="#cb103-2" aria-hidden="true" tabindex="-1"></a>diag_cpi <span class="ot">&lt;-</span> <span class="fu">capture.output</span>(<span class="fu">sarima</span>(cpi_log_ts, <span class="dv">3</span>,<span class="dv">1</span>,<span class="dv">3</span>))</span></code></pre></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -2947,15 +2988,39 @@ x_t = 0.0195 x_{t-1} - 0.6767 x_{t-2} + 0.3641 x_{t-3} + w_t - 0.4767 w_{t-1} + 
 </figure>
 </div>
 </div>
-</div>
-<p><strong>Standardized Residuals</strong>: The plot shows some fluctuation, but there don’t appear to be any clear patterns or trends.</p>
-<p><strong>ACF of Residuals</strong>: We observe no apparent autocorrelation amongst the residuals. The absence of significant spikes outside the confidence bounds suggests that the residuals are essentially white noise</p>
-<p><strong>Q-Q Plot of Std Residuals</strong>: which assesses the normality of the residuals, shows an acceptable alignment</p>
-<p><strong>Ljung-Box test</strong>: The p-values in the plot are well above the 0.05 threshold, indicating that we fail to reject the null hypothesis of no autocorrelation among residuals at different lags.</p>
-<p>The diagnostic plots suggest that the ARIMA(2,1,2) model is a reasonably good fit for the data.</p>
-</div>
-<div id="tabset-9-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-6-tab">
+<details class="code-fold">
+<summary>Diagnostics</summary>
+<div class="sourceCode cell-code" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="#cb104-1" aria-hidden="true" tabindex="-1"></a><span class="co">#print(diag_cpi)</span></span>
+<span id="cb104-2"><a href="#cb104-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(diag_cpi[<span class="dv">83</span><span class="sc">:</span><span class="dv">99</span>], diag_cpi[<span class="fu">length</span>(diag_cpi)], <span class="at">sep =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>converged
+&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;
+ 
+Coefficients: 
+         Estimate     SE t.value p.value
+ar1       -0.0372 0.1347 -0.2764  0.7823
+ar2       -0.7796 0.0842 -9.2614  0.0000
+ar3        0.3374 0.0950  3.5514  0.0004
+ma1        0.5945 0.1389  4.2804  0.0000
+ma2        0.9328 0.1291  7.2248  0.0000
+ma3        0.1365 0.1148  1.1892  0.2351
+constant   0.0022 0.0002 10.2650  0.0000
 
+sigma^2 estimated as 5.469487e-06 on 402 degrees of freedom 
+ 
+AIC = -9.237823  AICc = -9.23714  BIC = -9.159315 
+ 
+ </code></pre>
+</div>
+</div>
+<p><strong>Standardized Residuals</strong>: The plot of standardized residuals doesn’t exhibit any obvious patterns, trends, or seasonality, which suggests that the model has captured the underlying process well. The residuals fluctuate around the zero line within a consistent range, indicating that the variance of the residuals is stable over time.</p>
+<p><strong>ACF of Residuals</strong>: The ACF plot for the residuals displays no significant spikes outside the confidence bounds (blue dashed lines), which implies that the residuals are white noise.</p>
+<p><strong>Q-Q Plot of Std Residuals</strong>: which assesses the normality of the residuals, shows an acceptable alignment</p>
+<p><strong>Ljung-Box test</strong>: The p-values are very low (close to 0). This would suggest there is evidence of autocorrelation in the residuals.</p>
+<p><strong>Model Coefficients</strong>: The coefficients are significant all appear to be statistically significant, as indicated by their p-values being well below the 0.05 threshold. This indicates that all the coefficients contribute meaningfully to the model.</p>
+<p>Considering the log likelihood and the information criteria (AIC, AICc, BIC), the model seems to be well-fitted. A higher log likelihood and lower information criteria values generally indicate a better model fit.</p>
+<p>Based on these diagnostics, the ARIMA(3,1,3) model seems to be adequately fitting the data.</p>
 </div>
 </div>
 </div>
@@ -2963,10 +3028,18 @@ x_t = 0.0195 x_{t-1} - 0.6767 x_{t-2} + 0.3641 x_{t-3} + w_t - 0.4767 w_{t-1} + 
 <section id="auto.arima" class="level1">
 <h1>Auto.Arima()</h1>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true">Crude Oil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false">Natural Gas</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-3" role="tab" aria-controls="tabset-10-3" aria-selected="false">Electricity</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-4" role="tab" aria-controls="tabset-10-4" aria-selected="false">GDP</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-5" role="tab" aria-controls="tabset-10-5" aria-selected="false">CPI</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-6" role="tab" aria-controls="tabset-10-6" aria-selected="false"></a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true">Crude Oil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false">Natural Gas</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-3" role="tab" aria-controls="tabset-10-3" aria-selected="false">Electricity</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-4" role="tab" aria-controls="tabset-10-4" aria-selected="false">GDP</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-5" role="tab" aria-controls="tabset-10-5" aria-selected="false">CPI</a></li></ul>
 <div class="tab-content">
 <div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
 <div class="cell">
+<details class="code-fold">
+<summary>Auto Arima</summary>
+<div class="sourceCode cell-code" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="#cb106-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Apply auto.arima </span></span>
+<span id="cb106-2"><a href="#cb106-2" aria-hidden="true" tabindex="-1"></a>oil_auto <span class="ot">&lt;-</span> <span class="fu">auto.arima</span>(oil_log_ts)</span>
+<span id="cb106-3"><a href="#cb106-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb106-4"><a href="#cb106-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Summary</span></span>
+<span id="cb106-5"><a href="#cb106-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(oil_auto)</span></code></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Series: oil_log_ts 
 ARIMA(2,1,0)(1,0,0)[12] 
@@ -2977,29 +3050,54 @@ Coefficients:
 s.e.  0.0482   0.0483   0.0509
 
 sigma^2 = 0.006077:  log likelihood = 462.33
-AIC=-916.65   AICc=-916.55   BIC=-900.62</code></pre>
+AIC=-916.65   AICc=-916.55   BIC=-900.62
+
+Training set error measures:
+                      ME       RMSE        MAE        MPE    MAPE      MASE
+Training set 0.002107018 0.07757317 0.05790196 0.04553725 1.63053 0.2122086
+                    ACF1
+Training set -0.01447347</code></pre>
+</div>
+</div>
+<p>We used auto.arima() to pick the best model, and it chose ARIMA(2,1,0)(1,0,0)[12] which includes a seasonal component.</p>
+</div>
+<div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Auto Arima</summary>
+<div class="sourceCode cell-code" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="#cb108-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Apply auto.arima </span></span>
+<span id="cb108-2"><a href="#cb108-2" aria-hidden="true" tabindex="-1"></a>gas_auto <span class="ot">&lt;-</span> <span class="fu">auto.arima</span>(gas_log_ts)</span>
+<span id="cb108-3"><a href="#cb108-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb108-4"><a href="#cb108-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Summary</span></span>
+<span id="cb108-5"><a href="#cb108-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(gas_auto)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: gas_log_ts 
+ARIMA(0,1,2) 
+
+Coefficients:
+          ma1      ma2
+      -0.2402  -0.1187
+s.e.   0.0499   0.0529
+
+sigma^2 = 0.01392:  log likelihood = 292.52
+AIC=-579.04   AICc=-578.98   BIC=-567.02
+
+Training set error measures:
+                     ME      RMSE        MAE        MPE     MAPE      MASE
+Training set 0.00122901 0.1175624 0.07216194 -0.2474817 4.682673 0.3662571
+                     ACF1
+Training set -0.002743742</code></pre>
 </div>
 </div>
 <p>We used auto.arima() to pick the best model, and it chose ARIMA(2,1,0).</p>
 </div>
-<div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
-<div class="cell">
-<div class="cell-output cell-output-stdout">
-<pre><code>Series: oil_log_ts 
-ARIMA(2,1,0)(1,0,0)[12] 
-
-Coefficients:
-         ar1      ar2     sar1
-      0.5686  -0.2324  -0.0143
-s.e.  0.0482   0.0483   0.0509
-
-sigma^2 = 0.006077:  log likelihood = 462.33
-AIC=-916.65   AICc=-916.55   BIC=-900.62</code></pre>
-</div>
-</div>
-</div>
 <div id="tabset-10-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-3-tab">
 <div class="cell">
+<details class="code-fold">
+<summary>Auto Arima</summary>
+<div class="sourceCode cell-code" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="#cb110-1" aria-hidden="true" tabindex="-1"></a><span class="fu">auto.arima</span>(electricity_log_ts)</span></code></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Series: electricity_log_ts 
 ARIMA(0,1,1)(0,1,1)[12] 
@@ -3013,9 +3111,14 @@ sigma^2 = 0.000106:  log likelihood = 1240.06
 AIC=-2474.12   AICc=-2474.06   BIC=-2462.19</code></pre>
 </div>
 </div>
+<p>We used auto.arima() to pick the best model, and it chose ARIMA(2,1,0).</p>
 </div>
 <div id="tabset-10-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-4-tab">
 <div class="cell">
+<details class="code-fold">
+<summary>Auto Arima</summary>
+<div class="sourceCode cell-code" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="#cb112-1" aria-hidden="true" tabindex="-1"></a><span class="fu">auto.arima</span>(gdp_log_ts)</span></code></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Series: gdp_log_ts 
 ARIMA(0,1,0) with drift 
@@ -3029,9 +3132,14 @@ sigma^2 = 0.000159:  log likelihood = 399.6
 AIC=-795.2   AICc=-795.11   BIC=-789.39</code></pre>
 </div>
 </div>
+<p>We used auto.arima() to pick the best model, and it chose ARIMA(2,1,0).</p>
 </div>
 <div id="tabset-10-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-5-tab">
 <div class="cell">
+<details class="code-fold">
+<summary>Auto Arima</summary>
+<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a><span class="fu">auto.arima</span>((cpi_log_ts))</span></code></pre></div>
+</details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Series: (cpi_log_ts) 
 ARIMA(1,1,2)(0,0,1)[12] with drift 
@@ -3045,9 +3153,7 @@ sigma^2 = 5.594e-06:  log likelihood = 1897.16
 AIC=-3782.31   AICc=-3782.1   BIC=-3758.23</code></pre>
 </div>
 </div>
-</div>
-<div id="tabset-10-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-6-tab">
-
+<p>We used auto.arima() to pick the best model, and it chose ARIMA(2,1,0).</p>
 </div>
 </div>
 </div>
@@ -3059,6 +3165,19 @@ AIC=-3782.31   AICc=-3782.1   BIC=-3758.23</code></pre>
 <div class="tab-content">
 <div id="tabset-11-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-11-1-tab">
 <div class="cell">
+<details class="code-fold">
+<summary>Forecasting</summary>
+<div class="sourceCode cell-code" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="#cb116-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Forecasting the next 36</span></span>
+<span id="cb116-2"><a href="#cb116-2" aria-hidden="true" tabindex="-1"></a>forecast_crudeoil2 <span class="ot">&lt;-</span> <span class="fu">forecast</span>(fit_crudeoil2, <span class="at">h=</span><span class="dv">36</span>)</span>
+<span id="cb116-3"><a href="#cb116-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb116-4"><a href="#cb116-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Plotting the forecast</span></span>
+<span id="cb116-5"><a href="#cb116-5" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(forecast_crudeoil2) <span class="sc">+</span> </span>
+<span id="cb116-6"><a href="#cb116-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Forecast for Crude Oil Prices"</span>, </span>
+<span id="cb116-7"><a href="#cb116-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">x=</span><span class="st">"Year"</span>, <span class="at">y=</span><span class="st">"Logged Prices"</span>, </span>
+<span id="cb116-8"><a href="#cb116-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption=</span><span class="st">"Forecast using ARIMA(2,1,2)"</span>) <span class="sc">+</span></span>
+<span id="cb116-9"><a href="#cb116-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
+<span id="cb116-10"><a href="#cb116-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span></code></pre></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -3067,6 +3186,7 @@ AIC=-3782.31   AICc=-3782.1   BIC=-3758.23</code></pre>
 </div>
 </div>
 </div>
+<p>The actual forecast (the line within the shaded area) appears to stay around the level of the most recent actual observations, which suggests that the model does not anticipate any significant changes or trends in the near future. However, the wide confidence intervals imply that while the expected value is stable, the actual future prices could vary widely around this expected value.</p>
 </div>
 <div id="tabset-11-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-11-2-tab">
 <div class="cell">
@@ -3122,10 +3242,38 @@ AIC=-3782.31   AICc=-3782.1   BIC=-3758.23</code></pre>
 <section id="comparing-with-benchmark-methods" class="level1">
 <h1>Comparing with Benchmark Methods</h1>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-12-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-1" role="tab" aria-controls="tabset-12-1" aria-selected="true">Crude Oil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-2" role="tab" aria-controls="tabset-12-2" aria-selected="false">Natural Gas</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-3" role="tab" aria-controls="tabset-12-3" aria-selected="false">Electricity</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-4" role="tab" aria-controls="tabset-12-4" aria-selected="false">GDP</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-5" role="tab" aria-controls="tabset-12-5" aria-selected="false">CPI</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-6-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-6" role="tab" aria-controls="tabset-12-6" aria-selected="false"></a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-12-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-1" role="tab" aria-controls="tabset-12-1" aria-selected="true">Crude Oil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-2" role="tab" aria-controls="tabset-12-2" aria-selected="false">Natural Gas</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-3" role="tab" aria-controls="tabset-12-3" aria-selected="false">Electricity</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-4-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-4" role="tab" aria-controls="tabset-12-4" aria-selected="false">GDP</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-5-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-5" role="tab" aria-controls="tabset-12-5" aria-selected="false">CPI</a></li></ul>
 <div class="tab-content">
 <div id="tabset-12-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-12-1-tab">
 <div class="cell">
+<details class="code-fold">
+<summary>Comparing Benchmark</summary>
+<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Generate forecasts</span></span>
+<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a>forecast_meanf <span class="ot">&lt;-</span> <span class="fu">meanf</span>(oil_log_ts, <span class="at">h=</span><span class="dv">36</span>)</span>
+<span id="cb117-3"><a href="#cb117-3" aria-hidden="true" tabindex="-1"></a>forecast_naive <span class="ot">&lt;-</span> <span class="fu">naive</span>(oil_log_ts, <span class="at">h=</span><span class="dv">36</span>)</span>
+<span id="cb117-4"><a href="#cb117-4" aria-hidden="true" tabindex="-1"></a>forecast_snaive <span class="ot">&lt;-</span> <span class="fu">snaive</span>(oil_log_ts, <span class="at">h=</span><span class="dv">36</span>)</span>
+<span id="cb117-5"><a href="#cb117-5" aria-hidden="true" tabindex="-1"></a>forecast_rwf <span class="ot">&lt;-</span> <span class="fu">rwf</span>(oil_log_ts, <span class="at">drift=</span><span class="cn">TRUE</span>, <span class="at">h=</span><span class="dv">36</span>) </span>
+<span id="cb117-6"><a href="#cb117-6" aria-hidden="true" tabindex="-1"></a>forecast_arima <span class="ot">&lt;-</span> <span class="fu">forecast</span>(fit_crudeoil2, <span class="at">h=</span><span class="dv">36</span>)</span>
+<span id="cb117-7"><a href="#cb117-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb117-8"><a href="#cb117-8" aria-hidden="true" tabindex="-1"></a><span class="co">#Plotting the forecasts</span></span>
+<span id="cb117-9"><a href="#cb117-9" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(oil_log_ts, <span class="at">series=</span><span class="st">"Data"</span>) <span class="sc">+</span></span>
+<span id="cb117-10"><a href="#cb117-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(forecast_meanf, <span class="at">series=</span><span class="st">"Mean Forecast"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb117-11"><a href="#cb117-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(forecast_naive, <span class="at">series=</span><span class="st">"Naive Forecast"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb117-12"><a href="#cb117-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(forecast_snaive, <span class="at">series=</span><span class="st">"Seasonal Naive Forecast"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb117-13"><a href="#cb117-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(forecast_rwf, <span class="at">series=</span><span class="st">"Drift"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb117-14"><a href="#cb117-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(forecast_arima, <span class="at">series=</span><span class="st">"ARIMA(2,1,2) Forecast"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb117-15"><a href="#cb117-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Comparative Forecast for Crude Oil Prices"</span>,</span>
+<span id="cb117-16"><a href="#cb117-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">x=</span><span class="st">"Year"</span>, <span class="at">y=</span><span class="st">"Logged Prices"</span>,</span>
+<span id="cb117-17"><a href="#cb117-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption=</span><span class="st">"Comparing ARIMA(2,1,2) with Benchmark Methods"</span>) <span class="sc">+</span></span>
+<span id="cb117-18"><a href="#cb117-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb117-19"><a href="#cb117-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>)) <span class="sc">+</span></span>
+<span id="cb117-20"><a href="#cb117-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">colour=</span><span class="fu">guide_legend</span>(<span class="at">title=</span><span class="st">"Forecast Method"</span>)) <span class="sc">+</span></span>
+<span id="cb117-21"><a href="#cb117-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">"Data"</span><span class="ot">=</span><span class="st">"#000000"</span>, <span class="st">"Mean Forecast"</span><span class="ot">=</span><span class="st">"red"</span>,</span>
+<span id="cb117-22"><a href="#cb117-22" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"Naive Forecast"</span><span class="ot">=</span><span class="st">"green"</span>, <span class="st">"Seasonal Naive Forecast"</span><span class="ot">=</span><span class="st">"purple"</span>,</span>
+<span id="cb117-23"><a href="#cb117-23" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"Drift"</span><span class="ot">=</span><span class="st">"orange"</span>, <span class="st">"ARIMA(2,1,2) Forecast"</span><span class="ot">=</span><span class="st">"blue"</span>),</span>
+<span id="cb117-24"><a href="#cb117-24" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">c</span>(<span class="st">"Data"</span>, <span class="st">"Mean Forecast"</span>, <span class="st">"Naive Forecast"</span>,</span>
+<span id="cb117-25"><a href="#cb117-25" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"Seasonal Naive Forecast"</span>, <span class="st">"Drift"</span>, <span class="st">"ARIMA(2,1,2) Forecast"</span>))</span></code></pre></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -3133,7 +3281,22 @@ AIC=-3782.31   AICc=-3782.1   BIC=-3758.23</code></pre>
 </figure>
 </div>
 </div>
+<details class="code-fold">
+<summary>Comparing Benchmark</summary>
+<div class="sourceCode cell-code" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1" aria-hidden="true" tabindex="-1"></a><span class="fu">accuracy</span>(forecast_crudeoil2)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                      ME       RMSE        MAE MPE MAPE      MASE        ACF1
+Training set 0.001044984 0.07735308 0.05741248 Inf  Inf 0.6543703 0.006458057</code></pre>
 </div>
+</div>
+<p>We can observe the forecasts generated by different methods are quite close to each other, with only slight variations in their predicted future values.</p>
+<ul>
+<li><p>The mean forecast (Mean Forecast) is a flat line, indicating no change is expected in the future, which can be a result of averaging past data.</p></li>
+<li><p>The naïve forecast (Naive Forecast) and seasonal naïve forecast (Seasonal Naive Forecast) suggest a continuation of the last observed patterns.</p></li>
+<li><p>The random walk with drift forecast (Drift) shows a slight upward trend, indicating an expected gradual increase over time, likely accounting for the upward trend seen in the historical data.</p></li>
+</ul>
+<p>The ARIMA(2,1,2) model’s forecast also predicts future values that follow the patterns observed in the recent past but with a confidence interval that widens over time.</p>
 </div>
 <div id="tabset-12-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-12-2-tab">
 <div class="cell">
@@ -3179,14 +3342,504 @@ AIC=-3782.31   AICc=-3782.1   BIC=-3758.23</code></pre>
 </div>
 </div>
 </div>
-<div id="tabset-12-6" class="tab-pane" role="tabpanel" aria-labelledby="tabset-12-6-tab">
+</div>
+</div>
+<p>#SARIMA</p>
+<p>We can observe that in some of the datasets, there is clear seasonality. The three seasonal datasets are: Crude Oil, Electricity, and CPI. For these datasets, we need seasonal differencing and thus we will use SARIMA model.</p>
+<section id="sarima-acf-and-pacf-plots" class="level2">
+<h2 class="anchored" data-anchor-id="sarima-acf-and-pacf-plots">SARIMA ACF and PACF Plots</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-13-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-13-1" role="tab" aria-controls="tabset-13-1" aria-selected="true">Crude Oil</a></li></ul>
+<div class="tab-content">
+<div id="tabset-13-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-13-1-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>SARIMA ACF-PACF</summary>
+<div class="sourceCode cell-code" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Seasonal differencing</span></span>
+<span id="cb120-2"><a href="#cb120-2" aria-hidden="true" tabindex="-1"></a>seasonally_diff_oil_log_ts <span class="ot">&lt;-</span> <span class="fu">diff</span>(oil_log_ts, <span class="at">lag=</span><span class="dv">12</span>)</span>
+<span id="cb120-3"><a href="#cb120-3" aria-hidden="true" tabindex="-1"></a><span class="co">#ACF and PACF plots</span></span>
+<span id="cb120-4"><a href="#cb120-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggtsdisplay</span>(seasonally_diff_oil_log_ts, <span class="at">main=</span><span class="st">'Seasonally Differenced Crude Oil Prices'</span>)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="univariate-ts-models_files/figure-html/unnamed-chunk-69-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Based on these graphs and examining the ACF and PACF plots, we can suggest a range of values for P and Q:</p>
+<p>P = 1, 2 D = 1 Q = 1, 2</p>
+</div>
+</div>
+</div>
+</section>
+<section id="finding-sarima-parameters-p-d-q" class="level2">
+<h2 class="anchored" data-anchor-id="finding-sarima-parameters-p-d-q">Finding SARIMA Parameters (p, d, q)</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-14-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-14-1" role="tab" aria-controls="tabset-14-1" aria-selected="true">Crude Oil</a></li></ul>
+<div class="tab-content">
+<div id="tabset-14-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-14-1-tab">
+<p>p = 1, 2 q = 1, 2, 3 d = 1 D = 1 P = 1, 2 Q = 1, 2</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Parameters</summary>
+<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a>SARIMA.c<span class="ot">=</span><span class="cf">function</span>(p1,p2,q1,q2,P1,P2,Q1,Q2,data){</span>
+<span id="cb121-2"><a href="#cb121-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb121-3"><a href="#cb121-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#K=(p2+1)*(q2+1)*(P2+1)*(Q2+1)</span></span>
+<span id="cb121-4"><a href="#cb121-4" aria-hidden="true" tabindex="-1"></a>  temp<span class="ot">=</span><span class="fu">c</span>()</span>
+<span id="cb121-5"><a href="#cb121-5" aria-hidden="true" tabindex="-1"></a>  d <span class="ot">=</span> <span class="dv">1</span></span>
+<span id="cb121-6"><a href="#cb121-6" aria-hidden="true" tabindex="-1"></a>  D <span class="ot">=</span> <span class="dv">1</span></span>
+<span id="cb121-7"><a href="#cb121-7" aria-hidden="true" tabindex="-1"></a>  s <span class="ot">=</span> <span class="dv">12</span></span>
+<span id="cb121-8"><a href="#cb121-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb121-9"><a href="#cb121-9" aria-hidden="true" tabindex="-1"></a>  i<span class="ot">=</span><span class="dv">1</span></span>
+<span id="cb121-10"><a href="#cb121-10" aria-hidden="true" tabindex="-1"></a>  temp<span class="ot">=</span> <span class="fu">data.frame</span>()</span>
+<span id="cb121-11"><a href="#cb121-11" aria-hidden="true" tabindex="-1"></a>  ls<span class="ot">=</span><span class="fu">matrix</span>(<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">9</span><span class="sc">*</span><span class="dv">19</span>),<span class="at">nrow=</span><span class="dv">19</span>)</span>
+<span id="cb121-12"><a href="#cb121-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb121-13"><a href="#cb121-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb121-14"><a href="#cb121-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (p <span class="cf">in</span> p1<span class="sc">:</span>p2)</span>
+<span id="cb121-15"><a href="#cb121-15" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb121-16"><a href="#cb121-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(q <span class="cf">in</span> q1<span class="sc">:</span>q2)</span>
+<span id="cb121-17"><a href="#cb121-17" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb121-18"><a href="#cb121-18" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span>(P <span class="cf">in</span> P1<span class="sc">:</span>P2)</span>
+<span id="cb121-19"><a href="#cb121-19" aria-hidden="true" tabindex="-1"></a>      {</span>
+<span id="cb121-20"><a href="#cb121-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span>(Q <span class="cf">in</span> Q1<span class="sc">:</span>Q2)</span>
+<span id="cb121-21"><a href="#cb121-21" aria-hidden="true" tabindex="-1"></a>        {</span>
+<span id="cb121-22"><a href="#cb121-22" aria-hidden="true" tabindex="-1"></a>          <span class="cf">if</span>(p<span class="sc">+</span>d<span class="sc">+</span>q<span class="sc">+</span>P<span class="sc">+</span>D<span class="sc">+</span>Q<span class="sc">&lt;=</span><span class="dv">9</span>)</span>
+<span id="cb121-23"><a href="#cb121-23" aria-hidden="true" tabindex="-1"></a>          {</span>
+<span id="cb121-24"><a href="#cb121-24" aria-hidden="true" tabindex="-1"></a>            model<span class="ot">&lt;-</span> <span class="fu">Arima</span>(data,<span class="at">order=</span><span class="fu">c</span>(p<span class="dv">-1</span>,d,q<span class="dv">-1</span>),<span class="at">seasonal=</span><span class="fu">c</span>(P<span class="dv">-1</span>,D,Q<span class="dv">-1</span>))</span>
+<span id="cb121-25"><a href="#cb121-25" aria-hidden="true" tabindex="-1"></a>            ls[i,]<span class="ot">=</span> <span class="fu">c</span>(p<span class="dv">-1</span>,d,q<span class="dv">-1</span>,P<span class="dv">-1</span>,D,Q<span class="dv">-1</span>,model<span class="sc">$</span>aic,model<span class="sc">$</span>bic,model<span class="sc">$</span>aicc)</span>
+<span id="cb121-26"><a href="#cb121-26" aria-hidden="true" tabindex="-1"></a>            i<span class="ot">=</span>i<span class="sc">+</span><span class="dv">1</span></span>
+<span id="cb121-27"><a href="#cb121-27" aria-hidden="true" tabindex="-1"></a>            <span class="co">#print(i)</span></span>
+<span id="cb121-28"><a href="#cb121-28" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb121-29"><a href="#cb121-29" aria-hidden="true" tabindex="-1"></a>          }</span>
+<span id="cb121-30"><a href="#cb121-30" aria-hidden="true" tabindex="-1"></a>          </span>
+<span id="cb121-31"><a href="#cb121-31" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb121-32"><a href="#cb121-32" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb121-33"><a href="#cb121-33" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb121-34"><a href="#cb121-34" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb121-35"><a href="#cb121-35" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb121-36"><a href="#cb121-36" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb121-37"><a href="#cb121-37" aria-hidden="true" tabindex="-1"></a>  temp<span class="ot">=</span> <span class="fu">as.data.frame</span>(ls)</span>
+<span id="cb121-38"><a href="#cb121-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(temp)<span class="ot">=</span> <span class="fu">c</span>(<span class="st">"p"</span>,<span class="st">"d"</span>,<span class="st">"q"</span>,<span class="st">"P"</span>,<span class="st">"D"</span>,<span class="st">"Q"</span>,<span class="st">"AIC"</span>,<span class="st">"BIC"</span>,<span class="st">"AICc"</span>)</span>
+<span id="cb121-39"><a href="#cb121-39" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb121-40"><a href="#cb121-40" aria-hidden="true" tabindex="-1"></a>  temp</span>
+<span id="cb121-41"><a href="#cb121-41" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb121-42"><a href="#cb121-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb121-43"><a href="#cb121-43" aria-hidden="true" tabindex="-1"></a>output<span class="ot">=</span><span class="fu">SARIMA.c</span>(<span class="at">p1=</span><span class="dv">1</span>,<span class="at">p2=</span><span class="dv">2</span>,<span class="at">q1=</span><span class="dv">1</span>,<span class="at">q2=</span><span class="dv">3</span>,<span class="at">P1=</span><span class="dv">1</span>,<span class="at">P2=</span><span class="dv">2</span>,<span class="at">Q1=</span><span class="dv">1</span>,<span class="at">Q2=</span><span class="dv">2</span>,<span class="at">data=</span>oil_log_ts)</span>
+<span id="cb121-44"><a href="#cb121-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb121-45"><a href="#cb121-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb121-46"><a href="#cb121-46" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(output)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<table class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">p</th>
+<th style="text-align: right;">d</th>
+<th style="text-align: right;">q</th>
+<th style="text-align: right;">P</th>
+<th style="text-align: right;">D</th>
+<th style="text-align: right;">Q</th>
+<th style="text-align: right;">AIC</th>
+<th style="text-align: right;">BIC</th>
+<th style="text-align: right;">AICc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-516.9438</td>
+<td style="text-align: right;">-512.9649</td>
+<td style="text-align: right;">-516.9336</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">-748.1560</td>
+<td style="text-align: right;">-740.1982</td>
+<td style="text-align: right;">-748.1254</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-606.0015</td>
+<td style="text-align: right;">-598.0437</td>
+<td style="text-align: right;">-605.9708</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">-746.4074</td>
+<td style="text-align: right;">-734.4708</td>
+<td style="text-align: right;">-746.3460</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-610.6173</td>
+<td style="text-align: right;">-602.6595</td>
+<td style="text-align: right;">-610.5867</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">-847.3843</td>
+<td style="text-align: right;">-835.4477</td>
+<td style="text-align: right;">-847.3230</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-705.3717</td>
+<td style="text-align: right;">-693.4351</td>
+<td style="text-align: right;">-705.3103</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">-845.7597</td>
+<td style="text-align: right;">-829.8441</td>
+<td style="text-align: right;">-845.6571</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-614.0687</td>
+<td style="text-align: right;">-602.1321</td>
+<td style="text-align: right;">-614.0073</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">-850.3873</td>
+<td style="text-align: right;">-834.4717</td>
+<td style="text-align: right;">-850.2847</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-708.3169</td>
+<td style="text-align: right;">-692.4014</td>
+<td style="text-align: right;">-708.2144</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-603.7357</td>
+<td style="text-align: right;">-595.7780</td>
+<td style="text-align: right;">-603.7051</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">-836.3296</td>
+<td style="text-align: right;">-824.3929</td>
+<td style="text-align: right;">-836.2682</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-696.0521</td>
+<td style="text-align: right;">-684.1154</td>
+<td style="text-align: right;">-695.9907</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">-834.4715</td>
+<td style="text-align: right;">-818.5559</td>
+<td style="text-align: right;">-834.3689</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-613.1571</td>
+<td style="text-align: right;">-601.2204</td>
+<td style="text-align: right;">-613.0957</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">-849.3277</td>
+<td style="text-align: right;">-833.4121</td>
+<td style="text-align: right;">-849.2251</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-707.6117</td>
+<td style="text-align: right;">-691.6962</td>
+<td style="text-align: right;">-707.5091</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">-612.0820</td>
+<td style="text-align: right;">-596.1664</td>
+<td style="text-align: right;">-611.9794</td>
+</tr>
+</tbody>
+</table>
+</div>
+<details class="code-fold">
+<summary>Parameters</summary>
+<div class="sourceCode cell-code" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1" aria-hidden="true" tabindex="-1"></a>output[<span class="fu">which.min</span>(output<span class="sc">$</span>AIC),]</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>   p d q P D Q       AIC       BIC      AICc
+10 0 1 2 0 1 1 -850.3873 -834.4717 -850.2847</code></pre>
+</div>
+<details class="code-fold">
+<summary>Parameters</summary>
+<div class="sourceCode cell-code" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" aria-hidden="true" tabindex="-1"></a>output[<span class="fu">which.min</span>(output<span class="sc">$</span>BIC),]</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  p d q P D Q       AIC       BIC     AICc
+6 0 1 1 0 1 1 -847.3843 -835.4477 -847.323</code></pre>
+</div>
+<details class="code-fold">
+<summary>Parameters</summary>
+<div class="sourceCode cell-code" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="#cb126-1" aria-hidden="true" tabindex="-1"></a>output[<span class="fu">which.min</span>(output<span class="sc">$</span>AICc),]</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>   p d q P D Q       AIC       BIC      AICc
+10 0 1 2 0 1 1 -850.3873 -834.4717 -850.2847</code></pre>
+</div>
+</div>
+<p>The model with the lowest AIC and AICc is ARIMA(0,1,2)[0,1,1]12. and lowest BIC is ARIMA(0,1,1)[0,1,1]12.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="sarima-full-model-diagnostics" class="level2">
+<h2 class="anchored" data-anchor-id="sarima-full-model-diagnostics">SARIMA Full Model Diagnostics</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-15-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-15-1" role="tab" aria-controls="tabset-15-1" aria-selected="true">Crude Oil</a></li></ul>
+<div class="tab-content">
+<div id="tabset-15-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-15-1-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>SARIMA Fit</summary>
+<div class="sourceCode cell-code" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="#cb128-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">222</span>)</span>
+<span id="cb128-2"><a href="#cb128-2" aria-hidden="true" tabindex="-1"></a>model_output_s <span class="ot">&lt;-</span> <span class="fu">capture.output</span>(<span class="fu">sarima</span>(oil_log_ts, <span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">12</span>))</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="univariate-ts-models_files/figure-html/unnamed-chunk-71-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<details class="code-fold">
+<summary>SARIMA Fit</summary>
+<div class="sourceCode cell-code" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="#cb129-1" aria-hidden="true" tabindex="-1"></a><span class="co">#model_output_s</span></span>
+<span id="cb129-2"><a href="#cb129-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(model_output_s[<span class="dv">25</span><span class="sc">:</span><span class="dv">37</span>], model_output_s[<span class="fu">length</span>(model_output_s)], <span class="at">sep =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>) </span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>converged
+&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;
+ 
+Coefficients: 
+     Estimate     SE  t.value p.value
+ma1    0.5483 0.0496  11.0538  0.0000
+ma2    0.1238 0.0543   2.2800  0.0231
+sma1  -1.0000 0.0516 -19.3878  0.0000
 
+sigma^2 estimated as 0.005983027 on 392 degrees of freedom 
+ 
+AIC = -2.152879  AICc = -2.152724  BIC = -2.112587 
+ 
+ </code></pre>
+</div>
+</div>
+<p>Equation:</p>
+<p><span class="math display">\[
+x_t = 0.5483 x_{t-1} + 0.1238 x_{t-2} - 1.00 + a_t
+\]</span></p>
+</div>
+</div>
+</div>
+</section>
+<section id="auto-arima" class="level2">
+<h2 class="anchored" data-anchor-id="auto-arima">Auto ARIMA</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-16-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-16-1" role="tab" aria-controls="tabset-16-1" aria-selected="true">Crude Oil</a></li></ul>
+<div class="tab-content">
+<div id="tabset-16-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-16-1-tab">
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: oil_log_ts 
+ARIMA(2,1,0)(1,0,0)[12] 
+
+Coefficients:
+         ar1      ar2     sar1
+      0.5686  -0.2324  -0.0143
+s.e.  0.0482   0.0483   0.0509
+
+sigma^2 = 0.006077:  log likelihood = 462.33
+AIC=-916.65   AICc=-916.55   BIC=-900.62</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="forecasting-1" class="level2">
+<h2 class="anchored" data-anchor-id="forecasting-1">Forecasting</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-17-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-17-1" role="tab" aria-controls="tabset-17-1" aria-selected="true">Crude Oil</a></li></ul>
+<div class="tab-content">
+<div id="tabset-17-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-17-1-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="univariate-ts-models_files/figure-html/unnamed-chunk-73-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="comparing-sarima-with-benchmark" class="level2">
+<h2 class="anchored" data-anchor-id="comparing-sarima-with-benchmark">Comparing SARIMA With Benchmark</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-18-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-18-1" role="tab" aria-controls="tabset-18-1" aria-selected="true">Crude Oil</a></li></ul>
+<div class="tab-content">
+<div id="tabset-18-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-18-1-tab">
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="univariate-ts-models_files/figure-html/unnamed-chunk-74-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>SNaive benchmark appears to have a trend line most similar to the previous years</p>
+</div>
+</div>
+</div>
+</section>
+<section id="cross-validation" class="level2">
+<h2 class="anchored" data-anchor-id="cross-validation">Cross-Validation</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-19-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-19-1" role="tab" aria-controls="tabset-19-1" aria-selected="true">Crude Oil</a></li></ul>
+<div class="tab-content">
+<div id="tabset-19-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-19-1-tab">
+<p>The best model for this dataset using manual selection is ARIMA(0,1,2)(0,1,1)[12], while the auto arima model is ARIMA(2,1,0)(1,0,0)[12].</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in Arima(xtrain, order = c(0, 1, 2), seasonal = list(order = c(0, : No
+drift term fitted as the order of difference is 2 or more.
+
+Warning in Arima(xtrain, order = c(0, 1, 2), seasonal = list(order = c(0, : No
+drift term fitted as the order of difference is 2 or more.
+
+Warning in Arima(xtrain, order = c(0, 1, 2), seasonal = list(order = c(0, : No
+drift term fitted as the order of difference is 2 or more.
+
+Warning in Arima(xtrain, order = c(0, 1, 2), seasonal = list(order = c(0, : No
+drift term fitted as the order of difference is 2 or more.
+
+Warning in Arima(xtrain, order = c(0, 1, 2), seasonal = list(order = c(0, : No
+drift term fitted as the order of difference is 2 or more.</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="univariate-ts-models_files/figure-html/unnamed-chunk-75-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 <p><a href="./exploratory-data-analysis.html" class="previous-page-link" style="float: left;">← Previous Page: EDA</a></p>
 
 
+</section>
 </section>
 
 <a onclick="window.scrollTo(0, 0); return false;" role="button" id="quarto-back-to-top"><i class="bi bi-arrow-up"></i> Back to top</a></main> <!-- /main -->

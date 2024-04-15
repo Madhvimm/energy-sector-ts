@@ -1041,8 +1041,8 @@ It seems that first differencing might have been adequate to stabilize the mean 
 
 Examining the ACF and PACF plots for the first differencing of electricity prices, we can suggest a range of values for p and q:
 
-p = 1 to 12 (considering the significant spike at the first lag)
-q = 1, 2, 3, 4, 5, 6, 7, 8, 9
+p = 1, 2, 3 (considering the significant spike at the first lag)
+q = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 
 
 ## GDP
@@ -1222,8 +1222,8 @@ When selecting the best ARIMA model for forecasting natural gas prices, it's com
 
 ## Electricity
 
-p = 1 to 12 (considering the significant spike at the first lag)
-q = 1, 2, 3, 4, 5, 6, 7, 8, 9
+p = 1, 2, 3 (considering the significant spike at the first lag)
+q = 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
@@ -1234,11 +1234,11 @@ q = 1, 2, 3, 4, 5, 6, 7, 8, 9
 
 d <- 1 # Degree of differencing
 temp <- data.frame()
-ls <- matrix(rep(NA, 6 * 36), nrow = 36)  # p (12 options) * q (9 options) = 108 combinations - threshold
+ls <- matrix(rep(NA, 6 * 21), nrow = 21)  # p (3 options) * q (10 options) = 30 combinations - threshold
 
 i <- 1
-for (p in 1:12) {
-  for (q in 1:9) {
+for (p in 1:3) {
+  for (q in 1:10) {
     if(p-1+d+q-1<=8) {
       model <- Arima(electricity_log_ts, order = c(p, d, q), include.drift = TRUE)
       ls[i,] <- c(p, d, q, model$aic, model$bic, model$aicc)
@@ -1262,11 +1262,10 @@ temp[which.min(temp$AICc),]
 
 
 
-
 When selecting the best ARIMA model for forecasting electricity prices, it's common for the AIC and BIC to suggest different models. In such cases, we often prefer the model with the lower AIC. Based on the results, we've can select two models for further consideration:
 
-- Best Model by AIC, BIC, and AICc (ARIMA(4,1,4))
-- Second best model: ARIMA(7,1,2)
+- Best Model by AIC, BIC, and AICc (ARIMA(2,1,3))
+- Second best model: ARIMA(3,1,6)
 
 
 
@@ -1482,8 +1481,8 @@ $$
 
 ### Electricity
 
-- Best Model by AIC, BIC, and AICc (ARIMA(4,1,4))
-- Second best model: ARIMA(7,1,2)
+- Best Model by AIC, BIC, and AICc (ARIMA(2,1,3))
+- Second best model: ARIMA(3,1,6)
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
@@ -1492,34 +1491,33 @@ $$
 #| output: true
 
 #Fitting ARIMA
-fit_electricity <- Arima(diff(electricity_log_ts), order=c(4, 1, 4),include.drift = TRUE) 
+fit_electricity <- Arima(diff(electricity_log_ts), order=c(2, 1, 3),include.drift = TRUE) 
 summary(fit_electricity)
 
 ```
 
-**Coefficients:** The model includes four autoregressive terms (ar1, ar2, ar3, ar4) and four moving average terms with all coefficients having significant values.
+**Coefficients:** The model includes four autoregressive terms (ar1, ar2) and three moving average terms with all coefficients having significant values.
 **Drift:** The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.
 
 
-For the Best Model (ARIMA(4,1,4)):
+For the Best Model (ARIMA(2,1,3)):
 
 Given the coefficients:
 
-- AR1: 2.3940
-- AR2: -3.0152
-- AR3: 2.0155
-- AR4: -0.6215
-- MA1: -2.8848
-- MA2: 3.7759
-- MA3: -2.7851
-- MA4: 0.9013
+- AR1: 0.9728
+- AR2: -0.9217
+- MA1: -1.6812
+- MA2: 1.6054
+- MA3: -0.9242
 
-The equation for the ARIMA(4,1,4) model:
+The equation for the ARIMA(2,1,3) model:
 
 $$
-y_t = 2.3940 y_{t-1} - 3.0152 y_{t-2} + 2.0155 y_{t-3} - 0.6215 y_{t-4} + w_t - 2.8848 w_{t-1} + 3.7759 w_{t-2} - 2.7851 w_{t-3} + 0.9013 w_{t-4}
+\begin{aligned}
+y_t = &\ 0.9728 y_{t-1} - 0.9217 y_{t-2} \\
+      &\ + w_t - 1.6812 w_{t-1} + 1.6054 w_{t-2} - 0.9242 w_{t-3}
+\end{aligned}
 $$
-
 
 
 
@@ -1598,7 +1596,6 @@ y_t = 0.8004y_{t-1} - 0.3574y_{t-2} + 0.1405y_{t-3} + w_t - 1.2473w_{t-1} + 0.26
 $$
 
 
-## 
 
 :::
 
@@ -1720,8 +1717,8 @@ Given these considerations, the **ARIMA(3,1,1)** model is deemed better for the 
 
 ### Electricity
 
-- Best Model by AIC, BIC, and AICc (ARIMA(4,1,4))
-- Second best model: ARIMA(7,1,2)
+- Best Model by AIC, BIC, and AICc (ARIMA(2,1,3))
+- Second best model: ARIMA(3,1,6)
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
@@ -1730,53 +1727,55 @@ Given these considerations, the **ARIMA(3,1,1)** model is deemed better for the 
 #| output: true
 
 #Fitting ARIMA
-fit_electricity2 <- Arima(diff(electricity_log_ts), order=c(7, 1, 2),include.drift = TRUE) 
+fit_electricity2 <- Arima(diff(electricity_log_ts), order=c(3, 1, 6),include.drift = TRUE) 
 summary(fit_electricity2)
 
 ```
 
-**Coefficients:** The model includes seven autoregressive terms and two moving average terms (ma1, ma2), with all coefficients having significant values.
+**Coefficients:** The model includes three autoregressive terms and six moving average terms (ma1, ma2..., ma6), with all coefficients having significant values.
 **Drift:** The drift coefficient is extremely small, suggesting a negligible linear trend in the differenced series.
 
 
-For the Best Model (ARIMA(7,1,2)):
+For the Best Model (ARIMA(3,1,6)):
 
 Given the coefficients:
 
-- AR1: 0.9323
-- AR2: -0.4164 
-- AR3: -0.2322
-- AR4: -0.1740
-- AR5: 0.0383
-- AR6: 0.1052
-- AR7: -0.5193
-- MA1: -1.7405
-- MA2: 0.9597
+- AR1: 0.0090
+- AR2: 0.3478
+- AR3: -0.5904
+- MA1: -0.5779
+- MA2: -0.7449
+- MA3: 0.5961
+- MA4: -0.6126
+- MA5: -0.0975
+- MA6: 0.4660
 
-
-The equation for the ARIMA(7,1,2) model:
+The equation for the ARIMA(3,1,6) model:
 
 $$
-x_t = 0.9323x_{t-1} - 0.4164x_{t-2} - 0.2322x_{t-3} - 0.1740x_{t-4} + 0.0383x_{t-5} + 0.1052x_{t-6} - 0.5193x_{t-7} + w_t - 1.7405w_{t-1} + 0.9597w_{t-2}
+\begin{aligned}
+x_t = &\ 0.0090 x_{t-1} + 0.3478 x_{t-2} - 0.5904 x_{t-3} + w_t \\
+      &\ - 0.5779 w_{t-1} - 0.7449 w_{t-2} + 0.5961 w_{t-3} \\
+      &\ - 0.6126 w_{t-4} - 0.0975 w_{t-5} + 0.4660 w_{t-6}
+\end{aligned}
 $$
 
 #### Better Model:
 
-- ARIMA(7,1,2) has a lower AIC (-2250.37) compared to ARIMA(4,1,4) (-2153.26)
+- ARIMA(3,1,6) has a lower AIC (-2062.81) compared to ARIMA(2,1,3) (-2052.82 )
 
-- ARIMA(7,1,2) also shows a lower AICc (-2249.7) than ARIMA(4,1,4) (-2152.71)
+- ARIMA(3,1,6) also shows a lower AICc (-2062.14) than ARIMA(2,1,3) (-2052.54)
 
-- ARIMA(7,1,2) has a lower BIC (-2206.33) compared to ARIMA(4,1,4) (-2113.23)
+- ARIMA(2,1,3) has a lower BIC (-2024.79) compared to ARIMA(3,1,6) (-2018.77)
 
-- ARIMA(7,1,2) exhibits a higher log likelihood (1136.19) compared to ARIMA(4,1,4) (1086.63), indicating a slightly better fit
+- ARIMA(3,1,6) exhibits a higher log likelihood (1042.41) compared to ARIMA(2,1,3) (1033.41), indicating a slightly better fit
 
-- For ARIMA(7,1,2), both RMSE and MAE are slightly lower than for ARIMA(4,1,4), indicating better predictive performance
+- For ARIMA(3,1,6), both RMSE and MAE are slightly lower than for ARIMA(2,1,3), indicating better predictive performance
 
-- ARIMA(7,1,2) includes additional autoregressive terms which seem to capture more complexity in the data dynamics
+- ARIMA(3,1,6) includes additional autoregressive terms which seem to capture more complexity in the data dynamics
 
 
-Given these considerations, the **ARIMA(7,1,2)** model is better for the series
-
+Given these considerations, the **ARIMA(3,1,6)** model is better for the series
 
 
 ### GDP
@@ -1839,7 +1838,6 @@ Despite the ARIMA(3,1,2) having a slightly higher log likelihood and potentially
 
 
 
-
 ### CPI
 
 - Best Model by AIC and AICc: ARIMA(3,1,2)
@@ -1876,8 +1874,12 @@ Given the coefficients:
 The equation for the ARIMA(3,1,3) model:
 
 $$
-x_t = 0.0195 x_{t-1} - 0.6767 x_{t-2} + 0.3641 x_{t-3} + w_t - 0.4767 w_{t-1} + 0.2965 w_{t-2} - 0.7575 w_{t-3}
+\begin{aligned}
+x_t = &\ 0.0195 x_{t-1} - 0.6767 x_{t-2} + 0.3641 x_{t-3} \\
+      &\ + w_t - 0.4767 w_{t-1} + 0.2965 w_{t-2} - 0.7575 w_{t-3}
+\end{aligned}
 $$
+
 
 
 
@@ -1916,82 +1918,99 @@ Given these considerations, the **ARIMA(3,1,3)** model is better for the series
 
 ## Crude Oil
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Diagnostics'
 #| warning: false
 #| output: true
 
 set.seed(222)
+## Fit the Best Model
 diag_crudeoil <- capture.output(sarima(oil_log_ts, 2,1,2))
+#print(diag_crudeoil)
+cat(diag_crudeoil[25:55], diag_crudeoil[length(diag_crudeoil)], sep = "\n")
 
 ```
 
 
 **Standardized Residuals**: The plot shows some fluctuation, but there don't appear to be any clear patterns or trends.
 
-**ACF of Residuals**: We observe no apparent autocorrelation amongst the residuals. The absence of significant spikes outside the confidence bounds suggests that the residuals are essentially white noise
+**ACF of Residuals**: The ACF plot for the residuals displays no significant spikes outside the confidence bounds (blue dashed lines), which implies that the residuals are white noise.
 
 **Q-Q Plot of Std Residuals**: which assesses the normality of the residuals, shows an acceptable alignment
 
 **Ljung-Box test**: The p-values in the plot are well above the 0.05 threshold, indicating that we fail to reject the null hypothesis of no autocorrelation among residuals at different lags. 
 
+**Model Coefficients**: The coefficients are significant except for the second moving average coefficient (ma2), which has a p-value higher than 0.05. This indicates that while most coefficients contribute meaningfully to the model, the ma2 term may not be adding value.
 
-The diagnostic plots suggest that the ARIMA(2,1,2) model is a reasonably good fit for the data.
+Considering the log likelihood and the information criteria (AIC, AICc, BIC), the model seems to be well-fitted. A higher log likelihood and lower information criteria values generally indicate a better model fit.
+
+Based on these diagnostics, the **ARIMA(2,1,2)** model seems to be adequately fitting the crude oil time series data. 
 
 
 ## Natural Gas
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Diagnostics'
 #| warning: false
 #| output: true
 
 set.seed(222)
+## Fit the Best Model
 diag_ng <- capture.output(sarima(oil_log_ts, 3,1,1))
-
-
+#print(diag_ng)
+cat(diag_ng[76:91], diag_ng[length(diag_ng)], sep = "\n")
 ```
 
-**Standardized Residuals**: The plot shows some fluctuation, but there don't appear to be any clear patterns or trends.
 
-**ACF of Residuals**: We observe no apparent autocorrelation amongst the residuals. The absence of significant spikes outside the confidence bounds suggests that the residuals are essentially white noise
+**Standardized Residuals**: The plot of standardized residuals doesn't exhibit any obvious patterns, trends, or seasonality, which suggests that the model has captured the underlying process well. The residuals fluctuate around the zero line within a consistent range, indicating that the variance of the residuals is stable over time.
+
+**ACF of Residuals**: The ACF plot for the residuals displays no significant spikes outside the confidence bounds (blue dashed lines), which implies that the residuals are white noise.
 
 **Q-Q Plot of Std Residuals**: which assesses the normality of the residuals, shows an acceptable alignment
 
-**Ljung-Box test**: The p-values in the plot are well above the 0.05 threshold, indicating that we fail to reject the null hypothesis of no autocorrelation among residuals at different lags. 
+**Ljung-Box test**:The p-values in the plot are well above the 0.05 threshold, indicating that we fail to reject the null hypothesis of no autocorrelation among residuals at different lags. 
 
+**Model Coefficients**: The coefficients are significant all appear to be statistically significant, as indicated by their p-values being well below the 0.05 threshold. This indicates that all the coefficients contribute meaningfully to the model.
 
-The diagnostic plots suggest that the ARIMA(3,1,1) model is a reasonably good fit for the data.
+Considering the log likelihood and the information criteria (AIC, AICc, BIC), the model seems to be well-fitted. A higher log likelihood and lower information criteria values generally indicate a better model fit.
 
-
+Based on these diagnostics, the ARIMA(3,1,1) model seems to be adequately fitting the data.
 
 
 
 ## Electricity
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+ARIMA(3,1,6)
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Diagnostics'
 #| warning: false
 #| output: true
 
 set.seed(222)
-diag_electricity <- capture.output(sarima(electricity_log_ts, 4,1,4))
-
+## Fit the Best Model
+diag_electricity <- capture.output(sarima(electricity_log_ts, 3,1,6))
+#print(diag_electricity)
+cat(diag_electricity[79:98], diag_electricity[length(diag_electricity)], sep = "\n")
 ```
 
-**Standardized Residuals**: The plot shows some fluctuation, but there don't appear to be any clear patterns or trends.
 
-**ACF of Residuals**: We do observe some apparent autocorrelation amongst the residuals. The absence of significant spikes outside the confidence bounds suggests that the residuals are essentially white noise
+**Standardized Residuals**: The plot of standardized residuals doesn't exhibit any obvious patterns, trends, or seasonality, which suggests that the model has captured the underlying process well. The residuals fluctuate around the zero line within a consistent range, indicating that the variance of the residuals is stable over time.
+
+**ACF of Residuals**: The autocorrelation function (ACF) plot for the residuals exhibits no spikes outside the blue dashed confidence intervals, suggesting that the residuals are white noise, which means they do not exhibit autocorrelation.
 
 **Q-Q Plot of Std Residuals**: which assesses the normality of the residuals, shows an acceptable alignment
 
-**Ljung-Box test**: The p-values in the plot are well above the 0.05 threshold, indicating that we fail to reject the null hypothesis of no autocorrelation among residuals at different lags. 
+**Ljung-Box test**: The p-values are very low (close to 0). This would suggest there is evidence of autocorrelation in the residuals.
 
+**Model Coefficients**: The coefficients of the ARIMA model are statistically significant, with p-values below the 0.05 threshold, indicating they contribute meaningfully to the model.
 
-The diagnostic plots suggest that the ARIMA(2,1,2) model is a reasonably good fit for the data.
+Considering the log likelihood and the information criteria (AIC, AICc, BIC), the model seems to be well-fitted. A higher log likelihood and lower information criteria values generally indicate a better model fit.
+
+Based on these diagnostics, the ARIMA(3,1,6) model seems to be adequately fitting the data.
 
 
 
@@ -1999,98 +2018,116 @@ The diagnostic plots suggest that the ARIMA(2,1,2) model is a reasonably good fi
 
 ## GDP
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Diagnostics'
 #| warning: false
 #| output: true
 
 set.seed(222)
 diag_gdp <- capture.output(sarima(gdp_log_ts, 1,1,1))
-
+#print(diag_gdp)
+cat(diag_gdp[30:41], diag_gdp[length(diag_gdp)], sep = "\n")
 ```
 
-**Standardized Residuals**: The plot shows some fluctuation, but there don't appear to be any clear patterns or trends.
+**Standardized Residuals**: The plot of standardized residuals doesn't exhibit any obvious patterns, trends, or seasonality, which suggests that the model has captured the underlying process well. The residuals fluctuate around the zero line within a consistent range, indicating that the variance of the residuals is stable over time.
 
-**ACF of Residuals**: We observe no apparent autocorrelation amongst the residuals. The absence of significant spikes outside the confidence bounds suggests that the residuals are essentially white noise
+**ACF of Residuals**: The ACF plot for the residuals displays no significant spikes outside the confidence bounds (blue dashed lines), which implies that the residuals are white noise.
 
 **Q-Q Plot of Std Residuals**: which assesses the normality of the residuals, shows an acceptable alignment
 
-**Ljung-Box test**: The p-values in the plot are well above the 0.05 threshold, indicating that we fail to reject the null hypothesis of no autocorrelation among residuals at different lags. 
+**Ljung-Box test**:The p-values in the plot are well above the 0.05 threshold, indicating that we fail to reject the null hypothesis of no autocorrelation among residuals at different lags. 
 
+**Model Coefficients**: The coefficients are significant all appear to be statistically significant, as indicated by their p-values being well below the 0.05 threshold. This indicates that all the coefficients contribute meaningfully to the model.
 
-The diagnostic plots suggest that the ARIMA(1,1,1) model is a reasonably good fit for the data.
+Considering the log likelihood and the information criteria (AIC, AICc, BIC), the model seems to be well-fitted. A higher log likelihood and lower information criteria values generally indicate a better model fit.
+
+Based on these diagnostics, the ARIMA(1,1,1) model seems to be adequately fitting the data.
 
 
 
 ## CPI
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Diagnostics'
 #| warning: false
 #| output: true
 
 set.seed(222)
 diag_cpi <- capture.output(sarima(cpi_log_ts, 3,1,3))
-
+#print(diag_cpi)
+cat(diag_cpi[83:99], diag_cpi[length(diag_cpi)], sep = "\n")
 ```
 
 
-**Standardized Residuals**: The plot shows some fluctuation, but there don't appear to be any clear patterns or trends.
+**Standardized Residuals**: The plot of standardized residuals doesn't exhibit any obvious patterns, trends, or seasonality, which suggests that the model has captured the underlying process well. The residuals fluctuate around the zero line within a consistent range, indicating that the variance of the residuals is stable over time.
 
-**ACF of Residuals**: We observe no apparent autocorrelation amongst the residuals. The absence of significant spikes outside the confidence bounds suggests that the residuals are essentially white noise
+**ACF of Residuals**: The ACF plot for the residuals displays no significant spikes outside the confidence bounds (blue dashed lines), which implies that the residuals are white noise.
 
 **Q-Q Plot of Std Residuals**: which assesses the normality of the residuals, shows an acceptable alignment
 
-**Ljung-Box test**: The p-values in the plot are well above the 0.05 threshold, indicating that we fail to reject the null hypothesis of no autocorrelation among residuals at different lags. 
+**Ljung-Box test**: The p-values are very low (close to 0). This would suggest there is evidence of autocorrelation in the residuals.
+
+**Model Coefficients**: The coefficients are significant all appear to be statistically significant, as indicated by their p-values being well below the 0.05 threshold. This indicates that all the coefficients contribute meaningfully to the model.
+
+Considering the log likelihood and the information criteria (AIC, AICc, BIC), the model seems to be well-fitted. A higher log likelihood and lower information criteria values generally indicate a better model fit.
+
+Based on these diagnostics, the ARIMA(3,1,3) model seems to be adequately fitting the data.
 
 
-The diagnostic plots suggest that the ARIMA(2,1,2) model is a reasonably good fit for the data.
 
-
-
-## 
 :::
 
-# Auto.Arima()
 
+# Auto.Arima()
 
 
 ::: panel-tabset
 
 ## Crude Oil
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Auto Arima'
 #| warning: false
 #| output: true
 
-auto.arima(oil_log_ts)
+#Apply auto.arima 
+oil_auto <- auto.arima(oil_log_ts)
+
+#Summary
+summary(oil_auto)
 
 ```
 
-We used auto.arima() to pick the best model, and it chose ARIMA(2,1,0). 
+We used auto.arima() to pick the best model, and it chose ARIMA(2,1,0)(1,0,0)[12] which includes a seasonal component.
 
 
 
 ## Natural Gas
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Auto Arima'
 #| warning: false
 #| output: true
 
-auto.arima(oil_log_ts)
+#Apply auto.arima 
+gas_auto <- auto.arima(gas_log_ts)
+
+#Summary
+summary(gas_auto)
 ```
+
+We used auto.arima() to pick the best model, and it chose ARIMA(2,1,0). 
+
 
 ## Electricity
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Auto Arima'
 #| warning: false
 #| output: true
 
@@ -2098,23 +2135,28 @@ auto.arima(electricity_log_ts)
 
 ```
 
+We used auto.arima() to pick the best model, and it chose ARIMA(2,1,0). 
+
 ## GDP
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Auto Arima'
 #| warning: false
 #| output: true
+
 
 auto.arima(gdp_log_ts)
 
 ```
 
+We used auto.arima() to pick the best model, and it chose ARIMA(2,1,0). 
+
 ## CPI
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Auto Arima'
 #| warning: false
 #| output: true
 
@@ -2122,7 +2164,8 @@ auto.arima((cpi_log_ts))
 
 ```
 
-## 
+We used auto.arima() to pick the best model, and it chose ARIMA(2,1,0). 
+
 :::
 
 # Forecasting
@@ -2130,18 +2173,30 @@ auto.arima((cpi_log_ts))
 
 
 ::: panel-tabset
+
+
 ## Crude Oil
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Forecasting'
 #| warning: false
 #| output: true
 
-fit_crudeoil2 %>% forecast(h=36) %>% autoplot()
+#Forecasting the next 36
+forecast_crudeoil2 <- forecast(fit_crudeoil2, h=36)
 
-
+#Plotting the forecast
+autoplot(forecast_crudeoil2) + 
+  labs(title="Forecast for Crude Oil Prices", 
+       x="Year", y="Logged Prices", 
+       caption="Forecast using ARIMA(2,1,2)") +
+  theme_minimal()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 ```
+
+The actual forecast (the line within the shaded area) appears to stay around the level of the most recent actual observations, which suggests that the model does not anticipate any significant changes or trends in the near future. However, the wide confidence intervals imply that while the expected value is stable, the actual future prices could vary widely around this expected value.
+
 
 ## Natural Gas
 
@@ -2201,30 +2256,58 @@ The forecasting model has designed to predict future trends for our datasets. Ut
 # Comparing with Benchmark Methods
 
 
-
 ::: panel-tabset
+
 ## Crude Oil
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Importing Libraries'
+#| code-summary: 'Comparing Benchmark'
 #| warning: false
 #| output: true
 
-autoplot(oil_log_ts) +
-  autolayer(meanf(oil_log_ts, h=36),
-            series="Mean", PI=FALSE) +
-  autolayer(naive(oil_log_ts, h=36),
-            series="Naïve", PI=FALSE) +
-  autolayer(snaive(oil_log_ts, h=36),
-            series="SNaïve", PI=FALSE)+
-  autolayer(rwf(oil_log_ts, h=36, drift=TRUE),
-            series="Drift", PI=FALSE)+
-  autolayer(forecast(fit_crudeoil2,36), 
-            series="fit",PI=FALSE) +
-  guides(colour=guide_legend(title="Forecast"))
+#Generate forecasts
+forecast_meanf <- meanf(oil_log_ts, h=36)
+forecast_naive <- naive(oil_log_ts, h=36)
+forecast_snaive <- snaive(oil_log_ts, h=36)
+forecast_rwf <- rwf(oil_log_ts, drift=TRUE, h=36) 
+forecast_arima <- forecast(fit_crudeoil2, h=36)
+
+#Plotting the forecasts
+autoplot(oil_log_ts, series="Data") +
+  autolayer(forecast_meanf, series="Mean Forecast", PI=FALSE) +
+  autolayer(forecast_naive, series="Naive Forecast", PI=FALSE) +
+  autolayer(forecast_snaive, series="Seasonal Naive Forecast", PI=FALSE) +
+  autolayer(forecast_rwf, series="Drift", PI=FALSE) +
+  autolayer(forecast_arima, series="ARIMA(2,1,2) Forecast", PI=FALSE) +
+  labs(title="Comparative Forecast for Crude Oil Prices",
+       x="Year", y="Logged Prices",
+       caption="Comparing ARIMA(2,1,2) with Benchmark Methods") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold")) +
+  guides(colour=guide_legend(title="Forecast Method")) +
+  scale_color_manual(values=c("Data"="#000000", "Mean Forecast"="red",
+                              "Naive Forecast"="green", "Seasonal Naive Forecast"="purple",
+                              "Drift"="orange", "ARIMA(2,1,2) Forecast"="blue"),
+                     breaks=c("Data", "Mean Forecast", "Naive Forecast",
+                              "Seasonal Naive Forecast", "Drift", "ARIMA(2,1,2) Forecast"))
+
+
+accuracy(forecast_crudeoil2)
 
 ```
+
+We can observe the forecasts generated by different methods are quite close to each other, with only slight variations in their predicted future values. 
+
+- The mean forecast (Mean Forecast) is a flat line, indicating no change is expected in the future, which can be a result of averaging past data. 
+
+- The naïve forecast (Naive Forecast) and seasonal naïve forecast (Seasonal Naive Forecast) suggest a continuation of the last observed patterns. 
+
+- The random walk with drift forecast (Drift) shows a slight upward trend, indicating an expected gradual increase over time, likely accounting for the upward trend seen in the historical data. 
+
+The ARIMA(2,1,2) model's forecast also predicts future values that follow the patterns observed in the recent past but with a confidence interval that widens over time.
+
+
 
 ## Natural Gas
 
@@ -2322,12 +2405,308 @@ autoplot(cpi_log_ts) +
 
 
 
-
-
-## 
 :::
 
 
+#SARIMA
+
+We can observe that in some of the datasets, there is clear seasonality. The three seasonal datasets are: Crude Oil, Electricity, and CPI. For these datasets, we need seasonal differencing and thus we will use SARIMA model.
+
+
+## SARIMA ACF and PACF Plots
+
+
+::: panel-tabset
+
+### Crude Oil
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'SARIMA ACF-PACF'
+#| warning: false
+#| output: true
+
+#Seasonal differencing
+seasonally_diff_oil_log_ts <- diff(oil_log_ts, lag=12)
+#ACF and PACF plots
+ggtsdisplay(seasonally_diff_oil_log_ts, main='Seasonally Differenced Crude Oil Prices')
+
+```
+
+Based on these graphs and examining the ACF and PACF plots, we can suggest a range of values for P and Q:
+
+P = 1, 2
+D = 1
+Q = 1, 2
+
+
+:::
+
+
+
+## Finding SARIMA Parameters (p, d, q)
+
+
+
+::: panel-tabset
+
+### Crude Oil
+
+p = 1, 2
+q = 1, 2, 3
+d = 1
+D = 1
+P = 1, 2
+Q = 1, 2
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Parameters'
+#| warning: false
+#| output: true
+
+SARIMA.c=function(p1,p2,q1,q2,P1,P2,Q1,Q2,data){
+  
+  #K=(p2+1)*(q2+1)*(P2+1)*(Q2+1)
+  temp=c()
+  d = 1
+  D = 1
+  s = 12
+  
+  i=1
+  temp= data.frame()
+  ls=matrix(rep(NA,9*19),nrow=19)
+  
+  
+  for (p in p1:p2)
+  {
+    for(q in q1:q2)
+    {
+      for(P in P1:P2)
+      {
+        for(Q in Q1:Q2)
+        {
+          if(p+d+q+P+D+Q<=9)
+          {
+            model<- Arima(data,order=c(p-1,d,q-1),seasonal=c(P-1,D,Q-1))
+            ls[i,]= c(p-1,d,q-1,P-1,D,Q-1,model$aic,model$bic,model$aicc)
+            i=i+1
+            #print(i)
+            
+          }
+          
+        }
+      }
+    }
+    
+  }
+  
+  temp= as.data.frame(ls)
+  names(temp)= c("p","d","q","P","D","Q","AIC","BIC","AICc")
+  
+  temp
+}
+
+output=SARIMA.c(p1=1,p2=2,q1=1,q2=3,P1=1,P2=2,Q1=1,Q2=2,data=oil_log_ts)
+
+
+knitr::kable(output)
+
+output[which.min(output$AIC),]
+output[which.min(output$BIC),]
+output[which.min(output$AICc),]
+
+```
+
+
+
+The model with the lowest AIC and AICc is ARIMA(0,1,2)[0,1,1]12.
+and lowest BIC is ARIMA(0,1,1)[0,1,1]12.
+
+
+
+
+
+:::
+
+
+
+
+## SARIMA Full Model Diagnostics
+
+::: panel-tabset
+
+
+### Crude Oil
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'SARIMA Fit'
+#| warning: false
+#| output: true
+set.seed(222)
+model_output_s <- capture.output(sarima(oil_log_ts, 0,1,2,0,1,1,12))
+#model_output_s
+cat(model_output_s[25:37], model_output_s[length(model_output_s)], sep = "\n") 
+
+```
+Equation:
+
+$$
+x_t = 0.5483 x_{t-1} + 0.1238 x_{t-2} - 1.00 + a_t
+$$
+
+
+
+
+:::
+
+
+## Auto ARIMA
+
+::: panel-tabset
+
+
+### Crude Oil
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+auto.arima(oil_log_ts)
+
+```
+
+
+
+
+
+
+:::
+
+
+## Forecasting
+
+::: panel-tabset
+
+
+### Crude Oil
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+
+fit_oil_s <- Arima(oil_log_ts, order=c(0,1,2), seasonal=c(0,1,1))
+
+# forecast next three years
+fit_oil_s %>% forecast(h=36) %>% autoplot()+theme_bw() 
+```
+
+
+
+:::
+
+
+
+## Comparing SARIMA With Benchmark
+
+::: panel-tabset
+
+
+### Crude Oil
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+autoplot(oil_log_ts) +
+  autolayer(meanf(oil_log_ts, h=36),
+            series="Mean", PI=FALSE) +
+  autolayer(naive(oil_log_ts, h=36),
+            series="Naïve", PI=FALSE) +
+  autolayer(snaive(oil_log_ts, h=36),
+            series="SNaïve", PI=FALSE)+
+  autolayer(rwf(oil_log_ts, h=36, drift=TRUE),
+            series="Drift", PI=FALSE)+
+  autolayer(forecast(fit_oil_s,36), 
+            series="fit",PI=FALSE) +
+  guides(colour=guide_legend(title="Forecast")) +theme_bw() 
+```
+
+SNaive benchmark appears to have a trend line most similar to the previous years
+
+
+
+
+
+:::
+
+
+
+
+## Cross-Validation
+
+::: panel-tabset
+
+
+### Crude Oil
+
+The best model for this dataset using manual selection is ARIMA(0,1,2)(0,1,1)[12], while the auto arima model is ARIMA(2,1,0)(1,0,0)[12].
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: true
+
+
+#n=length(oil_log_ts)
+#n-k=50; 96/12=5; 
+k=51
+mae1 <- matrix(NA, 5,12) # change to 5
+mae2 <- matrix(NA,5,12)
+
+st <- tsp(oil_log_ts)[1]+(k-1)/12 #48 observations
+# put up to 5 because 96/12 = 5
+for(i in 1:5)
+{
+  #xtrain <- window(a10, start=st+(i-k+1)/12, end=st+i/12)
+  xtrain <- window(oil_log_ts, end=st + i-1)
+  xtest <- window(oil_log_ts, start=st + (i-1) + 1/12, end=st + i)
+  # Manual model
+  fit <- Arima(xtrain, order=c(0,1,2), seasonal=list(order=c(0,1,1), period=12),
+                include.drift=TRUE, method="ML")
+  fcast <- forecast(fit, h=12)
+  # Auto Arima
+  fit2 <- Arima(xtrain, order=c(2,1,0), seasonal=list(order=c(1,0,0), period=12),
+                include.drift=TRUE, method="ML")
+  fcast2 <- forecast(fit2, h=12)
+  
+  mae1[i,] <- abs(fcast$mean-xtest)
+  mae2[i,] <- abs(fcast2$mean-xtest)
+  
+}
+
+plot(1:12, colMeans(mae1,na.rm=TRUE), type="l", col=2, xlab="horizon", ylab="MAE")
+lines(1:12, colMeans(mae2,na.rm=TRUE), type="l",col=3)
+legend("topleft",legend=c("Manual Model","Auto Arima"),col=2:4,lty=1)
+```
+
+
+
+
+:::
 
 <a href="exploratory-data-analysis.qmd" class="previous-page-link" style="float: left;">&larr; Previous Page: EDA</a>
 
