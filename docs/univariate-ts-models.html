@@ -3091,7 +3091,7 @@ Training set 0.00122901 0.1175624 0.07216194 -0.2474817 4.682673 0.3662571
 Training set -0.002743742</code></pre>
 </div>
 </div>
-<p>We used auto.arima() to pick the best model, and it chose ARIMA(2,1,0).</p>
+<p>We used auto.arima() to pick the best model, and it chose ARIMA(0,1,2).</p>
 </div>
 <div id="tabset-10-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-3-tab">
 <div class="cell">
@@ -3112,7 +3112,7 @@ sigma^2 = 0.000106:  log likelihood = 1240.06
 AIC=-2474.12   AICc=-2474.06   BIC=-2462.19</code></pre>
 </div>
 </div>
-<p>We used auto.arima() to pick the best model, and it chose ARIMA(2,1,0).</p>
+<p>We used auto.arima() to pick the best model, and it chose ARIMA(0,1,1)(0,1,1)[12] which includes a seasonal component.</p>
 </div>
 <div id="tabset-10-4" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-4-tab">
 <div class="cell">
@@ -3133,7 +3133,7 @@ sigma^2 = 0.000159:  log likelihood = 399.6
 AIC=-795.2   AICc=-795.11   BIC=-789.39</code></pre>
 </div>
 </div>
-<p>We used auto.arima() to pick the best model, and it chose ARIMA(2,1,0).</p>
+<p>We used auto.arima() to pick the best model, and it chose ARIMA(0,1,0).</p>
 </div>
 <div id="tabset-10-5" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-5-tab">
 <div class="cell">
@@ -3154,7 +3154,7 @@ sigma^2 = 5.594e-06:  log likelihood = 1897.16
 AIC=-3782.31   AICc=-3782.1   BIC=-3758.23</code></pre>
 </div>
 </div>
-<p>We used auto.arima() to pick the best model, and it chose ARIMA(2,1,0).</p>
+<p>We used auto.arima() to pick the best model, and it chose ARIMA(1,1,2)(0,0,1)[12] which includes a seasonal component.</p>
 </div>
 </div>
 </div>
@@ -3191,6 +3191,19 @@ AIC=-3782.31   AICc=-3782.1   BIC=-3758.23</code></pre>
 </div>
 <div id="tabset-11-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-11-2-tab">
 <div class="cell">
+<details class="code-fold">
+<summary>Forecasting</summary>
+<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Forecasting the next 36</span></span>
+<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a>forecast_ng2 <span class="ot">&lt;-</span> <span class="fu">forecast</span>(fit_NaturalGas, <span class="at">h=</span><span class="dv">36</span>)</span>
+<span id="cb117-3"><a href="#cb117-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb117-4"><a href="#cb117-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Plotting the forecast</span></span>
+<span id="cb117-5"><a href="#cb117-5" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(forecast_ng2) <span class="sc">+</span> </span>
+<span id="cb117-6"><a href="#cb117-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Forecast for Natural Gas Prices"</span>, </span>
+<span id="cb117-7"><a href="#cb117-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">x=</span><span class="st">"Year"</span>, <span class="at">y=</span><span class="st">"Logged Prices"</span>, </span>
+<span id="cb117-8"><a href="#cb117-8" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption=</span><span class="st">"Forecast using ARIMA(3,1,1)"</span>) <span class="sc">+</span></span>
+<span id="cb117-9"><a href="#cb117-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()<span class="sc">+</span></span>
+<span id="cb117-10"><a href="#cb117-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span></code></pre></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -3199,6 +3212,7 @@ AIC=-3782.31   AICc=-3782.1   BIC=-3758.23</code></pre>
 </div>
 </div>
 </div>
+<p>The actual forecast (the line within the shaded area) appears to stay around the level of the most recent actual observations, which suggests that the model does not anticipate any significant changes or trends in the near future. However, the wide confidence intervals imply that while the expected value is stable, the actual future prices could vary widely around this expected value.</p>
 </div>
 <div id="tabset-11-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-11-3-tab">
 <div class="cell">
@@ -3249,31 +3263,31 @@ AIC=-3782.31   AICc=-3782.1   BIC=-3758.23</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Comparing Benchmark</summary>
-<div class="sourceCode cell-code" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="#cb117-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Generate forecasts</span></span>
-<span id="cb117-2"><a href="#cb117-2" aria-hidden="true" tabindex="-1"></a>forecast_meanf <span class="ot">&lt;-</span> <span class="fu">meanf</span>(oil_log_ts, <span class="at">h=</span><span class="dv">36</span>)</span>
-<span id="cb117-3"><a href="#cb117-3" aria-hidden="true" tabindex="-1"></a>forecast_naive <span class="ot">&lt;-</span> <span class="fu">naive</span>(oil_log_ts, <span class="at">h=</span><span class="dv">36</span>)</span>
-<span id="cb117-4"><a href="#cb117-4" aria-hidden="true" tabindex="-1"></a>forecast_snaive <span class="ot">&lt;-</span> <span class="fu">snaive</span>(oil_log_ts, <span class="at">h=</span><span class="dv">36</span>)</span>
-<span id="cb117-5"><a href="#cb117-5" aria-hidden="true" tabindex="-1"></a>forecast_rwf <span class="ot">&lt;-</span> <span class="fu">rwf</span>(oil_log_ts, <span class="at">drift=</span><span class="cn">TRUE</span>, <span class="at">h=</span><span class="dv">36</span>) </span>
-<span id="cb117-6"><a href="#cb117-6" aria-hidden="true" tabindex="-1"></a>forecast_arima <span class="ot">&lt;-</span> <span class="fu">forecast</span>(fit_crudeoil2, <span class="at">h=</span><span class="dv">36</span>)</span>
-<span id="cb117-7"><a href="#cb117-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb117-8"><a href="#cb117-8" aria-hidden="true" tabindex="-1"></a><span class="co">#Plotting the forecasts</span></span>
-<span id="cb117-9"><a href="#cb117-9" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(oil_log_ts, <span class="at">series=</span><span class="st">"Data"</span>) <span class="sc">+</span></span>
-<span id="cb117-10"><a href="#cb117-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(forecast_meanf, <span class="at">series=</span><span class="st">"Mean Forecast"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb117-11"><a href="#cb117-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(forecast_naive, <span class="at">series=</span><span class="st">"Naive Forecast"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb117-12"><a href="#cb117-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(forecast_snaive, <span class="at">series=</span><span class="st">"Seasonal Naive Forecast"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb117-13"><a href="#cb117-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(forecast_rwf, <span class="at">series=</span><span class="st">"Drift"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb117-14"><a href="#cb117-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(forecast_arima, <span class="at">series=</span><span class="st">"ARIMA(2,1,2) Forecast"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
-<span id="cb117-15"><a href="#cb117-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Comparative Forecast for Crude Oil Prices"</span>,</span>
-<span id="cb117-16"><a href="#cb117-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">x=</span><span class="st">"Year"</span>, <span class="at">y=</span><span class="st">"Logged Prices"</span>,</span>
-<span id="cb117-17"><a href="#cb117-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption=</span><span class="st">"Comparing ARIMA(2,1,2) with Benchmark Methods"</span>) <span class="sc">+</span></span>
-<span id="cb117-18"><a href="#cb117-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb117-19"><a href="#cb117-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>)) <span class="sc">+</span></span>
-<span id="cb117-20"><a href="#cb117-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">colour=</span><span class="fu">guide_legend</span>(<span class="at">title=</span><span class="st">"Forecast Method"</span>)) <span class="sc">+</span></span>
-<span id="cb117-21"><a href="#cb117-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">"Data"</span><span class="ot">=</span><span class="st">"#000000"</span>, <span class="st">"Mean Forecast"</span><span class="ot">=</span><span class="st">"red"</span>,</span>
-<span id="cb117-22"><a href="#cb117-22" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"Naive Forecast"</span><span class="ot">=</span><span class="st">"green"</span>, <span class="st">"Seasonal Naive Forecast"</span><span class="ot">=</span><span class="st">"purple"</span>,</span>
-<span id="cb117-23"><a href="#cb117-23" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"Drift"</span><span class="ot">=</span><span class="st">"orange"</span>, <span class="st">"ARIMA(2,1,2) Forecast"</span><span class="ot">=</span><span class="st">"blue"</span>),</span>
-<span id="cb117-24"><a href="#cb117-24" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">c</span>(<span class="st">"Data"</span>, <span class="st">"Mean Forecast"</span>, <span class="st">"Naive Forecast"</span>,</span>
-<span id="cb117-25"><a href="#cb117-25" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"Seasonal Naive Forecast"</span>, <span class="st">"Drift"</span>, <span class="st">"ARIMA(2,1,2) Forecast"</span>))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Generate forecasts</span></span>
+<span id="cb118-2"><a href="#cb118-2" aria-hidden="true" tabindex="-1"></a>forecast_meanf <span class="ot">&lt;-</span> <span class="fu">meanf</span>(oil_log_ts, <span class="at">h=</span><span class="dv">36</span>)</span>
+<span id="cb118-3"><a href="#cb118-3" aria-hidden="true" tabindex="-1"></a>forecast_naive <span class="ot">&lt;-</span> <span class="fu">naive</span>(oil_log_ts, <span class="at">h=</span><span class="dv">36</span>)</span>
+<span id="cb118-4"><a href="#cb118-4" aria-hidden="true" tabindex="-1"></a>forecast_snaive <span class="ot">&lt;-</span> <span class="fu">snaive</span>(oil_log_ts, <span class="at">h=</span><span class="dv">36</span>)</span>
+<span id="cb118-5"><a href="#cb118-5" aria-hidden="true" tabindex="-1"></a>forecast_rwf <span class="ot">&lt;-</span> <span class="fu">rwf</span>(oil_log_ts, <span class="at">drift=</span><span class="cn">TRUE</span>, <span class="at">h=</span><span class="dv">36</span>) </span>
+<span id="cb118-6"><a href="#cb118-6" aria-hidden="true" tabindex="-1"></a>forecast_arima <span class="ot">&lt;-</span> <span class="fu">forecast</span>(fit_crudeoil2, <span class="at">h=</span><span class="dv">36</span>)</span>
+<span id="cb118-7"><a href="#cb118-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb118-8"><a href="#cb118-8" aria-hidden="true" tabindex="-1"></a><span class="co">#Plotting the forecasts</span></span>
+<span id="cb118-9"><a href="#cb118-9" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(oil_log_ts, <span class="at">series=</span><span class="st">"Data"</span>) <span class="sc">+</span></span>
+<span id="cb118-10"><a href="#cb118-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(forecast_meanf, <span class="at">series=</span><span class="st">"Mean Forecast"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb118-11"><a href="#cb118-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(forecast_naive, <span class="at">series=</span><span class="st">"Naive Forecast"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb118-12"><a href="#cb118-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(forecast_snaive, <span class="at">series=</span><span class="st">"Seasonal Naive Forecast"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb118-13"><a href="#cb118-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(forecast_rwf, <span class="at">series=</span><span class="st">"Drift"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb118-14"><a href="#cb118-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(forecast_arima, <span class="at">series=</span><span class="st">"ARIMA(2,1,2) Forecast"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb118-15"><a href="#cb118-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Comparative Forecast for Crude Oil Prices"</span>,</span>
+<span id="cb118-16"><a href="#cb118-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">x=</span><span class="st">"Year"</span>, <span class="at">y=</span><span class="st">"Logged Prices"</span>,</span>
+<span id="cb118-17"><a href="#cb118-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption=</span><span class="st">"Comparing ARIMA(2,1,2) with Benchmark Methods"</span>) <span class="sc">+</span></span>
+<span id="cb118-18"><a href="#cb118-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb118-19"><a href="#cb118-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>)) <span class="sc">+</span></span>
+<span id="cb118-20"><a href="#cb118-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">colour=</span><span class="fu">guide_legend</span>(<span class="at">title=</span><span class="st">"Forecast Method"</span>)) <span class="sc">+</span></span>
+<span id="cb118-21"><a href="#cb118-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">"Data"</span><span class="ot">=</span><span class="st">"#000000"</span>, <span class="st">"Mean Forecast"</span><span class="ot">=</span><span class="st">"red"</span>,</span>
+<span id="cb118-22"><a href="#cb118-22" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"Naive Forecast"</span><span class="ot">=</span><span class="st">"green"</span>, <span class="st">"Seasonal Naive Forecast"</span><span class="ot">=</span><span class="st">"purple"</span>,</span>
+<span id="cb118-23"><a href="#cb118-23" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"Drift"</span><span class="ot">=</span><span class="st">"orange"</span>, <span class="st">"ARIMA(2,1,2) Forecast"</span><span class="ot">=</span><span class="st">"blue"</span>),</span>
+<span id="cb118-24"><a href="#cb118-24" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">c</span>(<span class="st">"Data"</span>, <span class="st">"Mean Forecast"</span>, <span class="st">"Naive Forecast"</span>,</span>
+<span id="cb118-25"><a href="#cb118-25" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"Seasonal Naive Forecast"</span>, <span class="st">"Drift"</span>, <span class="st">"ARIMA(2,1,2) Forecast"</span>))</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -3284,7 +3298,7 @@ AIC=-3782.31   AICc=-3782.1   BIC=-3758.23</code></pre>
 </div>
 <details class="code-fold">
 <summary>Comparing Benchmark</summary>
-<div class="sourceCode cell-code" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="#cb118-1" aria-hidden="true" tabindex="-1"></a><span class="fu">accuracy</span>(forecast_crudeoil2)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="#cb119-1" aria-hidden="true" tabindex="-1"></a><span class="fu">accuracy</span>(forecast_crudeoil2)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>                      ME       RMSE        MAE MPE MAPE      MASE        ACF1
@@ -3301,6 +3315,34 @@ Training set 0.001044984 0.07735308 0.05741248 Inf  Inf 0.6543703 0.006458057</c
 </div>
 <div id="tabset-12-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-12-2-tab">
 <div class="cell">
+<details class="code-fold">
+<summary>Comparing Benchmark</summary>
+<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Generate forecasts</span></span>
+<span id="cb121-2"><a href="#cb121-2" aria-hidden="true" tabindex="-1"></a>forecast_meanf_ng <span class="ot">&lt;-</span> <span class="fu">meanf</span>(gas_log_ts, <span class="at">h=</span><span class="dv">36</span>)</span>
+<span id="cb121-3"><a href="#cb121-3" aria-hidden="true" tabindex="-1"></a>forecast_naive_ng <span class="ot">&lt;-</span> <span class="fu">naive</span>(gas_log_ts, <span class="at">h=</span><span class="dv">36</span>)</span>
+<span id="cb121-4"><a href="#cb121-4" aria-hidden="true" tabindex="-1"></a>forecast_snaive_ng <span class="ot">&lt;-</span> <span class="fu">snaive</span>(gas_log_ts, <span class="at">h=</span><span class="dv">36</span>)</span>
+<span id="cb121-5"><a href="#cb121-5" aria-hidden="true" tabindex="-1"></a>forecast_rwf_ng <span class="ot">&lt;-</span> <span class="fu">rwf</span>(gas_log_ts, <span class="at">drift=</span><span class="cn">TRUE</span>, <span class="at">h=</span><span class="dv">36</span>) </span>
+<span id="cb121-6"><a href="#cb121-6" aria-hidden="true" tabindex="-1"></a>forecast_arima_ng <span class="ot">&lt;-</span> <span class="fu">forecast</span>(fit_NaturalGas, <span class="at">h=</span><span class="dv">36</span>)</span>
+<span id="cb121-7"><a href="#cb121-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb121-8"><a href="#cb121-8" aria-hidden="true" tabindex="-1"></a><span class="co">#Plotting the forecasts</span></span>
+<span id="cb121-9"><a href="#cb121-9" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(gas_log_ts, <span class="at">series=</span><span class="st">"Data"</span>) <span class="sc">+</span></span>
+<span id="cb121-10"><a href="#cb121-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(forecast_meanf_ng, <span class="at">series=</span><span class="st">"Mean Forecast"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb121-11"><a href="#cb121-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(forecast_naive_ng, <span class="at">series=</span><span class="st">"Naive Forecast"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb121-12"><a href="#cb121-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(forecast_snaive_ng, <span class="at">series=</span><span class="st">"Seasonal Naive Forecast"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb121-13"><a href="#cb121-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(forecast_rwf_ng, <span class="at">series=</span><span class="st">"Drift"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb121-14"><a href="#cb121-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autolayer</span>(forecast_arima_ng, <span class="at">series=</span><span class="st">"ARIMA(3,1,1) Forecast"</span>, <span class="at">PI=</span><span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb121-15"><a href="#cb121-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Comparative Forecast for Natural Gas Prices"</span>,</span>
+<span id="cb121-16"><a href="#cb121-16" aria-hidden="true" tabindex="-1"></a>       <span class="at">x=</span><span class="st">"Year"</span>, <span class="at">y=</span><span class="st">"Logged Prices"</span>,</span>
+<span id="cb121-17"><a href="#cb121-17" aria-hidden="true" tabindex="-1"></a>       <span class="at">caption=</span><span class="st">"Comparing ARIMA(3,1,1) with Benchmark Methods"</span>) <span class="sc">+</span></span>
+<span id="cb121-18"><a href="#cb121-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb121-19"><a href="#cb121-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>)) <span class="sc">+</span></span>
+<span id="cb121-20"><a href="#cb121-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">guides</span>(<span class="at">colour=</span><span class="fu">guide_legend</span>(<span class="at">title=</span><span class="st">"Forecast Method"</span>)) <span class="sc">+</span></span>
+<span id="cb121-21"><a href="#cb121-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values=</span><span class="fu">c</span>(<span class="st">"Data"</span><span class="ot">=</span><span class="st">"#000000"</span>, <span class="st">"Mean Forecast"</span><span class="ot">=</span><span class="st">"red"</span>,</span>
+<span id="cb121-22"><a href="#cb121-22" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"Naive Forecast"</span><span class="ot">=</span><span class="st">"green"</span>, <span class="st">"Seasonal Naive Forecast"</span><span class="ot">=</span><span class="st">"purple"</span>,</span>
+<span id="cb121-23"><a href="#cb121-23" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"Drift"</span><span class="ot">=</span><span class="st">"orange"</span>, <span class="st">"ARIMA(3,1,1) Forecast"</span><span class="ot">=</span><span class="st">"blue"</span>),</span>
+<span id="cb121-24"><a href="#cb121-24" aria-hidden="true" tabindex="-1"></a>                     <span class="at">breaks=</span><span class="fu">c</span>(<span class="st">"Data"</span>, <span class="st">"Mean Forecast"</span>, <span class="st">"Naive Forecast"</span>,</span>
+<span id="cb121-25"><a href="#cb121-25" aria-hidden="true" tabindex="-1"></a>                              <span class="st">"Seasonal Naive Forecast"</span>, <span class="st">"Drift"</span>, <span class="st">"ARIMA(3,1,1) Forecast"</span>))</span></code></pre></div>
+</details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -3308,7 +3350,22 @@ Training set 0.001044984 0.07735308 0.05741248 Inf  Inf 0.6543703 0.006458057</c
 </figure>
 </div>
 </div>
+<details class="code-fold">
+<summary>Comparing Benchmark</summary>
+<div class="sourceCode cell-code" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1" aria-hidden="true" tabindex="-1"></a><span class="fu">accuracy</span>(forecast_arima_ng)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>                      ME      RMSE        MAE MPE MAPE      MASE         ACF1
+Training set 0.002116183 0.1178166 0.07252866 NaN  Inf 0.7166933 -0.003575256</code></pre>
 </div>
+</div>
+<p>We can observe the forecasts generated by different methods are quite close to each other, with only slight variations in their predicted future values.</p>
+<ul>
+<li><p>The mean forecast (Mean Forecast) is a horizontal line, indicating a projection that the future prices will remain on average at the last observed level of the historical data. This method does not account for trends or seasonality.</p></li>
+<li><p>The naïve forecast (Naive Forecast) and seasonal naïve forecast (Seasonal Naive Forecast) suggest a continuation of the last observed patterns.</p></li>
+<li><p>The random walk with drift forecast (Drift) shows a slight upward trend, indicating an expected gradual increase over time, likely accounting for the upward trend seen in the historical data.</p></li>
+</ul>
+<p>These accuracy measures indicate that the ARIMA(3,1,1) model is providing forecasts that are consistent with the historical data, not deviating significantly from the patterns already observed, and is performing well against standard benchmarks.</p>
 </div>
 <div id="tabset-12-3" class="tab-pane" role="tabpanel" aria-labelledby="tabset-12-3-tab">
 <div class="cell">
@@ -3358,10 +3415,10 @@ Training set 0.001044984 0.07735308 0.05741248 Inf  Inf 0.6543703 0.006458057</c
 <div class="cell">
 <details class="code-fold">
 <summary>SARIMA ACF-PACF</summary>
-<div class="sourceCode cell-code" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="#cb120-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Seasonal differencing</span></span>
-<span id="cb120-2"><a href="#cb120-2" aria-hidden="true" tabindex="-1"></a>seasonally_diff_oil_log_ts <span class="ot">&lt;-</span> <span class="fu">diff</span>(oil_log_ts, <span class="at">lag=</span><span class="dv">12</span>)</span>
-<span id="cb120-3"><a href="#cb120-3" aria-hidden="true" tabindex="-1"></a><span class="co">#ACF and PACF plots</span></span>
-<span id="cb120-4"><a href="#cb120-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggtsdisplay</span>(seasonally_diff_oil_log_ts, <span class="at">main=</span><span class="st">'Seasonally Differenced Crude Oil Prices'</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Seasonal differencing</span></span>
+<span id="cb124-2"><a href="#cb124-2" aria-hidden="true" tabindex="-1"></a>seasonally_diff_oil_log_ts <span class="ot">&lt;-</span> <span class="fu">diff</span>(oil_log_ts, <span class="at">lag=</span><span class="dv">12</span>)</span>
+<span id="cb124-3"><a href="#cb124-3" aria-hidden="true" tabindex="-1"></a><span class="co">#ACF and PACF plots</span></span>
+<span id="cb124-4"><a href="#cb124-4" aria-hidden="true" tabindex="-1"></a><span class="fu">ggtsdisplay</span>(seasonally_diff_oil_log_ts, <span class="at">main=</span><span class="st">'Seasonally Differenced Crude Oil Prices'</span>)</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -3387,52 +3444,52 @@ Training set 0.001044984 0.07735308 0.05741248 Inf  Inf 0.6543703 0.006458057</c
 <div class="cell">
 <details class="code-fold">
 <summary>Parameters</summary>
-<div class="sourceCode cell-code" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="#cb121-1" aria-hidden="true" tabindex="-1"></a>SARIMA.c<span class="ot">=</span><span class="cf">function</span>(p1,p2,q1,q2,P1,P2,Q1,Q2,data){</span>
-<span id="cb121-2"><a href="#cb121-2" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb121-3"><a href="#cb121-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#K=(p2+1)*(q2+1)*(P2+1)*(Q2+1)</span></span>
-<span id="cb121-4"><a href="#cb121-4" aria-hidden="true" tabindex="-1"></a>  temp<span class="ot">=</span><span class="fu">c</span>()</span>
-<span id="cb121-5"><a href="#cb121-5" aria-hidden="true" tabindex="-1"></a>  d <span class="ot">=</span> <span class="dv">1</span></span>
-<span id="cb121-6"><a href="#cb121-6" aria-hidden="true" tabindex="-1"></a>  D <span class="ot">=</span> <span class="dv">1</span></span>
-<span id="cb121-7"><a href="#cb121-7" aria-hidden="true" tabindex="-1"></a>  s <span class="ot">=</span> <span class="dv">12</span></span>
-<span id="cb121-8"><a href="#cb121-8" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb121-9"><a href="#cb121-9" aria-hidden="true" tabindex="-1"></a>  i<span class="ot">=</span><span class="dv">1</span></span>
-<span id="cb121-10"><a href="#cb121-10" aria-hidden="true" tabindex="-1"></a>  temp<span class="ot">=</span> <span class="fu">data.frame</span>()</span>
-<span id="cb121-11"><a href="#cb121-11" aria-hidden="true" tabindex="-1"></a>  ls<span class="ot">=</span><span class="fu">matrix</span>(<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">9</span><span class="sc">*</span><span class="dv">19</span>),<span class="at">nrow=</span><span class="dv">19</span>)</span>
-<span id="cb121-12"><a href="#cb121-12" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb121-13"><a href="#cb121-13" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb121-14"><a href="#cb121-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (p <span class="cf">in</span> p1<span class="sc">:</span>p2)</span>
-<span id="cb121-15"><a href="#cb121-15" aria-hidden="true" tabindex="-1"></a>  {</span>
-<span id="cb121-16"><a href="#cb121-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(q <span class="cf">in</span> q1<span class="sc">:</span>q2)</span>
-<span id="cb121-17"><a href="#cb121-17" aria-hidden="true" tabindex="-1"></a>    {</span>
-<span id="cb121-18"><a href="#cb121-18" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span>(P <span class="cf">in</span> P1<span class="sc">:</span>P2)</span>
-<span id="cb121-19"><a href="#cb121-19" aria-hidden="true" tabindex="-1"></a>      {</span>
-<span id="cb121-20"><a href="#cb121-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span>(Q <span class="cf">in</span> Q1<span class="sc">:</span>Q2)</span>
-<span id="cb121-21"><a href="#cb121-21" aria-hidden="true" tabindex="-1"></a>        {</span>
-<span id="cb121-22"><a href="#cb121-22" aria-hidden="true" tabindex="-1"></a>          <span class="cf">if</span>(p<span class="sc">+</span>d<span class="sc">+</span>q<span class="sc">+</span>P<span class="sc">+</span>D<span class="sc">+</span>Q<span class="sc">&lt;=</span><span class="dv">9</span>)</span>
-<span id="cb121-23"><a href="#cb121-23" aria-hidden="true" tabindex="-1"></a>          {</span>
-<span id="cb121-24"><a href="#cb121-24" aria-hidden="true" tabindex="-1"></a>            model<span class="ot">&lt;-</span> <span class="fu">Arima</span>(data,<span class="at">order=</span><span class="fu">c</span>(p<span class="dv">-1</span>,d,q<span class="dv">-1</span>),<span class="at">seasonal=</span><span class="fu">c</span>(P<span class="dv">-1</span>,D,Q<span class="dv">-1</span>))</span>
-<span id="cb121-25"><a href="#cb121-25" aria-hidden="true" tabindex="-1"></a>            ls[i,]<span class="ot">=</span> <span class="fu">c</span>(p<span class="dv">-1</span>,d,q<span class="dv">-1</span>,P<span class="dv">-1</span>,D,Q<span class="dv">-1</span>,model<span class="sc">$</span>aic,model<span class="sc">$</span>bic,model<span class="sc">$</span>aicc)</span>
-<span id="cb121-26"><a href="#cb121-26" aria-hidden="true" tabindex="-1"></a>            i<span class="ot">=</span>i<span class="sc">+</span><span class="dv">1</span></span>
-<span id="cb121-27"><a href="#cb121-27" aria-hidden="true" tabindex="-1"></a>            <span class="co">#print(i)</span></span>
-<span id="cb121-28"><a href="#cb121-28" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb121-29"><a href="#cb121-29" aria-hidden="true" tabindex="-1"></a>          }</span>
-<span id="cb121-30"><a href="#cb121-30" aria-hidden="true" tabindex="-1"></a>          </span>
-<span id="cb121-31"><a href="#cb121-31" aria-hidden="true" tabindex="-1"></a>        }</span>
-<span id="cb121-32"><a href="#cb121-32" aria-hidden="true" tabindex="-1"></a>      }</span>
-<span id="cb121-33"><a href="#cb121-33" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb121-34"><a href="#cb121-34" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb121-35"><a href="#cb121-35" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb121-36"><a href="#cb121-36" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb121-37"><a href="#cb121-37" aria-hidden="true" tabindex="-1"></a>  temp<span class="ot">=</span> <span class="fu">as.data.frame</span>(ls)</span>
-<span id="cb121-38"><a href="#cb121-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(temp)<span class="ot">=</span> <span class="fu">c</span>(<span class="st">"p"</span>,<span class="st">"d"</span>,<span class="st">"q"</span>,<span class="st">"P"</span>,<span class="st">"D"</span>,<span class="st">"Q"</span>,<span class="st">"AIC"</span>,<span class="st">"BIC"</span>,<span class="st">"AICc"</span>)</span>
-<span id="cb121-39"><a href="#cb121-39" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb121-40"><a href="#cb121-40" aria-hidden="true" tabindex="-1"></a>  temp</span>
-<span id="cb121-41"><a href="#cb121-41" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb121-42"><a href="#cb121-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-43"><a href="#cb121-43" aria-hidden="true" tabindex="-1"></a>output<span class="ot">=</span><span class="fu">SARIMA.c</span>(<span class="at">p1=</span><span class="dv">1</span>,<span class="at">p2=</span><span class="dv">2</span>,<span class="at">q1=</span><span class="dv">1</span>,<span class="at">q2=</span><span class="dv">3</span>,<span class="at">P1=</span><span class="dv">1</span>,<span class="at">P2=</span><span class="dv">2</span>,<span class="at">Q1=</span><span class="dv">1</span>,<span class="at">Q2=</span><span class="dv">2</span>,<span class="at">data=</span>oil_log_ts)</span>
-<span id="cb121-44"><a href="#cb121-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-45"><a href="#cb121-45" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb121-46"><a href="#cb121-46" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(output)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="#cb125-1" aria-hidden="true" tabindex="-1"></a>SARIMA.c<span class="ot">=</span><span class="cf">function</span>(p1,p2,q1,q2,P1,P2,Q1,Q2,data){</span>
+<span id="cb125-2"><a href="#cb125-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb125-3"><a href="#cb125-3" aria-hidden="true" tabindex="-1"></a>  <span class="co">#K=(p2+1)*(q2+1)*(P2+1)*(Q2+1)</span></span>
+<span id="cb125-4"><a href="#cb125-4" aria-hidden="true" tabindex="-1"></a>  temp<span class="ot">=</span><span class="fu">c</span>()</span>
+<span id="cb125-5"><a href="#cb125-5" aria-hidden="true" tabindex="-1"></a>  d <span class="ot">=</span> <span class="dv">1</span></span>
+<span id="cb125-6"><a href="#cb125-6" aria-hidden="true" tabindex="-1"></a>  D <span class="ot">=</span> <span class="dv">1</span></span>
+<span id="cb125-7"><a href="#cb125-7" aria-hidden="true" tabindex="-1"></a>  s <span class="ot">=</span> <span class="dv">12</span></span>
+<span id="cb125-8"><a href="#cb125-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb125-9"><a href="#cb125-9" aria-hidden="true" tabindex="-1"></a>  i<span class="ot">=</span><span class="dv">1</span></span>
+<span id="cb125-10"><a href="#cb125-10" aria-hidden="true" tabindex="-1"></a>  temp<span class="ot">=</span> <span class="fu">data.frame</span>()</span>
+<span id="cb125-11"><a href="#cb125-11" aria-hidden="true" tabindex="-1"></a>  ls<span class="ot">=</span><span class="fu">matrix</span>(<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">9</span><span class="sc">*</span><span class="dv">19</span>),<span class="at">nrow=</span><span class="dv">19</span>)</span>
+<span id="cb125-12"><a href="#cb125-12" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb125-13"><a href="#cb125-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb125-14"><a href="#cb125-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (p <span class="cf">in</span> p1<span class="sc">:</span>p2)</span>
+<span id="cb125-15"><a href="#cb125-15" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb125-16"><a href="#cb125-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(q <span class="cf">in</span> q1<span class="sc">:</span>q2)</span>
+<span id="cb125-17"><a href="#cb125-17" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb125-18"><a href="#cb125-18" aria-hidden="true" tabindex="-1"></a>      <span class="cf">for</span>(P <span class="cf">in</span> P1<span class="sc">:</span>P2)</span>
+<span id="cb125-19"><a href="#cb125-19" aria-hidden="true" tabindex="-1"></a>      {</span>
+<span id="cb125-20"><a href="#cb125-20" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span>(Q <span class="cf">in</span> Q1<span class="sc">:</span>Q2)</span>
+<span id="cb125-21"><a href="#cb125-21" aria-hidden="true" tabindex="-1"></a>        {</span>
+<span id="cb125-22"><a href="#cb125-22" aria-hidden="true" tabindex="-1"></a>          <span class="cf">if</span>(p<span class="sc">+</span>d<span class="sc">+</span>q<span class="sc">+</span>P<span class="sc">+</span>D<span class="sc">+</span>Q<span class="sc">&lt;=</span><span class="dv">9</span>)</span>
+<span id="cb125-23"><a href="#cb125-23" aria-hidden="true" tabindex="-1"></a>          {</span>
+<span id="cb125-24"><a href="#cb125-24" aria-hidden="true" tabindex="-1"></a>            model<span class="ot">&lt;-</span> <span class="fu">Arima</span>(data,<span class="at">order=</span><span class="fu">c</span>(p<span class="dv">-1</span>,d,q<span class="dv">-1</span>),<span class="at">seasonal=</span><span class="fu">c</span>(P<span class="dv">-1</span>,D,Q<span class="dv">-1</span>))</span>
+<span id="cb125-25"><a href="#cb125-25" aria-hidden="true" tabindex="-1"></a>            ls[i,]<span class="ot">=</span> <span class="fu">c</span>(p<span class="dv">-1</span>,d,q<span class="dv">-1</span>,P<span class="dv">-1</span>,D,Q<span class="dv">-1</span>,model<span class="sc">$</span>aic,model<span class="sc">$</span>bic,model<span class="sc">$</span>aicc)</span>
+<span id="cb125-26"><a href="#cb125-26" aria-hidden="true" tabindex="-1"></a>            i<span class="ot">=</span>i<span class="sc">+</span><span class="dv">1</span></span>
+<span id="cb125-27"><a href="#cb125-27" aria-hidden="true" tabindex="-1"></a>            <span class="co">#print(i)</span></span>
+<span id="cb125-28"><a href="#cb125-28" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb125-29"><a href="#cb125-29" aria-hidden="true" tabindex="-1"></a>          }</span>
+<span id="cb125-30"><a href="#cb125-30" aria-hidden="true" tabindex="-1"></a>          </span>
+<span id="cb125-31"><a href="#cb125-31" aria-hidden="true" tabindex="-1"></a>        }</span>
+<span id="cb125-32"><a href="#cb125-32" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb125-33"><a href="#cb125-33" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb125-34"><a href="#cb125-34" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb125-35"><a href="#cb125-35" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb125-36"><a href="#cb125-36" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb125-37"><a href="#cb125-37" aria-hidden="true" tabindex="-1"></a>  temp<span class="ot">=</span> <span class="fu">as.data.frame</span>(ls)</span>
+<span id="cb125-38"><a href="#cb125-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">names</span>(temp)<span class="ot">=</span> <span class="fu">c</span>(<span class="st">"p"</span>,<span class="st">"d"</span>,<span class="st">"q"</span>,<span class="st">"P"</span>,<span class="st">"D"</span>,<span class="st">"Q"</span>,<span class="st">"AIC"</span>,<span class="st">"BIC"</span>,<span class="st">"AICc"</span>)</span>
+<span id="cb125-39"><a href="#cb125-39" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb125-40"><a href="#cb125-40" aria-hidden="true" tabindex="-1"></a>  temp</span>
+<span id="cb125-41"><a href="#cb125-41" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb125-42"><a href="#cb125-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-43"><a href="#cb125-43" aria-hidden="true" tabindex="-1"></a>output<span class="ot">=</span><span class="fu">SARIMA.c</span>(<span class="at">p1=</span><span class="dv">1</span>,<span class="at">p2=</span><span class="dv">2</span>,<span class="at">q1=</span><span class="dv">1</span>,<span class="at">q2=</span><span class="dv">3</span>,<span class="at">P1=</span><span class="dv">1</span>,<span class="at">P2=</span><span class="dv">2</span>,<span class="at">Q1=</span><span class="dv">1</span>,<span class="at">Q2=</span><span class="dv">2</span>,<span class="at">data=</span>oil_log_ts)</span>
+<span id="cb125-44"><a href="#cb125-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-45"><a href="#cb125-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb125-46"><a href="#cb125-46" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(output)</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
@@ -3664,7 +3721,7 @@ Training set 0.001044984 0.07735308 0.05741248 Inf  Inf 0.6543703 0.006458057</c
 </div>
 <details class="code-fold">
 <summary>Parameters</summary>
-<div class="sourceCode cell-code" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="#cb122-1" aria-hidden="true" tabindex="-1"></a>output[<span class="fu">which.min</span>(output<span class="sc">$</span>AIC),]</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="#cb126-1" aria-hidden="true" tabindex="-1"></a>output[<span class="fu">which.min</span>(output<span class="sc">$</span>AIC),]</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>   p d q P D Q       AIC       BIC      AICc
@@ -3672,7 +3729,7 @@ Training set 0.001044984 0.07735308 0.05741248 Inf  Inf 0.6543703 0.006458057</c
 </div>
 <details class="code-fold">
 <summary>Parameters</summary>
-<div class="sourceCode cell-code" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="#cb124-1" aria-hidden="true" tabindex="-1"></a>output[<span class="fu">which.min</span>(output<span class="sc">$</span>BIC),]</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="#cb128-1" aria-hidden="true" tabindex="-1"></a>output[<span class="fu">which.min</span>(output<span class="sc">$</span>BIC),]</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>  p d q P D Q       AIC       BIC     AICc
@@ -3680,7 +3737,7 @@ Training set 0.001044984 0.07735308 0.05741248 Inf  Inf 0.6543703 0.006458057</c
 </div>
 <details class="code-fold">
 <summary>Parameters</summary>
-<div class="sourceCode cell-code" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="#cb126-1" aria-hidden="true" tabindex="-1"></a>output[<span class="fu">which.min</span>(output<span class="sc">$</span>AICc),]</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb130-1"><a href="#cb130-1" aria-hidden="true" tabindex="-1"></a>output[<span class="fu">which.min</span>(output<span class="sc">$</span>AICc),]</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>   p d q P D Q       AIC       BIC      AICc
@@ -3701,8 +3758,8 @@ Training set 0.001044984 0.07735308 0.05741248 Inf  Inf 0.6543703 0.006458057</c
 <div class="cell">
 <details class="code-fold">
 <summary>SARIMA Fit</summary>
-<div class="sourceCode cell-code" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="#cb128-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">222</span>)</span>
-<span id="cb128-2"><a href="#cb128-2" aria-hidden="true" tabindex="-1"></a>model_output_s <span class="ot">&lt;-</span> <span class="fu">capture.output</span>(<span class="fu">sarima</span>(oil_log_ts, <span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">12</span>))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb132"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb132-1"><a href="#cb132-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">222</span>)</span>
+<span id="cb132-2"><a href="#cb132-2" aria-hidden="true" tabindex="-1"></a>model_output_s <span class="ot">&lt;-</span> <span class="fu">capture.output</span>(<span class="fu">sarima</span>(oil_log_ts, <span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">12</span>))</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -3713,8 +3770,8 @@ Training set 0.001044984 0.07735308 0.05741248 Inf  Inf 0.6543703 0.006458057</c
 </div>
 <details class="code-fold">
 <summary>SARIMA Fit</summary>
-<div class="sourceCode cell-code" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="#cb129-1" aria-hidden="true" tabindex="-1"></a><span class="co">#model_output_s</span></span>
-<span id="cb129-2"><a href="#cb129-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(model_output_s[<span class="dv">25</span><span class="sc">:</span><span class="dv">37</span>], model_output_s[<span class="fu">length</span>(model_output_s)], <span class="at">sep =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>) </span></code></pre></div>
+<div class="sourceCode cell-code" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb133-1"><a href="#cb133-1" aria-hidden="true" tabindex="-1"></a><span class="co">#model_output_s</span></span>
+<span id="cb133-2"><a href="#cb133-2" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(model_output_s[<span class="dv">25</span><span class="sc">:</span><span class="dv">37</span>], model_output_s[<span class="fu">length</span>(model_output_s)], <span class="at">sep =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>) </span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>converged
