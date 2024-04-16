@@ -2562,6 +2562,32 @@ D = 1
 Q = 1, 2
 
 
+## CPI
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'SARIMA ACF-PACF'
+#| warning: false
+#| output: true
+
+#Seasonal differencing
+seasonally_diff_cpi_log_ts <- diff(cpi_log_ts, lag=12)
+#ACF and PACF plots
+ggtsdisplay(seasonally_diff_cpi_log_ts, main='Seasonally Differenced CPI')
+
+
+```
+
+Based on these graphs and examining the ACF and PACF plots, we can suggest a range of values for P and Q:
+
+P = 1, 2
+D = 1
+Q = 1, 2
+
+
+
+
 
 :::
 
@@ -2723,6 +2749,82 @@ and lowest BIC is ARIMA(0,1,0)(0,1,1)[12].
 
 
 
+## CPI
+
+p = 1 to 12
+q = 1 to 9
+d = 1
+D = 1
+P = 1, 2
+Q = 1, 2
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Parameters'
+#| warning: false
+#| output: true
+
+SARIMA.c=function(p1,p2,q1,q2,P1,P2,Q1,Q2,data){
+  
+  #K=(p2+1)*(q2+1)*(P2+1)*(Q2+1)
+  temp=c()
+  d = 1
+  D = 1
+  s = 12
+  
+  i=1
+  temp= data.frame()
+  ls=matrix(rep(NA,9*25),nrow=25)
+  
+  
+  for (p in p1:p2)
+  {
+    for(q in q1:q2)
+    {
+      for(P in P1:P2)
+      {
+        for(Q in Q1:Q2)
+        {
+          if(p+d+q+P+D+Q<=9)
+          {
+            model<- Arima(data,order=c(p-1,d,q-1),seasonal=c(P-1,D,Q-1))
+            ls[i,]= c(p-1,d,q-1,P-1,D,Q-1,model$aic,model$bic,model$aicc)
+            i=i+1
+            #print(i)
+            
+          }
+          
+        }
+      }
+    }
+    
+  }
+  
+  temp= as.data.frame(ls)
+  names(temp)= c("p","d","q","P","D","Q","AIC","BIC","AICc")
+  
+  temp
+}
+
+output=SARIMA.c(p1=1,p2=12,q1=1,q2=9,P1=1,P2=2,Q1=1,Q2=2,data=cpi_log_ts)
+
+
+knitr::kable(output)
+
+output[which.min(output$AIC),]
+output[which.min(output$BIC),]
+output[which.min(output$AICc),]
+
+```
+
+
+
+The model with the lowest AIC and AICc is ARIMA(0,1,2)[0,1,1]12.
+and lowest BIC is ARIMA(0,1,1)[0,1,1]12.
+
+
+
+
 :::
 
 
@@ -2747,10 +2849,29 @@ model_output_s <- capture.output(sarima(oil_log_ts, 0,1,2,0,1,1,12))
 cat(model_output_s[25:37], model_output_s[length(model_output_s)], sep = "\n") 
 
 ```
+
+- The Standardized Residuals plot doesn’t show any apparent trends or seasonality, indicating that the model residuals are randomly distributed around zero
+
+
+- The ACF of Residuals plot exhibits all bars within the confidence bounds, suggesting that there's no autocorrelation left in the residuals after fitting the model.
+
+
+- The Normal Q-Q Plot of Std Residuals displays points that mostly align suggesting that the residuals are approximately normally distributed.
+
+
+- The p-values for the Ljung-Box statistic are all above the significance threshold of 0.05, implying that there's no significant autocorrelation at any lag
+
+
+- The coefficients for the non-seasonal terms ma1 and ma2 are 0.5483 and 0.1238, respectively. Both are statistically significant as their p-values are less than 0.05. The seasonal moving average term sma1 is -1.0000, which indicates a strong seasonal pattern has been identified and incorporated into the model.
+
+
+These criteria suggests that the model strikes a good balance between fitting the historical data well and not overfitting.
+
 Equation:
 
+
 $$
-x_t = 0.5483 x_{t-1} + 0.1238 x_{t-2} - 1.00 + a_t
+x_t = 0.5483 a_{t-1} + 0.1238 a_{t-2} - 1.00 a_{t-12} + a_t
 $$
 
 
@@ -2790,7 +2911,48 @@ These criteria suggests that the model strikes a good balance between fitting th
 Equation:
 
 $$
-x_t = - 0.0944 x_{t-1} - 0.7530 + a_t
+x_t = - 0.0944 x_{t-1} - 0.7530 a_{t-12} + a_t
+$$
+
+
+
+## CPI
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'SARIMA Fit'
+#| warning: false
+#| output: true
+set.seed(222)
+model_output_c <- capture.output(sarima(cpi_log_ts, 0,1,2,0,1,1,12))
+#model_output_c
+cat(model_output_c[22:34], model_output_c[length(model_output_c)], sep = "\n") 
+
+```
+
+- The Standardized Residuals plot doesn’t show any apparent trends or seasonality, indicating that the model residuals are randomly distributed around zero
+
+
+- The ACF of Residuals plot exhibits bars within the confidence bounds for the majority of lags, suggesting that there’s minimal autocorrelation left in the residuals after fitting the model.
+
+
+- The Normal Q-Q Plot of Std Residuals displays points that mostly align suggesting that the residuals are approximately normally distributed.
+
+
+- The p-values for the Ljung-Box statistic are not above the significance threshold of 0.05, implying that there's still some autocorrelation left
+
+
+- The coefficients for the non-seasonal terms ma1 and ma2 are 0.5566 and 0.1172, respectively. Both are statistically significant as their p-values are less than 0.05. The seasonal moving average term sma1 is -0.9997, which indicates a seasonal pattern has been identified and incorporated into the model.
+
+
+These criteria suggests that the model strikes a good balance between fitting the historical data well and not overfitting.
+
+Equation:
+
+
+$$
+x_t = 0.5566 a_{t-1} + 0.1172 a_{t-2} + a_t - 0.9997 a_{t-12}
 $$
 
 
@@ -2833,6 +2995,18 @@ auto.arima(electricity_log_ts)
 ```
 
 
+## CPI
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Auto Arima'
+#| warning: false
+#| output: true
+
+auto.arima(cpi_log_ts)
+
+```
 
 
 
@@ -2854,17 +3028,26 @@ auto.arima(electricity_log_ts)
 #| output: true
 
 
+#Forecasting the next 36 months
 fit_oil_s <- Arima(oil_log_ts, order=c(0,1,2), seasonal=c(0,1,1))
+forecast_oil_s <- forecast(fit_oil_s, h=36)
 
-# forecast next three years
-fit_oil_s %>% forecast(h=36) %>% autoplot()+theme_bw() 
+#Plotting the forecast
+autoplot(forecast_oil_s) + 
+  labs(title="Forecast for Crude Oil Prices - SARIMA", 
+       x="Year", y="Logged Prices", 
+       caption="Forecast using SARIMA(0,1,2)(0,1,1)[12]") +
+  theme_minimal()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
 ```
 
+
+The forecast generated by the SARIMA(0,1,2)(0,1,1)[12] model appears as a continuation of the last known pattern. This suggests that the model doesn't expect drastic changes in the price levels immediately after the last known data point, with a slightly upward trend.
 
 
 ## Electricity
 
-ARIMA(1,1,0)(0,1,1)[12].
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
@@ -2880,7 +3063,7 @@ forecast_elect_s <- forecast(fit_elec_s, h=36)
 autoplot(forecast_elect_s) + 
   labs(title="Forecast for Electricty Prices - SARIMA", 
        x="Year", y="Logged Prices", 
-       caption="Forecast using ARIMA(1,1,0)(0,1,1)[12]") +
+       caption="Forecast using SARIMA(1,1,0)(0,1,1)[12]") +
   theme_minimal()+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
@@ -2888,6 +3071,32 @@ autoplot(forecast_elect_s) +
 
 
 The forecast generated by the SARIMA(1,1,0)(0,1,1)[12] model appears as a continuation of the last known pattern. This suggests that the model doesn't expect drastic changes in the price levels immediately after the last known data point, with an upward trend.
+
+
+
+## CPI
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Forecasting SARIMA'
+#| warning: false
+#| output: true
+
+
+#Forecasting the next 36 months
+fit_cpi_s <- Arima(cpi_log_ts, order=c(0,1,2), seasonal=c(0,1,1))
+forecast_cpi_s <- forecast(fit_cpi_s, h=36)
+
+#Plotting the forecast
+autoplot(forecast_cpi_s) + 
+  labs(title="Forecast for CPI - SARIMA", 
+       x="Year", y="Logged Prices", 
+       caption="Forecast using SARIMA(0,1,2)(0,1,1)[12]") +
+  theme_minimal()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+```
+
+The forecast generated by the SARIMA(0,1,2)(0,1,1)[12] model appears as a continuation of the last known pattern. This suggests that the model doesn't expect drastic changes in the price levels immediately after the last known data point, with an upward trend.
 
 
 :::
@@ -2907,21 +3116,38 @@ The forecast generated by the SARIMA(1,1,0)(0,1,1)[12] model appears as a contin
 #| warning: false
 #| output: true
 
+
+#Plot
 autoplot(oil_log_ts) +
-  autolayer(meanf(oil_log_ts, h=36),
-            series="Mean", PI=FALSE) +
-  autolayer(naive(oil_log_ts, h=36),
-            series="Naïve", PI=FALSE) +
-  autolayer(snaive(oil_log_ts, h=36),
-            series="SNaïve", PI=FALSE)+
-  autolayer(rwf(oil_log_ts, h=36, drift=TRUE),
-            series="Drift", PI=FALSE)+
-  autolayer(forecast(fit_oil_s,36), 
-            series="fit",PI=FALSE) +
-  guides(colour=guide_legend(title="Forecast")) +theme_bw() 
+  autolayer(meanf(oil_log_ts, h=36), series="Mean", PI=FALSE) +
+  autolayer(naive(oil_log_ts, h=36), series="Naïve", PI=FALSE) +
+  autolayer(snaive(oil_log_ts, h=36), series="SNaïve", PI=FALSE) +
+  autolayer(rwf(oil_log_ts, h=36, drift=TRUE), series="Drift", PI=FALSE) +
+  autolayer(forecast(fit_oil_s, 36), series="SARIMA", PI=FALSE) +
+  labs(title="Comparing SARIMA with Benchmark Forecasts for Crude Oil Prices",
+       x="Time", y="Logged Prices",
+       caption="Forecasting Methods") +
+  guides(colour=guide_legend(title="Forecast")) +
+  theme_bw()
+
 ```
 
-SNaive benchmark appears to have a trend line most similar to the previous years
+- Mean Forecast (Yellow): The flat line suggests that if we consider the average of the past, we would expect the future to hold steady at this average price level.
+  
+
+- Naive Forecast (Light Green): Also a flat line suggests that if the future simply repeats the last known price, there won't be any change moving forward.
+
+
+- Seasonal Naive Forecast (Purple): This method extends the last observed seasonal pattern into the future.
+
+
+- Drift Forecast (Red): Includes a trend, show an upward trend over time.
+
+
+- SARIMA Forecast (Blue): This forecast captures both the recent levels and the seasonal patterns. It seems to predict a slight increase followed by seasonal variations.
+
+
+SARIMA model outperformed most of the benchmark methods
 
 
 
@@ -2960,6 +3186,55 @@ autoplot(electricity_log_ts) +
 - SARIMA Forecast (Blue): This forecast captures both the recent levels and the seasonal patterns. It seems to predict a slight increase followed by seasonal variations.
 
 SARIMA model outperformed most of the benchmark methods
+
+
+
+
+## CPI
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Comparing SARIMA Benchmark'
+#| warning: false
+#| output: true
+
+
+#Plot
+autoplot(cpi_log_ts) +
+  autolayer(meanf(cpi_log_ts, h=36), series="Mean", PI=FALSE) +
+  autolayer(naive(cpi_log_ts, h=36), series="Naïve", PI=FALSE) +
+  autolayer(snaive(cpi_log_ts, h=36), series="SNaïve", PI=FALSE) +
+  autolayer(rwf(cpi_log_ts, h=36, drift=TRUE), series="Drift", PI=FALSE) +
+  autolayer(forecast(fit_cpi_s, 36), series="SARIMA", PI=FALSE) +
+  labs(title="Comparing SARIMA with Benchmark Forecasts for CPI",
+       x="Time", y="Logged Prices",
+       caption="Forecasting Methods") +
+  guides(colour=guide_legend(title="Forecast")) +
+  theme_bw()
+
+```
+
+- Mean Forecast (Yellow): The flat line suggests that if we consider the average of the past, we would expect the future to hold steady at this average price level.
+  
+
+- Naive Forecast (Light Green): Also a flat line suggests that if the future simply repeats the last known price, there won't be any change moving forward.
+
+
+- Seasonal Naive Forecast (Purple): This method extends the last observed seasonal pattern into the future.
+
+
+- Drift Forecast (Red): Includes a trend, show an upward trend over time.
+
+
+- SARIMA Forecast (Blue): This forecast captures both the recent levels and the seasonal patterns. It seems to predict a slight increase followed by seasonal variations.
+
+
+SARIMA model outperformed most of the benchmark methods
+
+
+
+
+
 
 
 :::
@@ -3004,11 +3279,11 @@ for(i in 1:28)
   xtest <- window(oil_log_ts, start=st + (i-1) + 1/12, end=st + i)
   # Manual model
   fit <- Arima(xtrain, order=c(0,1,2), seasonal=list(order=c(0,1,1), period=12),
-                include.drift=TRUE, method="ML")
+                method="ML")
   fcast <- forecast(fit, h=12)
   # Auto Arima
   fit2 <- Arima(xtrain, order=c(2,1,0), seasonal=list(order=c(1,0,0), period=12),
-                include.drift=TRUE, method="ML")
+                method="ML")
   fcast2 <- forecast(fit2, h=12)
   
   mae1[i,] <- abs(fcast$mean-xtest)
@@ -3055,12 +3330,12 @@ for(i in 1:29)
   xtrain <- window(electricity_log_ts, end=st + i-1)
   xtest <- window(electricity_log_ts, start=st + (i-1) + 1/12, end=st + i)
   # Manual model
-  fit <- Arima(xtrain, order=c(1,1,0), seasonal=list(order=c(0,1,1), period=12),
-                include.drift=TRUE, method="ML")
+  fit <- Arima(xtrain, order=c(1,1,0), seasonal=list(order=c(0,1,1), period=12), 
+               method="ML")
   fcast <- forecast(fit, h=12)
   # Auto Arima
   fit2 <- Arima(xtrain, order=c(0,1,1), seasonal=list(order=c(0,1,1), period=12),
-                include.drift=TRUE, method="ML")
+                method="ML")
   fcast2 <- forecast(fit2, h=12)
   
   mae1[i,] <- abs(fcast$mean-xtest)
@@ -3075,6 +3350,61 @@ legend("topleft",legend=c("Manual Model","Auto Arima"),col=2:4,lty=1)
 
 Initially, both models perform similarly, as indicated by the overlapping lines. As the horizon increases, there is some divergence between the models. However, the difference in their performance remains quite small throughout.
 Suggesting that both models return to similar levels of forecasting accuracy.
+
+
+## CPI
+
+The best model for this dataset using manual selection is ARIMA(0,1,2)[0,1,1]12, while the auto arima model is ARIMA(1,1,2)(0,0,1)[12].
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'CV'
+#| warning: false
+#| output: true
+
+x=cpi_log_ts
+  
+set.seed(222)
+k <- 72 # first training set length (6 seasonal lags - 6*12)
+n <- length(x) #410
+#n-k #338 rest of the observations
+
+#n-k=338; 338/12=28; k=72
+
+
+mae1 <- matrix(NA, 28,12) 
+mae2 <- matrix(NA,28,12)
+
+st <- tsp(cpi_log_ts)[1]+(k-1)/12
+for(i in 1:28)
+{
+  #xtrain <- window(a10, start=st+(i-k+1)/12, end=st+i/12)
+  xtrain <- window(cpi_log_ts, end=st + i-1)
+  xtest <- window(cpi_log_ts, start=st + (i-1) + 1/12, end=st + i)
+  # Manual model
+  fit <- Arima(xtrain, order=c(0,1,2), seasonal=list(order=c(0,1,1), period=12),
+                method="ML")
+  fcast <- forecast(fit, h=12)
+  # Auto Arima
+  fit2 <- Arima(xtrain, order=c(2,1,0), seasonal=list(order=c(1,0,0), period=12),
+                method="ML")
+  fcast2 <- forecast(fit2, h=12)
+  
+  mae1[i,] <- abs(fcast$mean-xtest)
+  mae2[i,] <- abs(fcast2$mean-xtest)
+  
+}
+
+plot(1:12, colMeans(mae1,na.rm=TRUE), type="l", col=2, xlab="horizon", ylab="MAE")
+lines(1:12, colMeans(mae2,na.rm=TRUE), type="l",col=3)
+legend("topleft",legend=c("Manual Model","Auto Arima"),col=2:4,lty=1)
+```
+
+Auto Arima appears to consistently have a higher MAE compared to the Manual Model across all forecast horizons, indicating that the manual model has, on average, lower errors and hence is making more accurate predictions.
+
+
 
 
 :::
