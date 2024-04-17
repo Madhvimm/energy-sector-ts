@@ -1,13 +1,557 @@
 ---
-title: "Univariate TS Models (ARIMA/SARIMA)"
+title: "Multivariate TS Models (ARIMAX/SARIMAX/VAR)"
 output: distill::distill_article
 ---
 
 
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: false
+library(ggplot2)
+library(readr)
+library(tidyverse)
+library(lubridate)
+library(forecast)
+library(tseries)
+library(plotly)
+library(gridExtra)
+library(zoo)
+library(astsa)
+library(ggplot2)
+library(zoo)
+library(plotly)
+
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Read data'
+#| warning: false
+#| output: false
+
+composite_crude_oil_prices <- read.csv("data/composite_crude_oil_prices.csv")
+citygate_gas_prices <- read.csv("data/citygate_gas_prices.csv")
+total_electricity_prices <- read.csv("data/total_electricity_prices.csv")
+gdp_data <- read.csv("data/gdp_data.csv")
+cpi_data <- read.csv("data/cpi_data.csv")
+
+```
 
 
-<a href="exploratory-data-analysis.qmd" class="previous-page-link" style="float: left;">&larr; Previous Page: EDA</a>
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'convert to ts'
+#| warning: false
+#| output: false
 
 
+# For Crude Oil
+composite_crude_oil_prices$Date <- as.Date(composite_crude_oil_prices$Date)
+start_year <- as.numeric(format(min(composite_crude_oil_prices$Date), "%Y"))
+start_month <- as.numeric(format(min(composite_crude_oil_prices$Date), "%m"))
+composite_crude_oil_ts <- ts(composite_crude_oil_prices$Value, start=c(start_year, start_month), frequency=12)
+# Log-transform Value
+composite_crude_oil_prices$LOG_Value <- log(composite_crude_oil_prices$Value)
+oil_log_ts <- ts(composite_crude_oil_prices$LOG_Value, start=c(start_year, start_month), frequency=12)
+
+# For Natural Gas
+citygate_gas_prices$Date <- as.Date(citygate_gas_prices$Date)
+start_year_gas <- as.numeric(format(min(citygate_gas_prices$Date), "%Y"))
+start_month_gas <- as.numeric(format(min(citygate_gas_prices$Date), "%m"))
+citygate_gas_ts <- ts(citygate_gas_prices$Value, start=c(start_year_gas, start_month_gas), frequency=12)
+# Log-transform Value
+citygate_gas_prices$LOG_Value <- log(citygate_gas_prices$Value)
+gas_log_ts <- ts(citygate_gas_prices$LOG_Value, start=c(start_year_gas, start_month_gas), frequency=12)
+
+# For Electricity
+total_electricity_prices$Date <- as.Date(total_electricity_prices$Date, format = "%Y-%m-%d")
+start_year_elec <- as.numeric(format(min(total_electricity_prices$Date), "%Y"))
+start_month_elec <- as.numeric(format(min(total_electricity_prices$Date), "%m"))
+total_electricity_ts <- ts(total_electricity_prices$Value, start = c(start_year_elec, start_month_elec), frequency = 12)
+# Log-transform Value
+total_electricity_prices$LOG_Value <- log(total_electricity_prices$Value)
+electricity_log_ts <- ts(total_electricity_prices$LOG_Value, start=c(start_year_elec, start_month_elec), frequency=12)
+
+
+# For GDP (it's quarterly)
+gdp_data$DATE <- as.Date(gdp_data$DATE, format = "%Y-%m-%d")
+start_year_gdp <- as.numeric(format(min(gdp_data$DATE), "%Y"))
+start_quarter_gdp <- quarter(min(gdp_data$DATE))
+# Log-transform GDP
+gdp_data$LOG_GDP <- log(gdp_data$GDP)
+gdp_log_ts <- ts(gdp_data$LOG_GDP, start=c(start_year_gdp, start_quarter_gdp), frequency=4)
+
+
+# For CPI (it's monthly)
+cpi_data$DATE <- as.Date(cpi_data$DATE, format = "%Y-%m-%d")
+start_year_cpi <- as.numeric(format(min(cpi_data$DATE), "%Y"))
+start_month_cpi <- as.numeric(format(min(cpi_data$DATE), "%m"))
+# Log-transform CPI
+cpi_data$LOG_CPI <- log(cpi_data$CPIAUCSL)
+cpi_log_ts <- ts(cpi_data$LOG_CPI, start = c(start_year_cpi, start_month_cpi), frequency = 12)
+
+```
+
+
+
+
+# Define the Models
+
+
+In our quest to uncover the relationships within the energy sector and its economic consequences, we will use a series of statistical models that serve as the foundation for our analysis. This will help us understand both direct impacts and more complex, interdependent relationships within the datasets.
+
+## 1. ARIMAX Models:
+
+1. (ARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
+2. (ARIMAX) GDP ~ Crude Oil Prices + Natural Gas Prices
+3. (ARIMAX) CPI ~ Crude Oil Prices + Natural Gas Prices
+
+
+## 2. SARIMAX Models:
+
+1. (SARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices + Seasonality
+2. (SARIMAX) GDP ~ Crude Oil Prices + Natural Gas Prices + Seasonality
+3. (SARIMAX) CPI ~ Crude Oil Prices + Natural Gas Prices + Seasonality
+
+
+## 3. VAR Models:
+
+1. (VAR) Crude Oil Prices ~ Natural Gas Prices + GDP + CPI
+2. (VAR) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices + GDP + CPI
+
+
+
+
+# ARIMAX / SARIMAX
+
+We will use ARIMAX and SARIMAX models to investigate the intricate interdependencies within our economic and energy datasets. By selecting response and exogenous variables, we construct models to capture these relationships.
+
+
+## 1. Variable Selection
+
+::: panel-tabset
+
+## (SARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'convert to ts'
+#| warning: false
+#| output: false
+
+# Define the time window
+start_date <- as.Date("1990-01-01")
+end_date <- as.Date("2023-09-01")
+
+# Subset
+crude_oil_window <- window(oil_log_ts, start = decimal_date(start_date), end = decimal_date(end_date))
+natural_gas_window <- window(gas_log_ts, start = decimal_date(start_date), end = decimal_date(end_date))
+electricity_prices_window <- window(electricity_log_ts, start = decimal_date(start_date), end = decimal_date(end_date))
+gdp_window <- window(gdp_log_ts, start = decimal_date(start_date), end = decimal_date(end_date))
+cpi_window <- window(cpi_log_ts, start = decimal_date(start_date), end = decimal_date(end_date))
+```
+
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Variable Selection'
+#| warning: false
+#| output: true
+
+#Combining
+elec_oil_ng <- cbind(electricity_prices_window, crude_oil_window, natural_gas_window)
+colnames(elec_oil_ng) <- c("Electricity", "CrudeOil", "NaturalGas")
+
+#Plotting the data
+autoplot(elec_oil_ng) + 
+  theme_bw() +
+  labs(title = "Electricity, Crude Oil, and Natural Gas Prices Over Time",
+       x = "Year",
+       y = "Logged Prices",
+       color = "Series") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+
+```
+
+
+
+## (ARIMAX) GDP ~ Crude Oil Prices + Natural Gas Prices
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Variable Selection'
+#| warning: false
+#| output: true
+
+#Combining
+gdp_oil_ng <- cbind(electricity_prices_window, crude_oil_window, natural_gas_window)
+colnames(gdp_oil_ng) <- c("GDP", "CrudeOil", "NaturalGas")
+
+#Plotting the data
+autoplot(gdp_oil_ng) + 
+  theme_bw() +
+  labs(title = "GDP, Crude Oil, and Natural Gas Prices Over Time",
+       x = "Year",
+       y = "Logged Prices",
+       color = "Series") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+
+```
+
+
+
+
+## (ARIMAX) CPI ~ Crude Oil Prices + Natural Gas Prices
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Variable Selection'
+#| warning: false
+#| output: true
+
+#Combining
+cpi_oil_ng <- cbind(cpi_window, crude_oil_window, natural_gas_window)
+colnames(cpi_oil_ng) <- c("CPI", "CrudeOil", "NaturalGas")
+
+#Plotting the data
+autoplot(cpi_oil_ng) + 
+  theme_bw() +
+  labs(title = "CPI, Crude Oil, and Natural Gas Prices Over Time",
+       x = "Year",
+       y = "Logged Prices",
+       color = "Series") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+
+```
+
+
+:::
+
+
+
+
+## 2. Fit Auto.Arima
+
+In this section, I will first use the auto.arima() method 
+
+::: panel-tabset
+
+## (SARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Fit Auto Arima'
+#| warning: false
+#| output: true
+
+#Exogenous regressors
+xreg <- cbind(CrudeOil = elec_oil_ng[,"CrudeOil"], NaturalGas = elec_oil_ng[,"NaturalGas"])
+
+#Fit the ARIMAX model
+fit_arimax_ecn <- auto.arima(elec_oil_ng[,"Electricity"], xreg=xreg)
+
+#Summary
+summary(fit_arimax_ecn)
+
+```
+
+This gives me a Regression with SARIMA(2,1,1)(0,0,2)[12] errors. The model diagnostics are below.
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Check Residuals'
+#| warning: false
+#| output: true
+
+#Check residuals
+checkresiduals(fit_arimax_ecn)
+```
+
+**Residuals Check:**
+
+- The residuals plot shows fluctuations around zero, which is good because it suggests no obvious patterns are left unexplained by the model.
+
+
+- In the ACF plot of residuals we see some spikes suggesting that there is still some autocorrelation present in the residuals.
+
+
+- The histogram and Q-Q plot suggest that the residuals are approximately normally distributed.
+
+
+- Ljung-Box Test: The very low p-value suggests there is still autocorrelation in the residuals
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Residuals Fit - SARIMA'
+#| warning: false
+#| output: true
+
+model_output_r1 <- capture.output(sarima(residuals(fit_arimax_ecn), 0,1,2,0,1,1,12))
+#model_output_r1
+cat(model_output_r1[26:38], model_output_r1[length(model_output_r1)], sep = "\n") 
+
+
+```
+
+**Residuals Fit:**: The model used for the residuals is SARIMA(0,1,2)x(0,1,1)[12], which suggests that the residuals have seasonal patterns
+
+
+- The coefficients for the moving average terms ma1 and ma2 are significantly different from zero (p-value = 0.0).
+
+
+- The seasonal moving average term sma1 has a coefficient of -0.9483, indicating strong seasonal effects within the residuals.
+
+
+- The standardized residuals do not show any apparent trends or seasonality.
+
+
+- The ACF plot of the residuals shows a very little correlations at lags. This is an indicator of a good model fit.
+
+
+- The Normal Q-Q Plot of Std Residuals displays points that mostly align suggesting that the residuals are normally distributed.
+
+
+- The p-values for the Ljung-Box statistic are all below the significance threshold of 0.05, implying that there's still significant autocorrelation and a lack of fit.
+
+
+I think there might still be some patterns or trends hiding in the residuals.
+
+
+:::
+
+
+
+## 3. Manual Fit
+
+In this section, we will manually fit 
+
+::: panel-tabset
+
+## (SARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Manual Fit'
+#| warning: false
+#| output: true
+
+
+fit_m_ecn <- lm(Electricity ~ CrudeOil + NaturalGas, data=elec_oil_ng)
+summary(fit_m_ecn)
+```
+
+The coefficients for both Crude Oil and Natural Gas are statistically significant (esp coefficient for CrudeOil which is 0.30032). 
+
+
+#### ACF/PACF plot of the residuals.
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'ACF-PACF'
+#| warning: false
+#| output: true
+
+residuals_m_ecn <- ts(residuals(fit_m_ecn), start=start(elec_oil_ng)[1], frequency=12)
+
+#ACF plot
+acf_plot <- ggAcf(residuals_m_ecn) +
+  ggtitle("ACF Plot for Residulas") + 
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+  
+
+#PACF plot
+pacf_plot <- ggPacf(residuals_m_ecn) +
+  ggtitle("PACF Plot for Residulas") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+#Arrange
+grid.arrange(acf_plot, pacf_plot, nrow=2)
+```
+
+The ACF plot shows significant autocorrelation, suggesting seasonality in the residuals.
+
+
+#### Differencing - ACF/PACF plot
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'ACF-PACF'
+#| warning: false
+#| output: true
+
+
+#ACF plot
+acf_plot2 <- ggAcf(diff(residuals_m_ecn)) +
+  ggtitle("Diff ACF Plot for Residulas") + 
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+  
+
+#PACF plot
+pacf_plot2 <- ggPacf(diff(residuals_m_ecn)) +
+  ggtitle("Diff PACF Plot for Residulas") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+#Arrange
+grid.arrange(acf_plot2, pacf_plot2, nrow=2)
+```
+
+
+Differencing has addressed some of the seasonality. Now we have the following values: 
+
+p = 1 to 5
+
+q= 1 to 4
+
+
+
+#### Manual Parameter
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Manual Function'
+#| warning: false
+#| output: true
+
+SARIMA.c=function(p1,p2,q1,q2,P1,P2,Q1,Q2,d1,d2,data){
+  
+  temp=c()
+  d=1
+  D=1
+  s=12
+  
+  i=1
+  temp= data.frame()
+  ls=matrix(rep(NA,9*95),nrow=95)
+  
+  
+  for (p in p1:p2)
+  {
+    for(q in q1:q2)
+    {
+      for(P in P1:P2)
+      {
+        for(Q in Q1:Q2)
+        {
+          for(d in d1:d2)
+       
+        {
+          if(p+d+q+P+D+Q<=10)
+          {
+            
+            model<- Arima(data,order=c(p-1,d,q-1),seasonal=c(P-1,D,Q-1))
+            ls[i,]= c(p-1,d,q-1,P-1,D,Q-1,model$aic,model$bic,model$aicc)
+            i=i+1
+
+          }
+          
+        }
+      }
+    }
+    
+  }
+  
+  }
+  temp= as.data.frame(ls)
+  names(temp)= c("p","d","q","P","D","Q","AIC","BIC","AICc")
+  
+  temp
+  
+}
+
+
+output=SARIMA.c(p1=1,p2=5,q1=1,q2=4,P1=1,P2=2,Q1=1,Q2=2,d1=0,d2=1,data=residuals_m_ecn)
+
+knitr::kable(output)
+
+
+#Displaying the models with min values
+output[which.min(output$AIC),]
+output[which.min(output$BIC),]
+output[which.min(output$AICc),]
+```
+
+
+
+
+The best model is ARIMA(4,0,0)(0,1,1)[12]
+
+
+
+
+#### Manual Model Fitting
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Manual Model Fit'
+#| warning: false
+#| output: true
+
+set.seed(222)
+model_output_m_ecn <- capture.output(sarima(residuals_m_ecn, 4,0,0,0,1,1,12))
+#model_output_m_ecn
+cat(model_output_m_ecn[37:52], model_output_m_ecn[length(model_output_m_ecn)], sep = "\n") 
+```
+
+
+
+:::
+
+
+
+## 4. Cross-Validation
+
+In this section, I will first use the auto.arima() method 
+
+::: panel-tabset
+
+## (ARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
+
+:::
+
+
+## 5. Model Fitting
+
+In this section, I will first use the auto.arima() method 
+
+::: panel-tabset
+
+## (ARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
+
+:::
+
+
+## 6. Forecast
+
+In this section, I will first use the auto.arima() method 
+
+::: panel-tabset
+
+## (ARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
+
+:::
 
 
