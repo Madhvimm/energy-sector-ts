@@ -558,62 +558,63 @@ Auto Arima   -  ARIMA(2,1,1)(0,0,2)[12]
 #| warning: false
 #| output: true
 
-n=length(residuals_m_ecn) # 404
-k=72 
+suppressWarnings({
+  n=length(residuals_m_ecn) # 404
+  k=72
+  #n-k=332; 332/12=27;
  
- #n-k=332; 332/12=27;
- 
-rmse1 <- matrix(NA, 27,12) 
-rmse2 <- matrix(NA,27,12)
-rmse3 <- matrix(NA,27,12)
-err1 = c()
-err2 = c()
+  rmse1 <- matrix(NA, 27,12) 
+  rmse2 <- matrix(NA,27,12)
+  rmse3 <- matrix(NA,27,12)
+  err1 = c()
+  err2 = c()
 
-st <- tsp(residuals_m_ecn)[1]+(k-1)/12 
+  st <- tsp(residuals_m_ecn)[1]+(k-1)/12 
 
-for(i in 1:27)
-{
-  #xtrain <- window(a10, start=st+(i-k+1)/12, end=st+i/12)
-  xtrain <- window(residuals_m_ecn, end=st + i-1)
-  xtest <- window(residuals_m_ecn, start=st + (i-1) + 1/12, end=st + i)
+  for(i in 1:27)
+  {
+    #xtrain <- window(a10, start=st+(i-k+1)/12, end=st+i/12)
+    xtrain <- window(residuals_m_ecn, end=st + i-1)
+    xtest <- window(residuals_m_ecn, start=st + (i-1) + 1/12, end=st + i)
   
   
-  # auto arima
-  fit <- Arima(xtrain, order=c(2,1,1), seasonal=list(order=c(0,0,2), period=12),
-                include.drift=TRUE, method="CSS") 
-  fcast <- forecast(fit, h=12)
-  # manual model
-  fit2 <- Arima(xtrain, order=c(4,0,0), seasonal=list(order=c(0,1,1), period=12),
-                include.drift=TRUE, method="CSS") 
-  fcast2 <- forecast(fit2, h=12)
+    # auto arima
+    fit <- Arima(xtrain, order=c(2,1,1), seasonal=list(order=c(0,0,2), period=12),
+                  include.drift=TRUE, method="CSS") 
+    fcast <- forecast(fit, h=12)
+    # manual model
+    fit2 <- Arima(xtrain, order=c(4,0,0), seasonal=list(order=c(0,1,1), period=12),
+                  include.drift=TRUE, method="CSS") 
+    fcast2 <- forecast(fit2, h=12)
   
   
 
-  rmse1[i,1:length(xtest)]  <- sqrt((fcast$mean-xtest)^2)
-  rmse2[i,1:length(xtest)] <- sqrt((fcast2$mean-xtest)^2)
+    rmse1[i,1:length(xtest)]  <- sqrt((fcast$mean-xtest)^2)
+    rmse2[i,1:length(xtest)] <- sqrt((fcast2$mean-xtest)^2)
   
-  ## This is mean absolute error
-  err1 = c(err1, abs(fcast$mean-xtest)) 
-  err2 = c(err2, abs(fcast2$mean-xtest))
+    ## This is mean absolute error
+    err1 = c(err1, abs(fcast$mean-xtest)) 
+    err2 = c(err2, abs(fcast2$mean-xtest))
   
-  # This is mean squared error
-  err3 = c(err1, (fcast$mean-xtest)^2)
-  err4 = c(err2, (fcast2$mean-xtest)^2)
+    # This is mean squared error
+    err3 = c(err1, (fcast$mean-xtest)^2)
+    err4 = c(err2, (fcast2$mean-xtest)^2)
 
   
-}
+  }
+})
 
-plot(1:12, colMeans(rmse1,na.rm=TRUE), type="l", col=2, xlab="horizon", ylab="RMSE")
-lines(1:12, colMeans(rmse2,na.rm=TRUE), type="l",col=3)
+  plot(1:12, colMeans(rmse1,na.rm=TRUE), type="l", col=2, xlab="horizon", ylab="RMSE")
+  lines(1:12, colMeans(rmse2,na.rm=TRUE), type="l",col=3)
 
-legend("topleft",legend=c("Auto Arima model","Manual Model"),col=2:3,lty=1)
+  legend("topleft",legend=c("Auto Arima model","Manual Model"),col=2:3,lty=1)
 
 
-RMSE1 <- sqrt(mean(err3, na.rm = TRUE))
-RMSE2 <- sqrt(mean(err4, na.rm = TRUE))
+  RMSE1 <- sqrt(mean(err3, na.rm = TRUE))
+  RMSE2 <- sqrt(mean(err4, na.rm = TRUE))
 
-cat('The RMSE of Auto Arima is', RMSE1, '\n')
-cat('The RMSE of Manually Selection is', RMSE2, '\n')
+  cat('The RMSE of Auto Arima is', RMSE1, '\n')
+  cat('The RMSE of Manually Selection is', RMSE2, '\n')
 
 ```
 

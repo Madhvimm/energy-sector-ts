@@ -1789,100 +1789,56 @@ AIC = -4.032879  AICc = -4.032323  BIC = -3.961964
 <div class="cell">
 <details class="code-fold">
 <summary>C-V</summary>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>n<span class="ot">=</span><span class="fu">length</span>(residuals_m_ecn) <span class="co"># 404</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>k<span class="ot">=</span><span class="dv">72</span> </span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a> <span class="co">#n-k=332; 332/12=27;</span></span>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">suppressWarnings</span>({</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  n<span class="ot">=</span><span class="fu">length</span>(residuals_m_ecn) <span class="co"># 404</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  k<span class="ot">=</span><span class="dv">72</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="co">#n-k=332; 332/12=27;</span></span>
 <span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a> </span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>rmse1 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="dv">27</span>,<span class="dv">12</span>) </span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>rmse2 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>,<span class="dv">27</span>,<span class="dv">12</span>)</span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>rmse3 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>,<span class="dv">27</span>,<span class="dv">12</span>)</span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>err1 <span class="ot">=</span> <span class="fu">c</span>()</span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>err2 <span class="ot">=</span> <span class="fu">c</span>()</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  rmse1 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="dv">27</span>,<span class="dv">12</span>) </span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  rmse2 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>,<span class="dv">27</span>,<span class="dv">12</span>)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  rmse3 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>,<span class="dv">27</span>,<span class="dv">12</span>)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  err1 <span class="ot">=</span> <span class="fu">c</span>()</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>  err2 <span class="ot">=</span> <span class="fu">c</span>()</span>
 <span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>st <span class="ot">&lt;-</span> <span class="fu">tsp</span>(residuals_m_ecn)[<span class="dv">1</span>]<span class="sc">+</span>(k<span class="dv">-1</span>)<span class="sc">/</span><span class="dv">12</span> </span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  st <span class="ot">&lt;-</span> <span class="fu">tsp</span>(residuals_m_ecn)[<span class="dv">1</span>]<span class="sc">+</span>(k<span class="dv">-1</span>)<span class="sc">/</span><span class="dv">12</span> </span>
 <span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">27</span>)</span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>{</span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>  <span class="co">#xtrain &lt;- window(a10, start=st+(i-k+1)/12, end=st+i/12)</span></span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>  xtrain <span class="ot">&lt;-</span> <span class="fu">window</span>(residuals_m_ecn, <span class="at">end=</span>st <span class="sc">+</span> i<span class="dv">-1</span>)</span>
-<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>  xtest <span class="ot">&lt;-</span> <span class="fu">window</span>(residuals_m_ecn, <span class="at">start=</span>st <span class="sc">+</span> (i<span class="dv">-1</span>) <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">12</span>, <span class="at">end=</span>st <span class="sc">+</span> i)</span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">27</span>)</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>    <span class="co">#xtrain &lt;- window(a10, start=st+(i-k+1)/12, end=st+i/12)</span></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>    xtrain <span class="ot">&lt;-</span> <span class="fu">window</span>(residuals_m_ecn, <span class="at">end=</span>st <span class="sc">+</span> i<span class="dv">-1</span>)</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>    xtest <span class="ot">&lt;-</span> <span class="fu">window</span>(residuals_m_ecn, <span class="at">start=</span>st <span class="sc">+</span> (i<span class="dv">-1</span>) <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">12</span>, <span class="at">end=</span>st <span class="sc">+</span> i)</span>
 <span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># auto arima</span></span>
-<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>  fit <span class="ot">&lt;-</span> <span class="fu">Arima</span>(xtrain, <span class="at">order=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">seasonal=</span><span class="fu">list</span>(<span class="at">order=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">2</span>), <span class="at">period=</span><span class="dv">12</span>),</span>
-<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>                <span class="at">include.drift=</span><span class="cn">TRUE</span>, <span class="at">method=</span><span class="st">"CSS"</span>) </span>
-<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>  fcast <span class="ot">&lt;-</span> <span class="fu">forecast</span>(fit, <span class="at">h=</span><span class="dv">12</span>)</span>
-<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># manual model</span></span>
-<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>  fit2 <span class="ot">&lt;-</span> <span class="fu">Arima</span>(xtrain, <span class="at">order=</span><span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">0</span>,<span class="dv">0</span>), <span class="at">seasonal=</span><span class="fu">list</span>(<span class="at">order=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">period=</span><span class="dv">12</span>),</span>
-<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>                <span class="at">include.drift=</span><span class="cn">TRUE</span>, <span class="at">method=</span><span class="st">"CSS"</span>) </span>
-<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>  fcast2 <span class="ot">&lt;-</span> <span class="fu">forecast</span>(fit2, <span class="at">h=</span><span class="dv">12</span>)</span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># auto arima</span></span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>    fit <span class="ot">&lt;-</span> <span class="fu">Arima</span>(xtrain, <span class="at">order=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">seasonal=</span><span class="fu">list</span>(<span class="at">order=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">2</span>), <span class="at">period=</span><span class="dv">12</span>),</span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>                  <span class="at">include.drift=</span><span class="cn">TRUE</span>, <span class="at">method=</span><span class="st">"CSS"</span>) </span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>    fcast <span class="ot">&lt;-</span> <span class="fu">forecast</span>(fit, <span class="at">h=</span><span class="dv">12</span>)</span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>    <span class="co"># manual model</span></span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>    fit2 <span class="ot">&lt;-</span> <span class="fu">Arima</span>(xtrain, <span class="at">order=</span><span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">0</span>,<span class="dv">0</span>), <span class="at">seasonal=</span><span class="fu">list</span>(<span class="at">order=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">period=</span><span class="dv">12</span>),</span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>                  <span class="at">include.drift=</span><span class="cn">TRUE</span>, <span class="at">method=</span><span class="st">"CSS"</span>) </span>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>    fcast2 <span class="ot">&lt;-</span> <span class="fu">forecast</span>(fit2, <span class="at">h=</span><span class="dv">12</span>)</span>
 <span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>  </span>
 <span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a>  rmse1[i,<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(xtest)]  <span class="ot">&lt;-</span> <span class="fu">sqrt</span>((fcast<span class="sc">$</span>mean<span class="sc">-</span>xtest)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>  rmse2[i,<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(xtest)] <span class="ot">&lt;-</span> <span class="fu">sqrt</span>((fcast2<span class="sc">$</span>mean<span class="sc">-</span>xtest)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a>    rmse1[i,<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(xtest)]  <span class="ot">&lt;-</span> <span class="fu">sqrt</span>((fcast<span class="sc">$</span>mean<span class="sc">-</span>xtest)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>    rmse2[i,<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(xtest)] <span class="ot">&lt;-</span> <span class="fu">sqrt</span>((fcast2<span class="sc">$</span>mean<span class="sc">-</span>xtest)<span class="sc">^</span><span class="dv">2</span>)</span>
 <span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a>  <span class="do">## This is mean absolute error</span></span>
-<span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a>  err1 <span class="ot">=</span> <span class="fu">c</span>(err1, <span class="fu">abs</span>(fcast<span class="sc">$</span>mean<span class="sc">-</span>xtest)) </span>
-<span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a>  err2 <span class="ot">=</span> <span class="fu">c</span>(err2, <span class="fu">abs</span>(fcast2<span class="sc">$</span>mean<span class="sc">-</span>xtest))</span>
+<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a>    <span class="do">## This is mean absolute error</span></span>
+<span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a>    err1 <span class="ot">=</span> <span class="fu">c</span>(err1, <span class="fu">abs</span>(fcast<span class="sc">$</span>mean<span class="sc">-</span>xtest)) </span>
+<span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a>    err2 <span class="ot">=</span> <span class="fu">c</span>(err2, <span class="fu">abs</span>(fcast2<span class="sc">$</span>mean<span class="sc">-</span>xtest))</span>
 <span id="cb25-38"><a href="#cb25-38" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb25-39"><a href="#cb25-39" aria-hidden="true" tabindex="-1"></a>  <span class="co"># This is mean squared error</span></span>
-<span id="cb25-40"><a href="#cb25-40" aria-hidden="true" tabindex="-1"></a>  err3 <span class="ot">=</span> <span class="fu">c</span>(err1, (fcast<span class="sc">$</span>mean<span class="sc">-</span>xtest)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb25-41"><a href="#cb25-41" aria-hidden="true" tabindex="-1"></a>  err4 <span class="ot">=</span> <span class="fu">c</span>(err2, (fcast2<span class="sc">$</span>mean<span class="sc">-</span>xtest)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb25-39"><a href="#cb25-39" aria-hidden="true" tabindex="-1"></a>    <span class="co"># This is mean squared error</span></span>
+<span id="cb25-40"><a href="#cb25-40" aria-hidden="true" tabindex="-1"></a>    err3 <span class="ot">=</span> <span class="fu">c</span>(err1, (fcast<span class="sc">$</span>mean<span class="sc">-</span>xtest)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb25-41"><a href="#cb25-41" aria-hidden="true" tabindex="-1"></a>    err4 <span class="ot">=</span> <span class="fu">c</span>(err2, (fcast2<span class="sc">$</span>mean<span class="sc">-</span>xtest)<span class="sc">^</span><span class="dv">2</span>)</span>
 <span id="cb25-42"><a href="#cb25-42" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb25-43"><a href="#cb25-43" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb25-44"><a href="#cb25-44" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
-is not invertible
-
-Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
-is not invertible
-
-Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
-is not invertible
-
-Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
-is not invertible
-
-Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
-is not invertible
-
-Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
-is not invertible
-
-Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
-is not invertible
-
-Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
-is not invertible
-
-Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
-is not invertible
-
-Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
-is not invertible
-
-Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
-is not invertible
-
-Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
-is not invertible
-
-Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
-is not invertible
-
-Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
-is not invertible</code></pre>
-</div>
-<details class="code-fold">
-<summary>C-V</summary>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="fu">colMeans</span>(rmse1,<span class="at">na.rm=</span><span class="cn">TRUE</span>), <span class="at">type=</span><span class="st">"l"</span>, <span class="at">col=</span><span class="dv">2</span>, <span class="at">xlab=</span><span class="st">"horizon"</span>, <span class="at">ylab=</span><span class="st">"RMSE"</span>)</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="fu">colMeans</span>(rmse2,<span class="at">na.rm=</span><span class="cn">TRUE</span>), <span class="at">type=</span><span class="st">"l"</span>,<span class="at">col=</span><span class="dv">3</span>)</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">"Auto Arima model"</span>,<span class="st">"Manual Model"</span>),<span class="at">col=</span><span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>,<span class="at">lty=</span><span class="dv">1</span>)</span></code></pre></div>
+<span id="cb25-44"><a href="#cb25-44" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb25-45"><a href="#cb25-45" aria-hidden="true" tabindex="-1"></a>})</span>
+<span id="cb25-46"><a href="#cb25-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-47"><a href="#cb25-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="fu">colMeans</span>(rmse1,<span class="at">na.rm=</span><span class="cn">TRUE</span>), <span class="at">type=</span><span class="st">"l"</span>, <span class="at">col=</span><span class="dv">2</span>, <span class="at">xlab=</span><span class="st">"horizon"</span>, <span class="at">ylab=</span><span class="st">"RMSE"</span>)</span>
+<span id="cb25-48"><a href="#cb25-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lines</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="fu">colMeans</span>(rmse2,<span class="at">na.rm=</span><span class="cn">TRUE</span>), <span class="at">type=</span><span class="st">"l"</span>,<span class="at">col=</span><span class="dv">3</span>)</span>
+<span id="cb25-49"><a href="#cb25-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-50"><a href="#cb25-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">legend</span>(<span class="st">"topleft"</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">"Auto Arima model"</span>,<span class="st">"Manual Model"</span>),<span class="at">col=</span><span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>,<span class="at">lty=</span><span class="dv">1</span>)</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -1893,17 +1849,17 @@ is not invertible</code></pre>
 </div>
 <details class="code-fold">
 <summary>C-V</summary>
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>RMSE1 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>(err3, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>RMSE2 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>(err4, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">'The RMSE of Auto Arima is'</span>, RMSE1, <span class="st">'</span><span class="sc">\n</span><span class="st">'</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>  RMSE1 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>(err3, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  RMSE2 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>(err4, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">'The RMSE of Auto Arima is'</span>, RMSE1, <span class="st">'</span><span class="sc">\n</span><span class="st">'</span>)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The RMSE of Auto Arima is 0.2591981 </code></pre>
 </div>
 <details class="code-fold">
 <summary>C-V</summary>
-<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">'The RMSE of Manually Selection is'</span>, RMSE2, <span class="st">'</span><span class="sc">\n</span><span class="st">'</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cat</span>(<span class="st">'The RMSE of Manually Selection is'</span>, RMSE2, <span class="st">'</span><span class="sc">\n</span><span class="st">'</span>)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The RMSE of Manually Selection is 0.2340468 </code></pre>
@@ -1924,8 +1880,8 @@ is not invertible</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Model Fit</summary>
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>fit_ecng <span class="ot">&lt;-</span> <span class="fu">Arima</span>(elec_oil_ng[,<span class="st">"Electricity"</span>],<span class="at">order=</span><span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">0</span>,<span class="dv">0</span>),<span class="at">seasonal =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">xreg=</span>xreg)</span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_ecng)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>fit_ecng <span class="ot">&lt;-</span> <span class="fu">Arima</span>(elec_oil_ng[,<span class="st">"Electricity"</span>],<span class="at">order=</span><span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">0</span>,<span class="dv">0</span>),<span class="at">seasonal =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">xreg=</span>xreg)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_ecng)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Series: elec_oil_ng[, "Electricity"] 
@@ -1962,8 +1918,8 @@ Training set -0.002015252</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Forecasting</summary>
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">forecast</span>(fit_ecng, <span class="at">h =</span> <span class="dv">3</span>, <span class="at">xreg=</span>xreg) <span class="sc">%&gt;%</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>() <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"Year"</span>)<span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="fu">forecast</span>(fit_ecng, <span class="at">h =</span> <span class="dv">3</span>, <span class="at">xreg=</span>xreg) <span class="sc">%&gt;%</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>() <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"Year"</span>)<span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -1993,18 +1949,18 @@ Training set -0.002015252</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Variable</summary>
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Combining</span></span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>oil_cpi <span class="ot">&lt;-</span> <span class="fu">cbind</span>(crude_oil_window, cpi_window)</span>
-<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(oil_cpi) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"CrudeOil"</span>, <span class="st">"CPI"</span>)</span>
-<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Plotting the data</span></span>
-<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(oil_cpi) <span class="sc">+</span> </span>
-<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
-<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Crude Oil Prices and CPI Over Time"</span>,</span>
-<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Year"</span>,</span>
-<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Logged Prices"</span>,</span>
-<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Series"</span>) <span class="sc">+</span></span>
-<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Combining</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>oil_cpi <span class="ot">&lt;-</span> <span class="fu">cbind</span>(crude_oil_window, cpi_window)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(oil_cpi) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"CrudeOil"</span>, <span class="st">"CPI"</span>)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Plotting the data</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(oil_cpi) <span class="sc">+</span> </span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Crude Oil Prices and CPI Over Time"</span>,</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Year"</span>,</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Logged Prices"</span>,</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Series"</span>) <span class="sc">+</span></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -2027,9 +1983,9 @@ Training set -0.002015252</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>VAR Select</summary>
-<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co">#options(scipen = 999, digits = 3)</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">VARselect</span>(oil_cpi, <span class="at">lag.max=</span><span class="dv">10</span>, <span class="at">type=</span><span class="st">"both"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co">#options(scipen = 999, digits = 3)</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="fu">VARselect</span>(oil_cpi, <span class="at">lag.max=</span><span class="dv">10</span>, <span class="at">type=</span><span class="st">"both"</span>)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>$selection
@@ -2053,7 +2009,7 @@ FPE(n)  2.302192e-08  2.267860e-08  2.287510e-08  2.306590e-08  2.326273e-08</co
 <div class="cell">
 <details class="code-fold">
 <summary>VAR Select</summary>
-<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(vars<span class="sc">::</span><span class="fu">VAR</span>(oil_cpi, <span class="at">p=</span><span class="dv">2</span>, <span class="at">type=</span><span class="st">'both'</span>))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(vars<span class="sc">::</span><span class="fu">VAR</span>(oil_cpi, <span class="at">p=</span><span class="dv">2</span>, <span class="at">type=</span><span class="st">'both'</span>))</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -2124,7 +2080,7 @@ CPI        0.4999 1.0000</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>VAR Select</summary>
-<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(vars<span class="sc">::</span><span class="fu">VAR</span>(oil_cpi, <span class="at">p=</span><span class="dv">4</span>, <span class="at">type=</span><span class="st">'both'</span>))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(vars<span class="sc">::</span><span class="fu">VAR</span>(oil_cpi, <span class="at">p=</span><span class="dv">4</span>, <span class="at">type=</span><span class="st">'both'</span>))</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -2203,7 +2159,7 @@ CPI        0.4987 1.0000</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>VAR Select</summary>
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(vars<span class="sc">::</span><span class="fu">VAR</span>(oil_cpi, <span class="at">p=</span><span class="dv">7</span>, <span class="at">type=</span><span class="st">'both'</span>))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(vars<span class="sc">::</span><span class="fu">VAR</span>(oil_cpi, <span class="at">p=</span><span class="dv">7</span>, <span class="at">type=</span><span class="st">'both'</span>))</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
