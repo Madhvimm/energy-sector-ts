@@ -22,7 +22,7 @@ library(astsa)
 library(ggplot2)
 library(zoo)
 library(plotly)
-
+library(vars)
 ```
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -103,24 +103,18 @@ cpi_log_ts <- ts(cpi_data$LOG_CPI, start = c(start_year_cpi, start_month_cpi), f
 
 In our quest to uncover the relationships within the energy sector and its economic consequences, we will use a series of statistical models that serve as the foundation for our analysis. This will help us understand both direct impacts and more complex, interdependent relationships within the datasets.
 
-## 1. ARIMAX Models:
+## 1. SARIMAX Models:
 
-1. (ARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
-2. (ARIMAX) GDP ~ Crude Oil Prices + Natural Gas Prices
-3. (ARIMAX) CPI ~ Crude Oil Prices + Natural Gas Prices
-
-
-## 2. SARIMAX Models:
-
-1. (SARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices + Seasonality
-2. (SARIMAX) GDP ~ Crude Oil Prices + Natural Gas Prices + Seasonality
-3. (SARIMAX) CPI ~ Crude Oil Prices + Natural Gas Prices + Seasonality
+1. (SARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
+2. (SARIMAX) GDP ~ Crude Oil Prices + Natural Gas Prices
+3. (SARIMAX) CPI ~ Crude Oil Prices + Natural Gas Prices
 
 
-## 3. VAR Models:
 
-1. (VAR) Crude Oil Prices ~ Natural Gas Prices + GDP + CPI
-2. (VAR) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices + GDP + CPI
+## 2. VAR Models:
+
+1. (VAR) Crude Oil Prices ~ CPI
+2. (VAR) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
 
 
 
@@ -181,7 +175,7 @@ autoplot(elec_oil_ng) +
 
 
 
-## (ARIMAX) GDP ~ Crude Oil Prices + Natural Gas Prices
+## (SARIMAX) GDP ~ Crude Oil Prices + Natural Gas Prices
 
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
@@ -209,7 +203,7 @@ autoplot(gdp_oil_ng) +
 
 
 
-## (ARIMAX) CPI ~ Crude Oil Prices + Natural Gas Prices
+## (SARIMAX) CPI ~ Crude Oil Prices + Natural Gas Prices
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
@@ -552,7 +546,7 @@ Almost similar Manual model is better in terms of p-value in the Ljung-Box
 
 ::: panel-tabset
 
-## (ARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
+## (SARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
 
 Manual model -  ARIMA(4,0,0)(0,1,1)[12]
 Auto Arima   -  ARIMA(2,1,1)(0,0,2)[12]
@@ -636,7 +630,7 @@ Now we will fit the Manual model -  ARIMA(4,0,0)(0,1,1)[12]
 
 ::: panel-tabset
 
-## (ARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
+## (SARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
 
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
@@ -665,7 +659,7 @@ $$
 
 ::: panel-tabset
 
-## (ARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
+## (SARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
 
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
@@ -685,5 +679,143 @@ forecast(fit_ecng, h = 3, xreg=xreg) %>%
 
 
 :::
+
+
+
+
+
+# VAR MODEL
+
+1. (VAR) Crude Oil Prices ~ CPI
+2. (VAR) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
+  
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Variable'
+#| warning: false
+#| output: false
+
+#crude_oil_window <- window(oil_log_ts, start = decimal_date(start_date), end = decimal_date(end_date))
+#natural_gas_window <- window(gas_log_ts, start = decimal_date(start_date), end = decimal_date(end_date))
+#electricity_prices_window <- window(electricity_log_ts, start = decimal_date(start_date), end = decimal_date(end_date))
+#gdp_window <- window(gdp_log_ts, start = decimal_date(start_date), end = decimal_date(end_date))
+#cpi_window <- window(cpi_log_ts, start = decimal_date(start_date), end = decimal_date(end_date))
+
+
+
+#oil_cpi_dd<-data.frame(composite_crude_oil_prices,cpi_data)
+#oil_cpi_dd<-oil_cpi_dd[,c(1,2,4,6)]
+#colnames(dd)<-c("DATE","GDP","Employment","PIncome")
+
+#knitr::kable(head(dd))
+```
+
+
+
+
+## 1. Variable Selection
+
+::: panel-tabset
+
+## (VAR) Crude Oil Prices ~ CPI
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Variable'
+#| warning: false
+#| output: true
+
+#Combining
+oil_cpi <- cbind(crude_oil_window, cpi_window)
+colnames(oil_cpi) <- c("CrudeOil", "CPI")
+
+#Plotting the data
+autoplot(oil_cpi) + 
+  theme_bw() +
+  labs(title = "Crude Oil Prices and CPI Over Time",
+       x = "Year",
+       y = "Logged Prices",
+       color = "Series") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+
+
+
+```
+
+
+
+
+:::
+
+
+
+
+
+## 2. VARselect
+
+::: panel-tabset
+
+## (VAR) Crude Oil Prices ~ CPI
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'VAR Select'
+#| warning: false
+#| output: true
+#options(scipen = 999, digits = 3)
+
+VARselect(oil_cpi, lag.max=10, type="both")
+
+
+```
+
+
+So we have p = 2, 4 ,7. Now the model is tested for different lags (p=2, p=4, p=7)
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'VAR Select'
+#| warning: false
+#| output: true
+
+
+summary(vars::VAR(oil_cpi, p=2, type='both'))
+
+```
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'VAR Select'
+#| warning: false
+#| output: true
+
+
+summary(vars::VAR(oil_cpi, p=4, type='both'))
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'VAR Select'
+#| warning: false
+#| output: true
+
+
+summary(vars::VAR(oil_cpi, p=7, type='both'))
+
+```
+
+
+All the 3 models with different lags (p =2, 4, and 7) have significant coefficients. But lets go for VAR model with p = 4 
+
+:::
+
+
 
 

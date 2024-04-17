@@ -204,9 +204,8 @@ window.Quarto = {
   <ul>
   <li><a href="#define-the-models" id="toc-define-the-models" class="nav-link active" data-scroll-target="#define-the-models">Define the Models</a>
   <ul class="collapse">
-  <li><a href="#arimax-models" id="toc-arimax-models" class="nav-link" data-scroll-target="#arimax-models">1. ARIMAX Models:</a></li>
-  <li><a href="#sarimax-models" id="toc-sarimax-models" class="nav-link" data-scroll-target="#sarimax-models">2. SARIMAX Models:</a></li>
-  <li><a href="#var-models" id="toc-var-models" class="nav-link" data-scroll-target="#var-models">3. VAR Models:</a></li>
+  <li><a href="#sarimax-models" id="toc-sarimax-models" class="nav-link" data-scroll-target="#sarimax-models">1. SARIMAX Models:</a></li>
+  <li><a href="#var-models" id="toc-var-models" class="nav-link" data-scroll-target="#var-models">2. VAR Models:</a></li>
   </ul></li>
   <li><a href="#arimax-sarimax" id="toc-arimax-sarimax" class="nav-link" data-scroll-target="#arimax-sarimax">ARIMAX / SARIMAX</a>
   <ul class="collapse">
@@ -216,6 +215,11 @@ window.Quarto = {
   <li><a href="#cross-validation" id="toc-cross-validation" class="nav-link" data-scroll-target="#cross-validation">4. Cross-Validation</a></li>
   <li><a href="#model-fitting" id="toc-model-fitting" class="nav-link" data-scroll-target="#model-fitting">5. Model Fitting</a></li>
   <li><a href="#forecast" id="toc-forecast" class="nav-link" data-scroll-target="#forecast">6. Forecast</a></li>
+  </ul></li>
+  <li><a href="#var-model" id="toc-var-model" class="nav-link" data-scroll-target="#var-model">VAR MODEL</a>
+  <ul class="collapse">
+  <li><a href="#variable-selection-1" id="toc-variable-selection-1" class="nav-link" data-scroll-target="#variable-selection-1">1. Variable Selection</a></li>
+  <li><a href="#varselect" id="toc-varselect" class="nav-link" data-scroll-target="#varselect">2. VARselect</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -245,27 +249,19 @@ window.Quarto = {
 <section id="define-the-models" class="level1">
 <h1>Define the Models</h1>
 <p>In our quest to uncover the relationships within the energy sector and its economic consequences, we will use a series of statistical models that serve as the foundation for our analysis. This will help us understand both direct impacts and more complex, interdependent relationships within the datasets.</p>
-<section id="arimax-models" class="level2">
-<h2 class="anchored" data-anchor-id="arimax-models">1. ARIMAX Models:</h2>
-<ol type="1">
-<li>(ARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices</li>
-<li>(ARIMAX) GDP ~ Crude Oil Prices + Natural Gas Prices</li>
-<li>(ARIMAX) CPI ~ Crude Oil Prices + Natural Gas Prices</li>
-</ol>
-</section>
 <section id="sarimax-models" class="level2">
-<h2 class="anchored" data-anchor-id="sarimax-models">2. SARIMAX Models:</h2>
+<h2 class="anchored" data-anchor-id="sarimax-models">1. SARIMAX Models:</h2>
 <ol type="1">
-<li>(SARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices + Seasonality</li>
-<li>(SARIMAX) GDP ~ Crude Oil Prices + Natural Gas Prices + Seasonality</li>
-<li>(SARIMAX) CPI ~ Crude Oil Prices + Natural Gas Prices + Seasonality</li>
+<li>(SARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices</li>
+<li>(SARIMAX) GDP ~ Crude Oil Prices + Natural Gas Prices</li>
+<li>(SARIMAX) CPI ~ Crude Oil Prices + Natural Gas Prices</li>
 </ol>
 </section>
 <section id="var-models" class="level2">
-<h2 class="anchored" data-anchor-id="var-models">3. VAR Models:</h2>
+<h2 class="anchored" data-anchor-id="var-models">2. VAR Models:</h2>
 <ol type="1">
-<li>(VAR) Crude Oil Prices ~ Natural Gas Prices + GDP + CPI</li>
-<li>(VAR) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices + GDP + CPI</li>
+<li>(VAR) Crude Oil Prices ~ CPI</li>
+<li>(VAR) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices</li>
 </ol>
 </section>
 </section>
@@ -275,7 +271,7 @@ window.Quarto = {
 <section id="variable-selection" class="level2">
 <h2 class="anchored" data-anchor-id="variable-selection">1. Variable Selection</h2>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">(SARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">(ARIMAX) GDP ~ Crude Oil Prices + Natural Gas Prices</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false">(ARIMAX) CPI ~ Crude Oil Prices + Natural Gas Prices</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-1-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-1" role="tab" aria-controls="tabset-1-1" aria-selected="true">(SARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-2" role="tab" aria-controls="tabset-1-2" aria-selected="false">(SARIMAX) GDP ~ Crude Oil Prices + Natural Gas Prices</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-1-3-tab" data-bs-toggle="tab" data-bs-target="#tabset-1-3" role="tab" aria-controls="tabset-1-3" aria-selected="false">(SARIMAX) CPI ~ Crude Oil Prices + Natural Gas Prices</a></li></ul>
 <div class="tab-content">
 <div id="tabset-1-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-1-1-tab">
 <div class="cell">
@@ -1786,7 +1782,7 @@ AIC = -4.032879  AICc = -4.032323  BIC = -3.961964
 <section id="cross-validation" class="level2">
 <h2 class="anchored" data-anchor-id="cross-validation">4. Cross-Validation</h2>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">(ARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">(SARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices</a></li></ul>
 <div class="tab-content">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
 <p>Manual model - ARIMA(4,0,0)(0,1,1)[12] Auto Arima - ARIMA(2,1,1)(0,0,2)[12]</p>
@@ -1922,7 +1918,7 @@ is not invertible</code></pre>
 <h2 class="anchored" data-anchor-id="model-fitting">5. Model Fitting</h2>
 <p>Now we will fit the Manual model - ARIMA(4,0,0)(0,1,1)[12]</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">(ARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">(SARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices</a></li></ul>
 <div class="tab-content">
 <div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
 <div class="cell">
@@ -1960,7 +1956,7 @@ Training set -0.002015252</code></pre>
 <section id="forecast" class="level2">
 <h2 class="anchored" data-anchor-id="forecast">6. Forecast</h2>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">(ARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">(SARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices</a></li></ul>
 <div class="tab-content">
 <div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
 <div class="cell">
@@ -1977,6 +1973,325 @@ Training set -0.002015252</code></pre>
 </div>
 </div>
 </div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="var-model" class="level1">
+<h1>VAR MODEL</h1>
+<ol type="1">
+<li>(VAR) Crude Oil Prices ~ CPI</li>
+<li>(VAR) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices</li>
+</ol>
+<section id="variable-selection-1" class="level2">
+<h2 class="anchored" data-anchor-id="variable-selection-1">1. Variable Selection</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">(VAR) Crude Oil Prices ~ CPI</a></li></ul>
+<div class="tab-content">
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Variable</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Combining</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>oil_cpi <span class="ot">&lt;-</span> <span class="fu">cbind</span>(crude_oil_window, cpi_window)</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(oil_cpi) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"CrudeOil"</span>, <span class="st">"CPI"</span>)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a><span class="co">#Plotting the data</span></span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(oil_cpi) <span class="sc">+</span> </span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Crude Oil Prices and CPI Over Time"</span>,</span>
+<span id="cb35-9"><a href="#cb35-9" aria-hidden="true" tabindex="-1"></a>       <span class="at">x =</span> <span class="st">"Year"</span>,</span>
+<span id="cb35-10"><a href="#cb35-10" aria-hidden="true" tabindex="-1"></a>       <span class="at">y =</span> <span class="st">"Logged Prices"</span>,</span>
+<span id="cb35-11"><a href="#cb35-11" aria-hidden="true" tabindex="-1"></a>       <span class="at">color =</span> <span class="st">"Series"</span>) <span class="sc">+</span></span>
+<span id="cb35-12"><a href="#cb35-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="multivariate-ts-models_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="varselect" class="level2">
+<h2 class="anchored" data-anchor-id="varselect">2. VARselect</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">(VAR) Crude Oil Prices ~ CPI</a></li></ul>
+<div class="tab-content">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>VAR Select</summary>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co">#options(scipen = 999, digits = 3)</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a><span class="fu">VARselect</span>(oil_cpi, <span class="at">lag.max=</span><span class="dv">10</span>, <span class="at">type=</span><span class="st">"both"</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>$selection
+AIC(n)  HQ(n)  SC(n) FPE(n) 
+     7      4      2      7 
+
+$criteria
+                   1             2             3             4             5
+AIC(n) -1.705627e+01 -1.753223e+01 -1.754567e+01 -1.756580e+01 -1.757418e+01
+HQ(n)  -1.702428e+01 -1.748424e+01 -1.748168e+01 -1.748582e+01 -1.747820e+01
+SC(n)  -1.697553e+01 -1.741112e+01 -1.738419e+01 -1.736395e+01 -1.733197e+01
+FPE(n)  3.913413e-08  2.431376e-08  2.398939e-08  2.351145e-08  2.331560e-08
+                   6             7             8             9            10
+AIC(n) -1.758688e+01 -1.760193e+01 -1.759334e+01 -1.758509e+01 -1.757665e+01
+HQ(n)  -1.747491e+01 -1.747396e+01 -1.744938e+01 -1.742512e+01 -1.740069e+01
+SC(n)  -1.730430e+01 -1.727898e+01 -1.723002e+01 -1.718139e+01 -1.713259e+01
+FPE(n)  2.302192e-08  2.267860e-08  2.287510e-08  2.306590e-08  2.326273e-08</code></pre>
+</div>
+</div>
+<p>So we have p = 2, 4 ,7. Now the model is tested for different lags (p=2, p=4, p=7)</p>
+<div class="cell">
+<details class="code-fold">
+<summary>VAR Select</summary>
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(vars<span class="sc">::</span><span class="fu">VAR</span>(oil_cpi, <span class="at">p=</span><span class="dv">2</span>, <span class="at">type=</span><span class="st">'both'</span>))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+VAR Estimation Results:
+========================= 
+Endogenous variables: CrudeOil, CPI 
+Deterministic variables: both 
+Sample size: 402 
+Log Likelihood: 2384.906 
+Roots of the characteristic polynomial:
+0.9879 0.9328 0.4599 0.4599
+Call:
+vars::VAR(y = oil_cpi, p = 2, type = "both")
+
+
+Estimation results for equation CrudeOil: 
+========================================= 
+CrudeOil = CrudeOil.l1 + CPI.l1 + CrudeOil.l2 + CPI.l2 + const + trend 
+
+              Estimate Std. Error t value Pr(&gt;|t|)    
+CrudeOil.l1  1.5116852  0.0537668  28.116   &lt;2e-16 ***
+CPI.l1      -3.8454842  1.7684569  -2.174   0.0303 *  
+CrudeOil.l2 -0.5492210  0.0532802 -10.308   &lt;2e-16 ***
+CPI.l2       4.0001075  1.7563344   2.278   0.0233 *  
+const       -0.6442305  1.0172718  -0.633   0.5269    
+trend       -0.0001238  0.0003769  -0.328   0.7427    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+
+Residual standard error: 0.07882 on 396 degrees of freedom
+Multiple R-Squared: 0.9865, Adjusted R-squared: 0.9864 
+F-statistic:  5802 on 5 and 396 DF,  p-value: &lt; 2.2e-16 
+
+
+Estimation results for equation CPI: 
+==================================== 
+CPI = CrudeOil.l1 + CPI.l1 + CrudeOil.l2 + CPI.l2 + const + trend 
+
+              Estimate Std. Error t value Pr(&gt;|t|)    
+CrudeOil.l1  1.019e-02  1.575e-03   6.469 2.91e-10 ***
+CPI.l1       1.273e+00  5.179e-02  24.571  &lt; 2e-16 ***
+CrudeOil.l2 -1.034e-02  1.560e-03  -6.626 1.13e-10 ***
+CPI.l2      -2.795e-01  5.144e-02  -5.434 9.66e-08 ***
+const        3.587e-02  2.979e-02   1.204    0.229    
+trend        1.395e-05  1.104e-05   1.264    0.207    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+
+Residual standard error: 0.002309 on 396 degrees of freedom
+Multiple R-Squared: 0.9999, Adjusted R-squared: 0.9999 
+F-statistic: 7.525e+05 on 5 and 396 DF,  p-value: &lt; 2.2e-16 
+
+
+
+Covariance matrix of residuals:
+          CrudeOil       CPI
+CrudeOil 6.213e-03 9.096e-05
+CPI      9.096e-05 5.329e-06
+
+Correlation matrix of residuals:
+         CrudeOil    CPI
+CrudeOil   1.0000 0.4999
+CPI        0.4999 1.0000</code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>VAR Select</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(vars<span class="sc">::</span><span class="fu">VAR</span>(oil_cpi, <span class="at">p=</span><span class="dv">4</span>, <span class="at">type=</span><span class="st">'both'</span>))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+VAR Estimation Results:
+========================= 
+Endogenous variables: CrudeOil, CPI 
+Deterministic variables: both 
+Sample size: 400 
+Log Likelihood: 2388.441 
+Roots of the characteristic polynomial:
+0.9888 0.9598 0.5828 0.5828 0.5641 0.4774 0.4774 0.2265
+Call:
+vars::VAR(y = oil_cpi, p = 4, type = "both")
+
+
+Estimation results for equation CrudeOil: 
+========================================= 
+CrudeOil = CrudeOil.l1 + CPI.l1 + CrudeOil.l2 + CPI.l2 + CrudeOil.l3 + CPI.l3 + CrudeOil.l4 + CPI.l4 + const + trend 
+
+              Estimate Std. Error t value Pr(&gt;|t|)    
+CrudeOil.l1  1.561e+00  5.790e-02  26.959  &lt; 2e-16 ***
+CPI.l1      -2.091e+00  1.972e+00  -1.060    0.290    
+CrudeOil.l2 -7.625e-01  1.005e-01  -7.589 2.39e-13 ***
+CPI.l2       3.067e+00  3.332e+00   0.921    0.358    
+CrudeOil.l3  1.074e-01  1.035e-01   1.037    0.300    
+CPI.l3       6.522e-02  3.257e+00   0.020    0.984    
+CrudeOil.l4  6.695e-02  6.042e-02   1.108    0.268    
+CPI.l4      -1.009e+00  1.873e+00  -0.539    0.590    
+const       -8.075e-02  1.039e+00  -0.078    0.938    
+trend        5.924e-05  3.832e-04   0.155    0.877    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+
+Residual standard error: 0.07791 on 390 degrees of freedom
+Multiple R-Squared: 0.987,  Adjusted R-squared: 0.9867 
+F-statistic:  3279 on 9 and 390 DF,  p-value: &lt; 2.2e-16 
+
+
+Estimation results for equation CPI: 
+==================================== 
+CPI = CrudeOil.l1 + CPI.l1 + CrudeOil.l2 + CPI.l2 + CrudeOil.l3 + CPI.l3 + CrudeOil.l4 + CPI.l4 + const + trend 
+
+              Estimate Std. Error t value Pr(&gt;|t|)    
+CrudeOil.l1  1.156e-02  1.686e-03   6.857 2.76e-11 ***
+CPI.l1       1.349e+00  5.744e-02  23.489  &lt; 2e-16 ***
+CrudeOil.l2 -1.603e-02  2.926e-03  -5.479 7.71e-08 ***
+CPI.l2      -4.752e-01  9.704e-02  -4.897 1.43e-06 ***
+CrudeOil.l3  6.197e-03  3.014e-03   2.056   0.0405 *  
+CPI.l3       2.311e-01  9.485e-02   2.437   0.0153 *  
+CrudeOil.l4 -1.874e-03  1.759e-03  -1.065   0.2875    
+CPI.l4      -1.119e-01  5.455e-02  -2.052   0.0409 *  
+const        3.502e-02  3.025e-02   1.158   0.2477    
+trend        1.373e-05  1.116e-05   1.230   0.2193    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+
+Residual standard error: 0.002269 on 390 degrees of freedom
+Multiple R-Squared: 0.9999, Adjusted R-squared: 0.9999 
+F-statistic: 4.247e+05 on 9 and 390 DF,  p-value: &lt; 2.2e-16 
+
+
+
+Covariance matrix of residuals:
+          CrudeOil       CPI
+CrudeOil 6.070e-03 8.815e-05
+CPI      8.815e-05 5.148e-06
+
+Correlation matrix of residuals:
+         CrudeOil    CPI
+CrudeOil   1.0000 0.4987
+CPI        0.4987 1.0000</code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>VAR Select</summary>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(vars<span class="sc">::</span><span class="fu">VAR</span>(oil_cpi, <span class="at">p=</span><span class="dv">7</span>, <span class="at">type=</span><span class="st">'both'</span>))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+VAR Estimation Results:
+========================= 
+Endogenous variables: CrudeOil, CPI 
+Deterministic variables: both 
+Sample size: 397 
+Log Likelihood: 2390.501 
+Roots of the characteristic polynomial:
+0.9794 0.9794 0.7888 0.7765 0.7765 0.6888 0.6888 0.6643 0.6251 0.6251 0.4737 0.4737 0.4475 0.2353
+Call:
+vars::VAR(y = oil_cpi, p = 7, type = "both")
+
+
+Estimation results for equation CrudeOil: 
+========================================= 
+CrudeOil = CrudeOil.l1 + CPI.l1 + CrudeOil.l2 + CPI.l2 + CrudeOil.l3 + CPI.l3 + CrudeOil.l4 + CPI.l4 + CrudeOil.l5 + CPI.l5 + CrudeOil.l6 + CPI.l6 + CrudeOil.l7 + CPI.l7 + const + trend 
+
+              Estimate Std. Error t value Pr(&gt;|t|)    
+CrudeOil.l1  1.547e+00  5.960e-02  25.948  &lt; 2e-16 ***
+CPI.l1      -1.130e+00  2.059e+00  -0.549   0.5833    
+CrudeOil.l2 -7.675e-01  1.010e-01  -7.600 2.33e-13 ***
+CPI.l2       2.415e+00  3.454e+00   0.699   0.4848    
+CrudeOil.l3  1.528e-01  1.081e-01   1.413   0.1584    
+CPI.l3      -1.987e-01  3.587e+00  -0.055   0.9559    
+CrudeOil.l4 -5.249e-02  1.090e-01  -0.482   0.6304    
+CPI.l4       1.257e+00  3.576e+00   0.351   0.7254    
+CrudeOil.l5  1.660e-01  1.103e-01   1.505   0.1331    
+CPI.l5      -7.358e+00  3.518e+00  -2.092   0.0371 *  
+CrudeOil.l6 -5.420e-02  1.060e-01  -0.511   0.6093    
+CPI.l6       4.290e+00  3.319e+00   1.292   0.1970    
+CrudeOil.l7 -1.643e-02  6.143e-02  -0.267   0.7892    
+CPI.l7       7.937e-01  1.933e+00   0.411   0.6816    
+const       -2.596e-01  1.087e+00  -0.239   0.8113    
+trend       -1.931e-05  3.989e-04  -0.048   0.9614    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+
+Residual standard error: 0.07766 on 381 degrees of freedom
+Multiple R-Squared: 0.9872, Adjusted R-squared: 0.9867 
+F-statistic:  1952 on 15 and 381 DF,  p-value: &lt; 2.2e-16 
+
+
+Estimation results for equation CPI: 
+==================================== 
+CPI = CrudeOil.l1 + CPI.l1 + CrudeOil.l2 + CPI.l2 + CrudeOil.l3 + CPI.l3 + CrudeOil.l4 + CPI.l4 + CrudeOil.l5 + CPI.l5 + CrudeOil.l6 + CPI.l6 + CrudeOil.l7 + CPI.l7 + const + trend 
+
+              Estimate Std. Error t value Pr(&gt;|t|)    
+CrudeOil.l1  1.240e-02  1.714e-03   7.233 2.61e-12 ***
+CPI.l1       1.322e+00  5.921e-02  22.326  &lt; 2e-16 ***
+CrudeOil.l2 -1.688e-02  2.905e-03  -5.812 1.31e-08 ***
+CPI.l2      -4.614e-01  9.934e-02  -4.645 4.69e-06 ***
+CrudeOil.l3  8.685e-03  3.110e-03   2.793  0.00549 ** 
+CPI.l3       1.750e-01  1.032e-01   1.696  0.09068 .  
+CrudeOil.l4 -8.201e-03  3.135e-03  -2.616  0.00924 ** 
+CPI.l4       1.347e-01  1.028e-01   1.310  0.19114    
+CrudeOil.l5  4.987e-03  3.172e-03   1.572  0.11673    
+CPI.l5      -2.454e-01  1.012e-01  -2.425  0.01576 *  
+CrudeOil.l6 -2.759e-03  3.048e-03  -0.905  0.36586    
+CPI.l6       2.223e-01  9.546e-02   2.329  0.02037 *  
+CrudeOil.l7  1.505e-03  1.767e-03   0.852  0.39486    
+CPI.l7      -1.535e-01  5.560e-02  -2.761  0.00604 ** 
+const        3.268e-02  3.126e-02   1.046  0.29643    
+trend        1.367e-05  1.147e-05   1.191  0.23424    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+
+Residual standard error: 0.002234 on 381 degrees of freedom
+Multiple R-Squared: 0.9999, Adjusted R-squared: 0.9999 
+F-statistic: 2.556e+05 on 15 and 381 DF,  p-value: &lt; 2.2e-16 
+
+
+
+Covariance matrix of residuals:
+          CrudeOil       CPI
+CrudeOil 6.032e-03 9.045e-05
+CPI      9.045e-05 4.989e-06
+
+Correlation matrix of residuals:
+         CrudeOil    CPI
+CrudeOil   1.0000 0.5214
+CPI        0.5214 1.0000</code></pre>
+</div>
+</div>
+<p>All the 3 models with different lags (p =2, 4, and 7) have significant coefficients. But lets go for VAR model with p = 4</p>
 </div>
 </div>
 </div>
