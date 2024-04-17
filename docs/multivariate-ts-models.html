@@ -101,6 +101,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -1736,6 +1765,19 @@ AIC = -4.032879  AICc = -4.032323  BIC = -3.961964
  </code></pre>
 </div>
 </div>
+<ul>
+<li><p>The Standardized Residuals plot doesn’t show any apparent trends or seasonality, indicating that the model residuals are randomly distributed around zero</p></li>
+<li><p>The ACF of Residuals plot exhibits all bars within the confidence bounds, suggesting that there’s no autocorrelation</p></li>
+<li><p>The Normal Q-Q Plot of Std Residuals displays points that mostly align suggesting that the residuals are approximately normally distributed.</p></li>
+<li><p>The p-values for the Ljung-Box statistic are mostly above the significance threshold of 0.05, implying that there’s no significant autocorrelation.</p></li>
+<li><p>The significant positive value of ar1 and ar2 are both significant while ar3 and ar4 are not significant (p-values are greater than 0.05), which suggests they might not be useful in the model. The seasonal MA term is significant with a coefficient of -0.9275, indicating a strong seasonal effect.</p></li>
+</ul>
+<p>When comparing the models</p>
+<ul>
+<li>Manual model - ARIMA(4,0,0)(0,1,1)[12]</li>
+<li>Auto Arima - ARIMA(2,1,1)(0,0,2)[12]</li>
+</ul>
+<p>Almost similar Manual model is better in terms of p-value in the Ljung-Box</p>
 </section>
 </div>
 </div>
@@ -1743,36 +1785,198 @@ AIC = -4.032879  AICc = -4.032323  BIC = -3.961964
 </section>
 <section id="cross-validation" class="level2">
 <h2 class="anchored" data-anchor-id="cross-validation">4. Cross-Validation</h2>
-<p>In this section, I will first use the auto.arima() method</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">(ARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices</a></li></ul>
 <div class="tab-content">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
+<p>Manual model - ARIMA(4,0,0)(0,1,1)[12] Auto Arima - ARIMA(2,1,1)(0,0,2)[12]</p>
+<div class="cell">
+<details class="code-fold">
+<summary>C-V</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>n<span class="ot">=</span><span class="fu">length</span>(residuals_m_ecn) <span class="co"># 404</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>k<span class="ot">=</span><span class="dv">72</span> </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a> <span class="co">#n-k=332; 332/12=27;</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>rmse1 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>, <span class="dv">27</span>,<span class="dv">12</span>) </span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>rmse2 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>,<span class="dv">27</span>,<span class="dv">12</span>)</span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>rmse3 <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="cn">NA</span>,<span class="dv">27</span>,<span class="dv">12</span>)</span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>err1 <span class="ot">=</span> <span class="fu">c</span>()</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>err2 <span class="ot">=</span> <span class="fu">c</span>()</span>
+<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>st <span class="ot">&lt;-</span> <span class="fu">tsp</span>(residuals_m_ecn)[<span class="dv">1</span>]<span class="sc">+</span>(k<span class="dv">-1</span>)<span class="sc">/</span><span class="dv">12</span> </span>
+<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">27</span>)</span>
+<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>  <span class="co">#xtrain &lt;- window(a10, start=st+(i-k+1)/12, end=st+i/12)</span></span>
+<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>  xtrain <span class="ot">&lt;-</span> <span class="fu">window</span>(residuals_m_ecn, <span class="at">end=</span>st <span class="sc">+</span> i<span class="dv">-1</span>)</span>
+<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a>  xtest <span class="ot">&lt;-</span> <span class="fu">window</span>(residuals_m_ecn, <span class="at">start=</span>st <span class="sc">+</span> (i<span class="dv">-1</span>) <span class="sc">+</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">12</span>, <span class="at">end=</span>st <span class="sc">+</span> i)</span>
+<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>  <span class="co"># auto arima</span></span>
+<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>  fit <span class="ot">&lt;-</span> <span class="fu">Arima</span>(xtrain, <span class="at">order=</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">seasonal=</span><span class="fu">list</span>(<span class="at">order=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">2</span>), <span class="at">period=</span><span class="dv">12</span>),</span>
+<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>                <span class="at">include.drift=</span><span class="cn">TRUE</span>, <span class="at">method=</span><span class="st">"CSS"</span>) </span>
+<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>  fcast <span class="ot">&lt;-</span> <span class="fu">forecast</span>(fit, <span class="at">h=</span><span class="dv">12</span>)</span>
+<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>  <span class="co"># manual model</span></span>
+<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>  fit2 <span class="ot">&lt;-</span> <span class="fu">Arima</span>(xtrain, <span class="at">order=</span><span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">0</span>,<span class="dv">0</span>), <span class="at">seasonal=</span><span class="fu">list</span>(<span class="at">order=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">period=</span><span class="dv">12</span>),</span>
+<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>                <span class="at">include.drift=</span><span class="cn">TRUE</span>, <span class="at">method=</span><span class="st">"CSS"</span>) </span>
+<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>  fcast2 <span class="ot">&lt;-</span> <span class="fu">forecast</span>(fit2, <span class="at">h=</span><span class="dv">12</span>)</span>
+<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a>  rmse1[i,<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(xtest)]  <span class="ot">&lt;-</span> <span class="fu">sqrt</span>((fcast<span class="sc">$</span>mean<span class="sc">-</span>xtest)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>  rmse2[i,<span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(xtest)] <span class="ot">&lt;-</span> <span class="fu">sqrt</span>((fcast2<span class="sc">$</span>mean<span class="sc">-</span>xtest)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a>  <span class="do">## This is mean absolute error</span></span>
+<span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a>  err1 <span class="ot">=</span> <span class="fu">c</span>(err1, <span class="fu">abs</span>(fcast<span class="sc">$</span>mean<span class="sc">-</span>xtest)) </span>
+<span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a>  err2 <span class="ot">=</span> <span class="fu">c</span>(err2, <span class="fu">abs</span>(fcast2<span class="sc">$</span>mean<span class="sc">-</span>xtest))</span>
+<span id="cb25-38"><a href="#cb25-38" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb25-39"><a href="#cb25-39" aria-hidden="true" tabindex="-1"></a>  <span class="co"># This is mean squared error</span></span>
+<span id="cb25-40"><a href="#cb25-40" aria-hidden="true" tabindex="-1"></a>  err3 <span class="ot">=</span> <span class="fu">c</span>(err1, (fcast<span class="sc">$</span>mean<span class="sc">-</span>xtest)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb25-41"><a href="#cb25-41" aria-hidden="true" tabindex="-1"></a>  err4 <span class="ot">=</span> <span class="fu">c</span>(err2, (fcast2<span class="sc">$</span>mean<span class="sc">-</span>xtest)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb25-42"><a href="#cb25-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-43"><a href="#cb25-43" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb25-44"><a href="#cb25-44" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
+is not invertible
 
+Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
+is not invertible
+
+Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
+is not invertible
+
+Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
+is not invertible
+
+Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
+is not invertible
+
+Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
+is not invertible
+
+Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
+is not invertible
+
+Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
+is not invertible
+
+Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
+is not invertible
+
+Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
+is not invertible
+
+Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
+is not invertible
+
+Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
+is not invertible
+
+Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
+is not invertible
+
+Warning in predict.Arima(object, n.ahead = h, newxreg = xreg): MA part of model
+is not invertible</code></pre>
+</div>
+<details class="code-fold">
+<summary>C-V</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="fu">colMeans</span>(rmse1,<span class="at">na.rm=</span><span class="cn">TRUE</span>), <span class="at">type=</span><span class="st">"l"</span>, <span class="at">col=</span><span class="dv">2</span>, <span class="at">xlab=</span><span class="st">"horizon"</span>, <span class="at">ylab=</span><span class="st">"RMSE"</span>)</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">lines</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">12</span>, <span class="fu">colMeans</span>(rmse2,<span class="at">na.rm=</span><span class="cn">TRUE</span>), <span class="at">type=</span><span class="st">"l"</span>,<span class="at">col=</span><span class="dv">3</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a><span class="fu">legend</span>(<span class="st">"topleft"</span>,<span class="at">legend=</span><span class="fu">c</span>(<span class="st">"Auto Arima model"</span>,<span class="st">"Manual Model"</span>),<span class="at">col=</span><span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>,<span class="at">lty=</span><span class="dv">1</span>)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="multivariate-ts-models_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<details class="code-fold">
+<summary>C-V</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>RMSE1 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>(err3, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>RMSE2 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>(err4, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">'The RMSE of Auto Arima is'</span>, RMSE1, <span class="st">'</span><span class="sc">\n</span><span class="st">'</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>The RMSE of Auto Arima is 0.2591981 </code></pre>
+</div>
+<details class="code-fold">
+<summary>C-V</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">'The RMSE of Manually Selection is'</span>, RMSE2, <span class="st">'</span><span class="sc">\n</span><span class="st">'</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>The RMSE of Manually Selection is 0.2340468 </code></pre>
+</div>
+</div>
+<p>The Manual model, ARIMA(4,0,0)(0,1,1)[12] has a lower RMSE (0.2340468) compared to the Auto Arima model (0.2591981) for all horizons. Therefore, manual is better.</p>
 </div>
 </div>
 </div>
 </section>
 <section id="model-fitting" class="level2">
 <h2 class="anchored" data-anchor-id="model-fitting">5. Model Fitting</h2>
-<p>In this section, I will first use the auto.arima() method</p>
+<p>Now we will fit the Manual model - ARIMA(4,0,0)(0,1,1)[12]</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">(ARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices</a></li></ul>
 <div class="tab-content">
 <div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Model Fit</summary>
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>fit_ecng <span class="ot">&lt;-</span> <span class="fu">Arima</span>(elec_oil_ng[,<span class="st">"Electricity"</span>],<span class="at">order=</span><span class="fu">c</span>(<span class="dv">4</span>,<span class="dv">0</span>,<span class="dv">0</span>),<span class="at">seasonal =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">xreg=</span>xreg)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_ecng)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: elec_oil_ng[, "Electricity"] 
+Regression with ARIMA(4,0,0)(0,1,1)[12] errors 
 
+Coefficients:
+         ar1     ar2     ar3      ar4     sma1  CrudeOil  NaturalGas
+      0.8859  0.0909  0.1035  -0.0862  -0.6998   -0.0057      0.0313
+s.e.  0.0507  0.0680  0.0722   0.0515   0.0435    0.0047      0.0041
+
+sigma^2 = 9.383e-05:  log likelihood = 1260.04
+AIC=-2504.09   AICc=-2503.71   BIC=-2472.32
+
+Training set error measures:
+                       ME        RMSE        MAE        MPE      MAPE      MASE
+Training set 0.0006091259 0.009456162 0.00738006 0.02727096 0.3428008 0.2657412
+                     ACF1
+Training set -0.002015252</code></pre>
+</div>
+</div>
+<p><span class="math display">\[
+0.0313 * {NaturalGas} - 0.0057 * {CrudeOil} - 0.6998 x_t + n_t + 0.8859 n_{t-1} + 0.0909 n_{t-2} + 0.1035 n_{t-3} - 0.0862 n_{t-4} + \epsilon_t
+\]</span></p>
 </div>
 </div>
 </div>
 </section>
 <section id="forecast" class="level2">
 <h2 class="anchored" data-anchor-id="forecast">6. Forecast</h2>
-<p>In this section, I will first use the auto.arima() method</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">(ARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices</a></li></ul>
 <div class="tab-content">
 <div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
-
+<div class="cell">
+<details class="code-fold">
+<summary>Forecasting</summary>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="fu">forecast</span>(fit_ecng, <span class="at">h =</span> <span class="dv">3</span>, <span class="at">xreg=</span>xreg) <span class="sc">%&gt;%</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">autoplot</span>() <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">"Year"</span>)<span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="multivariate-ts-models_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>

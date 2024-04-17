@@ -517,6 +517,30 @@ cat(model_output_m_ecn[37:52], model_output_m_ecn[length(model_output_m_ecn)], s
 ```
 
 
+- The Standardized Residuals plot doesn’t show any apparent trends or seasonality, indicating that the model residuals are randomly distributed around zero
+
+
+- The ACF of Residuals plot exhibits all bars within the confidence bounds, suggesting that there's no autocorrelation
+
+
+- The Normal Q-Q Plot of Std Residuals displays points that mostly align suggesting that the residuals are approximately normally distributed.
+
+
+- The p-values for the Ljung-Box statistic are mostly above the significance threshold of 0.05, implying that there's no significant autocorrelation.
+
+
+- The significant positive value of ar1 and ar2 are both significant while ar3 and ar4 are not significant (p-values are greater than 0.05), which suggests they might not be useful in the model. The seasonal MA term is significant with a coefficient of -0.9275, indicating a strong seasonal effect.
+
+
+When comparing the models 
+
+- Manual model -  ARIMA(4,0,0)(0,1,1)[12]
+- Auto Arima   -  ARIMA(2,1,1)(0,0,2)[12]
+
+
+Almost similar Manual model is better in terms of p-value in the Ljung-Box
+
+
 
 :::
 
@@ -524,33 +548,141 @@ cat(model_output_m_ecn[37:52], model_output_m_ecn[length(model_output_m_ecn)], s
 
 ## 4. Cross-Validation
 
-In this section, I will first use the auto.arima() method 
+
 
 ::: panel-tabset
 
 ## (ARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
+
+Manual model -  ARIMA(4,0,0)(0,1,1)[12]
+Auto Arima   -  ARIMA(2,1,1)(0,0,2)[12]
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'C-V'
+#| warning: false
+#| output: true
+
+n=length(residuals_m_ecn) # 404
+k=72 
+ 
+ #n-k=332; 332/12=27;
+ 
+rmse1 <- matrix(NA, 27,12) 
+rmse2 <- matrix(NA,27,12)
+rmse3 <- matrix(NA,27,12)
+err1 = c()
+err2 = c()
+
+st <- tsp(residuals_m_ecn)[1]+(k-1)/12 
+
+for(i in 1:27)
+{
+  #xtrain <- window(a10, start=st+(i-k+1)/12, end=st+i/12)
+  xtrain <- window(residuals_m_ecn, end=st + i-1)
+  xtest <- window(residuals_m_ecn, start=st + (i-1) + 1/12, end=st + i)
+  
+  
+  # auto arima
+  fit <- Arima(xtrain, order=c(2,1,1), seasonal=list(order=c(0,0,2), period=12),
+                include.drift=TRUE, method="CSS") 
+  fcast <- forecast(fit, h=12)
+  # manual model
+  fit2 <- Arima(xtrain, order=c(4,0,0), seasonal=list(order=c(0,1,1), period=12),
+                include.drift=TRUE, method="CSS") 
+  fcast2 <- forecast(fit2, h=12)
+  
+  
+
+  rmse1[i,1:length(xtest)]  <- sqrt((fcast$mean-xtest)^2)
+  rmse2[i,1:length(xtest)] <- sqrt((fcast2$mean-xtest)^2)
+  
+  ## This is mean absolute error
+  err1 = c(err1, abs(fcast$mean-xtest)) 
+  err2 = c(err2, abs(fcast2$mean-xtest))
+  
+  # This is mean squared error
+  err3 = c(err1, (fcast$mean-xtest)^2)
+  err4 = c(err2, (fcast2$mean-xtest)^2)
+
+  
+}
+
+plot(1:12, colMeans(rmse1,na.rm=TRUE), type="l", col=2, xlab="horizon", ylab="RMSE")
+lines(1:12, colMeans(rmse2,na.rm=TRUE), type="l",col=3)
+
+legend("topleft",legend=c("Auto Arima model","Manual Model"),col=2:3,lty=1)
+
+
+RMSE1 <- sqrt(mean(err3, na.rm = TRUE))
+RMSE2 <- sqrt(mean(err4, na.rm = TRUE))
+
+cat('The RMSE of Auto Arima is', RMSE1, '\n')
+cat('The RMSE of Manually Selection is', RMSE2, '\n')
+
+```
+
+
+The Manual model, ARIMA(4,0,0)(0,1,1)[12] has a lower RMSE (0.2340468) compared to the Auto Arima model (0.2591981) for all horizons. Therefore, manual is better.
+
 
 :::
 
 
 ## 5. Model Fitting
 
-In this section, I will first use the auto.arima() method 
+Now we will fit the Manual model -  ARIMA(4,0,0)(0,1,1)[12]
 
 ::: panel-tabset
 
 ## (ARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Model Fit'
+#| warning: false
+#| output: true
+
+
+fit_ecng <- Arima(elec_oil_ng[,"Electricity"],order=c(4,0,0),seasonal = c(0,1,1), xreg=xreg)
+summary(fit_ecng)
+```
+
+$$
+0.0313 * {NaturalGas} - 0.0057 * {CrudeOil} - 0.6998 x_t + n_t + 0.8859 n_{t-1} + 0.0909 n_{t-2} + 0.1035 n_{t-3} - 0.0862 n_{t-4} + \epsilon_t
+$$
+
+
 
 :::
 
 
 ## 6. Forecast
 
-In this section, I will first use the auto.arima() method 
+
 
 ::: panel-tabset
 
 ## (ARIMAX) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Forecasting'
+#| warning: false
+#| output: true
+
+
+forecast(fit_ecng, h = 3, xreg=xreg) %>%
+  autoplot() + xlab("Year")+ theme_bw()
+
+```
+
+
+
+
 
 :::
 
