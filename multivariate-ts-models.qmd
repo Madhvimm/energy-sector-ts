@@ -23,6 +23,8 @@ library(ggplot2)
 library(zoo)
 library(plotly)
 library(vars)
+library(dplyr)
+
 ```
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -139,6 +141,7 @@ We will use ARIMAX and SARIMAX models to investigate the intricate interdependen
 # Define the time window
 start_date <- as.Date("1990-01-01")
 end_date <- as.Date("2023-09-01")
+
 
 # Subset
 crude_oil_window <- window(oil_log_ts, start = decimal_date(start_date), end = decimal_date(end_date))
@@ -687,9 +690,17 @@ forecast(fit_ecng, h = 3, xreg=xreg) %>%
 
 # VAR MODEL
 
+Vector Autoregression (VAR) Model is a robust statistical tool, designed to capture the dynamic relationship between multiple interdependent time series variables. We would be analysing two Vector Autoregression (VAR) models, to uncover the intricate dynamics between key economic and energy variables.
+
+
 1. (VAR) Crude Oil Prices ~ CPI
+
+
 2. (VAR) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
   
+  
+  
+
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -697,25 +708,68 @@ forecast(fit_ecng, h = 3, xreg=xreg) %>%
 #| warning: false
 #| output: false
 
-#crude_oil_window <- window(oil_log_ts, start = decimal_date(start_date), end = decimal_date(end_date))
-#natural_gas_window <- window(gas_log_ts, start = decimal_date(start_date), end = decimal_date(end_date))
-#electricity_prices_window <- window(electricity_log_ts, start = decimal_date(start_date), end = decimal_date(end_date))
-#gdp_window <- window(gdp_log_ts, start = decimal_date(start_date), end = decimal_date(end_date))
-#cpi_window <- window(cpi_log_ts, start = decimal_date(start_date), end = decimal_date(end_date))
+library(dplyr)
+
+
+# Select and rename columns in composite_crude_oil_prices
+oil_prices <- composite_crude_oil_prices %>%
+  dplyr::select(Date, Oil_Price = Value)
+
+# Select and rename columns in cpi_data
+cpi <- cpi_data %>%
+  dplyr::select(Date = DATE, CPI = CPIAUCSL)
+
+# Merge datasets
+oil_cpi_df <- left_join(oil_prices, cpi, by = "Date")
+
+# View the first few rows to confirm
+head(oil_cpi_df)
+
+
+oil_cpi_df <- oil_cpi_df %>%
+  mutate(Log_Oil_Price = log(Oil_Price),
+         Log_CPI = log(CPI))
+
+head(oil_cpi_df)
+
+sum(is.na(oil_cpi_df))
+
+str(oil_cpi_df)
 
 
 
-#oil_cpi_dd<-data.frame(composite_crude_oil_prices,cpi_data)
-#oil_cpi_dd<-oil_cpi_dd[,c(1,2,4,6)]
-#colnames(dd)<-c("DATE","GDP","Employment","PIncome")
+```
 
-#knitr::kable(head(dd))
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Variable'
+#| warning: false
+#| output: false
+
+
+start_year <- as.numeric(format(min(oil_cpi_df$Date), "%Y"))
+start_month <- as.numeric(format(min(oil_cpi_df$Date), "%m"))
+
+oil_cpi_ts <- ts(oil_cpi_df$Log_Oil_Price, start=c(start_year, start_month), frequency=12)
+
+#str(oil_cpi_ts)
+
+
+oil_cpi_mts <- ts(data.frame(Log_Oil_Price = oil_cpi_df$Log_Oil_Price, 
+                             Log_CPI = oil_cpi_df$Log_CPI),
+                  start = c(start_year, start_month), 
+                  frequency = 12)
+
+str(oil_cpi_mts)
+
+
 ```
 
 
-
-
 ## 1. Variable Selection
+
+The selection of variables in VAR model is a critical process that informs the quality and reliability of our findings. For our analysis, we have chosen variables that have significant theoretical underpinnings to the energy and economic sectors.
+
 
 ::: panel-tabset
 
@@ -728,24 +782,22 @@ forecast(fit_ecng, h = 3, xreg=xreg) %>%
 #| warning: false
 #| output: true
 
-#Combining
-oil_cpi <- cbind(crude_oil_window, cpi_window)
-colnames(oil_cpi) <- c("CrudeOil", "CPI")
-
-#Plotting the data
-autoplot(oil_cpi) + 
+#Plotting the combined data
+ggplot(oil_cpi_df, aes(x = Date)) + 
+  geom_line(aes(y = Log_Oil_Price, colour = "Oil Price")) +
+  geom_line(aes(y = Log_CPI, colour = "CPI")) +
+  scale_colour_manual(values = c("Oil Price" = "blue", "CPI" = "red")) +
   theme_bw() +
   labs(title = "Crude Oil Prices and CPI Over Time",
-       x = "Year",
+       x = "Date",
        y = "Logged Prices",
        color = "Series") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 
-
-
 ```
 
+There is an upward trend in both series, although the crude oil prices show more volatility. The CPI appears to have a steadier upward trend. It’s important to remember that the visual correlation does not imply causation, and that's why VAR model's analysis will be used.
 
 
 
@@ -756,6 +808,9 @@ autoplot(oil_cpi) +
 
 
 ## 2. VARselect
+
+VARselect function provides several criteria to inform our choice: the Akaike Information Criterion (AIC), the Hannan-Quinn Information Criterion (HQ), Schwarz's Bayesian Information Criterion (SC), and the Final Prediction Error (FPE). Lets use it for our models
+
 
 ::: panel-tabset
 
@@ -769,7 +824,7 @@ autoplot(oil_cpi) +
 #| output: true
 #options(scipen = 999, digits = 3)
 
-VARselect(oil_cpi, lag.max=10, type="both")
+VARselect(oil_cpi_mts, lag.max=10, type="both")
 
 
 ```
@@ -785,7 +840,7 @@ So we have p = 2, 4 ,7. Now the model is tested for different lags (p=2, p=4, p=
 #| output: true
 
 
-summary(vars::VAR(oil_cpi, p=2, type='both'))
+summary(vars::VAR(oil_cpi_mts, p=2, type='both'))
 
 ```
 
@@ -796,7 +851,7 @@ summary(vars::VAR(oil_cpi, p=2, type='both'))
 #| output: true
 
 
-summary(vars::VAR(oil_cpi, p=4, type='both'))
+summary(vars::VAR(oil_cpi_mts, p=4, type='both'))
 
 ```
 
@@ -807,16 +862,140 @@ summary(vars::VAR(oil_cpi, p=4, type='both'))
 #| warning: false
 #| output: true
 
-
-summary(vars::VAR(oil_cpi, p=7, type='both'))
+summary(vars::VAR(oil_cpi_mts, p=7, type='both'))
 
 ```
 
 
-All the 3 models with different lags (p =2, 4, and 7) have significant coefficients. But lets go for VAR model with p = 4 
+In the analysis of the VAR models with different lags, the objective is to determine which model best captures the dynamics of the relationship between crude oil prices and the Consumer Price Index (CPI) without overfitting the data. 
+
+- The AIC and BIC continue to decrease as lags increase.
+- p = 2: Most coefficients are significant, indicating a good fit with fewer parameters.
+- p = 4: Starts to show non-significant coefficients, which could indicate overfitting.
+- p = 7: Many coefficients are not statistically significant
+
+While a higher number of lags may provide a more detailed understanding, it can also lead to overfitting and unnecessary complexity. Given that the model with **p = 2** offers a balance between capturing sufficient dynamics and maintaining parsimony, it seems to be the most suitable choice for this analysis.
+
+VAR model with p = 2 lags is selected.
 
 :::
 
 
 
+## 3. Cross-Validation
 
+::: panel-tabset
+
+## (VAR) Crude Oil Prices ~ CPI
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'C-V'
+#| warning: false
+#| output: false
+
+
+#n=length(temp_month_ts) 525; 525-45
+#n-k=480; 480/12=40;
+n=length(oil_cpi_mts)
+k=45 #19*4
+
+rmse1 <- matrix(NA, 40,12)
+rmse2 <- matrix(NA, 40,12)
+year<-c()
+
+# Convert data frame to time series object
+ts_obj <- ts(oil_cpi_df, star=decimal_date(as.Date("1990-01-01",format = "%Y-%m-%d")),frequency = 12)
+
+st <- tsp(ts_obj )[1]+(k-1)/12
+
+
+for (i in 1:3) {
+  xtrain <- window(ts_obj, end=st + i - 1)
+  xtest <- window(ts_obj, start=st + (i - 1) + 1/12, end=st + i)
+  
+  ######## first Model ############
+  fit <- VAR(ts_obj, p=2, type='both')
+  fcast <- predict(fit, n.ahead=12)
+  foil <- fcast$fcst$Oil_Price
+  fcpi <- fcast$fcst$CPI
+  
+  # Get the starting point of xtest
+  xtest_start <- tsp(xtest)[1]
+  xtest_end <- tsp(xtest)[2]
+  
+  # Create ff with the same starting point as xtest
+  ff <- ts(cbind(foil[, 1], fcpi[, 1]), start=c(xtest_start), end=c(xtest_end), frequency=12)
+  
+  # Subset xtest to include only Oil_Price and CPI columns
+  xtest_subset <- xtest[, c("Oil_Price", "CPI")]
+  
+  a = 12 * i - 11
+  b = 12 * i
+  rmse1[c(a:b), ] <- sqrt((ff - xtest_subset)^2)
+  
+  ######## Second Model ############
+  fit2 <- vars::VAR(ts_obj, p=4, type='both')
+  fcast2 <- predict(fit2, n.ahead=12)
+  foil <- fcast2$fcst$Oil_Price
+  fcpi <- fcast2$fcst$CPI
+  
+  # Create ff2 with the same starting point as xtest
+  ff2 <- ts(cbind(foil[, 1], fcpi[, 1]), start=c(xtest_start), end=c(xtest_end), frequency=12)
+  
+  # Subset xtest to include only Oil_Price and CPI columns
+  xtest_subset <- xtest[, c("Oil_Price", "CPI")]
+  a = 12 * i - 11
+  b = 12 * i
+  rmse2[c(a:b), ] <- sqrt((ff2 - xtest_subset)^2)
+}
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'C-V'
+#| warning: false
+#| output: false
+
+
+plot(1:12, colMeans(rmse1,na.rm=TRUE), type="l", col=2, xlab="Year", ylab="RMSE")
+lines(1:12, colMeans(rmse2,na.rm=TRUE), type="l",col=3)
+legend("topleft",legend=c("VAR 2","VAR 4"),col=2:4,lty=1)
+```
+
+
+
+
+
+:::
+
+
+
+## 4. Forecasting
+
+::: panel-tabset
+
+## (VAR) Crude Oil Prices ~ CPI
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Forecasting'
+#| warning: false
+#| output: false
+
+var2 <- VAR(oil_cpi_mts, p=2, type="const")
+
+forecast(var1) %>%
+  autoplot() + xlab("Week")+
+  theme_minimal()+
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+```
+
+
+
+
+
+:::
