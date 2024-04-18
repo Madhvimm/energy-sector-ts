@@ -893,7 +893,8 @@ VAR model with p = 2 lags is selected.
 #| code-fold: true
 #| code-summary: 'C-V'
 #| warning: false
-#| output: false
+#| output: true
+
 
 
 #n=length(temp_month_ts) 525; 525-45
@@ -957,7 +958,8 @@ for (i in 1:3) {
 #| code-fold: true
 #| code-summary: 'C-V'
 #| warning: false
-#| output: false
+#| output: true
+
 
 
 plot(1:12, colMeans(rmse1,na.rm=TRUE), type="l", col=2, xlab="Year", ylab="RMSE")
@@ -983,7 +985,8 @@ legend("topleft",legend=c("VAR 2","VAR 4"),col=2:4,lty=1)
 #| code-fold: true
 #| code-summary: 'Forecasting'
 #| warning: false
-#| output: false
+#| output: true
+
 
 var2 <- VAR(oil_cpi_mts, p=2, type="const")
 
