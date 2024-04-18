@@ -987,7 +987,7 @@ legend("topleft",legend=c("VAR 2","VAR 4"),col=2:4,lty=1)
 
 var2 <- VAR(oil_cpi_mts, p=2, type="const")
 
-forecast(var1) %>%
+forecast(var2) %>%
   autoplot() + xlab("Week")+
   theme_minimal()+
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
