@@ -699,8 +699,6 @@ Vector Autoregression (VAR) Model is a robust statistical tool, designed to capt
 2. (VAR) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
   
   
-  
-
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
@@ -766,6 +764,50 @@ str(oil_cpi_mts)
 ```
 
 
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Variable'
+#| warning: false
+#| output: false
+
+library(dplyr)
+
+
+# Select and rename columns in composite_crude_oil_prices
+oil_prices <- composite_crude_oil_prices %>%
+  dplyr::select(Date, Oil_Price = Value)
+
+# Select and rename columns in cpi_data
+cpi <- cpi_data %>%
+  dplyr::select(Date = DATE, CPI = CPIAUCSL)
+
+# Merge datasets
+oil_cpi_df <- left_join(oil_prices, cpi, by = "Date")
+
+# View the first few rows to confirm
+head(oil_cpi_df)
+
+
+oil_cpi_df <- oil_cpi_df %>%
+  mutate(Log_Oil_Price = log(Oil_Price),
+         Log_CPI = log(CPI))
+
+head(oil_cpi_df)
+
+sum(is.na(oil_cpi_df))
+
+str(oil_cpi_df)
+
+
+
+```
+
+
+
+
+
+
 ## 1. Variable Selection
 
 The selection of variables in VAR model is a critical process that informs the quality and reliability of our findings. For our analysis, we have chosen variables that have significant theoretical underpinnings to the energy and economic sectors.
@@ -798,6 +840,14 @@ ggplot(oil_cpi_df, aes(x = Date)) +
 ```
 
 There is an upward trend in both series, although the crude oil prices show more volatility. The CPI appears to have a steadier upward trend. It’s important to remember that the visual correlation does not imply causation, and that's why VAR model's analysis will be used.
+
+
+
+
+## (VAR) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices
+
+
+
 
 
 

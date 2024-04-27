@@ -1,0 +1,908 @@
+---
+title: "Financial Time Series Models (ARCH/GARCH)"
+output: distill::distill_article
+---
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: false
+library(ggplot2)
+library(readr)
+library(tidyverse)
+library(lubridate)
+library(forecast)
+library(tseries)
+library(plotly)
+library(gridExtra)
+library(zoo)
+library(astsa)
+library(ggplot2)
+library(zoo)
+library(plotly)
+library(vars)
+library(dplyr)
+library(quantmod)
+```
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Read data'
+#| warning: false
+#| output: false
+
+composite_crude_oil_prices <- read.csv("data/composite_crude_oil_prices.csv")
+citygate_gas_prices <- read.csv("data/citygate_gas_prices.csv")
+total_electricity_prices <- read.csv("data/total_electricity_prices.csv")
+gdp_data <- read.csv("data/gdp_data.csv")
+cpi_data <- read.csv("data/cpi_data.csv")
+
+```
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'convert to ts'
+#| warning: false
+#| output: false
+
+
+# For Crude Oil
+composite_crude_oil_prices$Date <- as.Date(composite_crude_oil_prices$Date)
+start_year <- as.numeric(format(min(composite_crude_oil_prices$Date), "%Y"))
+start_month <- as.numeric(format(min(composite_crude_oil_prices$Date), "%m"))
+composite_crude_oil_ts <- ts(composite_crude_oil_prices$Value, start=c(start_year, start_month), frequency=12)
+# Log-transform Value
+composite_crude_oil_prices$LOG_Value <- log(composite_crude_oil_prices$Value)
+oil_log_ts <- ts(composite_crude_oil_prices$LOG_Value, start=c(start_year, start_month), frequency=12)
+
+# For Natural Gas
+citygate_gas_prices$Date <- as.Date(citygate_gas_prices$Date)
+start_year_gas <- as.numeric(format(min(citygate_gas_prices$Date), "%Y"))
+start_month_gas <- as.numeric(format(min(citygate_gas_prices$Date), "%m"))
+citygate_gas_ts <- ts(citygate_gas_prices$Value, start=c(start_year_gas, start_month_gas), frequency=12)
+# Log-transform Value
+citygate_gas_prices$LOG_Value <- log(citygate_gas_prices$Value)
+gas_log_ts <- ts(citygate_gas_prices$LOG_Value, start=c(start_year_gas, start_month_gas), frequency=12)
+
+# For Electricity
+total_electricity_prices$Date <- as.Date(total_electricity_prices$Date, format = "%Y-%m-%d")
+start_year_elec <- as.numeric(format(min(total_electricity_prices$Date), "%Y"))
+start_month_elec <- as.numeric(format(min(total_electricity_prices$Date), "%m"))
+total_electricity_ts <- ts(total_electricity_prices$Value, start = c(start_year_elec, start_month_elec), frequency = 12)
+# Log-transform Value
+total_electricity_prices$LOG_Value <- log(total_electricity_prices$Value)
+electricity_log_ts <- ts(total_electricity_prices$LOG_Value, start=c(start_year_elec, start_month_elec), frequency=12)
+
+
+# For GDP (it's quarterly)
+gdp_data$DATE <- as.Date(gdp_data$DATE, format = "%Y-%m-%d")
+start_year_gdp <- as.numeric(format(min(gdp_data$DATE), "%Y"))
+start_quarter_gdp <- quarter(min(gdp_data$DATE))
+# Log-transform GDP
+gdp_data$LOG_GDP <- log(gdp_data$GDP)
+gdp_log_ts <- ts(gdp_data$LOG_GDP, start=c(start_year_gdp, start_quarter_gdp), frequency=4)
+
+
+# For CPI (it's monthly)
+cpi_data$DATE <- as.Date(cpi_data$DATE, format = "%Y-%m-%d")
+start_year_cpi <- as.numeric(format(min(cpi_data$DATE), "%Y"))
+start_month_cpi <- as.numeric(format(min(cpi_data$DATE), "%m"))
+# Log-transform CPI
+cpi_data$LOG_CPI <- log(cpi_data$CPIAUCSL)
+cpi_log_ts <- ts(cpi_data$LOG_CPI, start = c(start_year_cpi, start_month_cpi), frequency = 12)
+
+```
+
+
+
+
+# 1. Introduction
+
+
+In this section of our project, we will analyze financial time series data related to key players in the energy market, specifically Exxon Mobil Corporation (XOM) and Chevron Corporation (CVX). These companies, pivotal in the global energy landscape, not only reflect the economic pulses of the oil industry but also provide insights into how shifts in energy policies and market dynamics influence significant economic indicators.
+
+### Exxon Mobil Corporation and its Market Influence
+
+Exxon Mobil, a titan in the oil industry, has been at the forefront of energy production and innovation. The company's activities span across the extraction, refining, and distribution of energy products, positioning it as a critical barometer for assessing the economic health and trends within the energy sector. By examining the financial time series of Exxon Mobil's stock prices, we aim to capture the volatility and market sentiment that underpin the broader economic implications of shifts in oil prices and energy policies.
+
+### Chevron Corporation and its Economic Role
+
+Similarly, Chevron, as a major competitor and another influential player in the oil market, offers a complementary perspective to the economic analysis of the energy sector. Chevron’s extensive operations in energy production and its strategic responses to global energy demands make its financial performance a valuable indicator of the sector's economic stability and growth. The analysis of Chevron’s stock price volatility will help us understand how energy market fluctuations and transitions toward renewable resources impact major energy corporations.
+
+
+### Analytical Approach Using ARCH and GARCH Models
+
+To conduct the time series analysis of financial data from Exxon Mobil and Chevron, we will utilize ARCH (Autoregressive Conditional Heteroskedasticity) and GARCH (Generalized Autoregressive Conditional Heteroskedasticity) models. These models are particularly effective for financial market data as they adeptly handle the inherent volatility typical of stock return data. By examining the volatility patterns in the stock prices of XOM and CVX, we aim to glean insights into how market dynamics, driven by both traditional and renewable energy sources, are shaping the economic narratives of these leading corporations.
+
+In this detailed exploration, our objective is to uncover how historical and present economic conditions, policy shifts, and global energy crises influence the financial trajectories of key energy players. These insights will not only deepen our understanding of the energy sector's impact on global economics but also aid in formulating strategies for a sustainable energy future.
+
+
+
+# 2. Plot the Data
+
+To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data. 
+
+Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data
+
+
+::: panel-tabset
+
+## Exxon Mobil
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+# Retrieve stock price data for Exxon Mobil starting from 1990
+Exxon_stockprice <- getSymbols("XOM", auto.assign = FALSE, from = "1990-01-01", src = "yahoo")
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+# Plot the stock prices
+chartSeries(Exxon_stockprice, theme = chartTheme("white"),
+            bar.type = "hlc",  
+            up.col = "green",  
+            dn.col = "red") 
+
+
+```
+
+
+The chart shows the stock price movement for Exxon Mobil Corporation from January 1990 to April 2024. The data, represented through a high-low-close (HLC) bar chart, shows trajectory of prices over more than three decades. A general uptrend can be observed in the late '90s, followed by increased volatility and several peaks and dips that suggest fluctuating market conditions through the 2000s and 2010s. The trading volume, in the histogram below the main price chart, offers a narrative on market sentiment, with spikes in volume  associated with changes in the industry. 
+
+
+
+## Chevron Corporation
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+# Retrieve stock price data for Chevron Corporation starting from 1990
+Chevron_stockprice <- getSymbols("CVX", auto.assign = FALSE, from = "1990-01-01", src = "yahoo")
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+# Plot the stock prices
+chartSeries(Chevron_stockprice, theme = chartTheme("white"),
+            bar.type = "hlc",  
+            up.col = "green",  
+            dn.col = "red") 
+
+
+```
+
+
+The chart displays Chevron Corporation's stock prices from 1990 to April 2024, capturing significant ups and downs that reflect key changes in the energy industry and wider economic trends. The green and red bars indicates when prices went up or down each day. After a clear rise in prices until the late '90s, the stock experiences noticeable volatility, swinging up and down.
+
+The histogram below the chart, which tracks trading volume, aligns with notable shifts in stock prices, suggesting times when investors were particularly active. This visualization lays the groundwork for a detailed examination of price volatility using ARCH/GARCH models, offering a visual summary of the market forces that have influenced Chevron's stock over the years.
+
+
+:::
+
+
+
+
+
+# 3. Fitting the Model
+
+Now, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.
+
+
+::: panel-tabset
+
+
+## Exxon Mobil
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+# Convert to a time series object
+Exxon_ts <- ts(Exxon_stockprice$XOM.Adjusted, start=decimal_date(as.Date("1990-01-01")), frequency = 365.25)
+
+# Calculate log returns
+returns_xom <- log(Exxon_ts)%>% diff()
+knitr::kable(summary(returns_xom))
+
+```
+
+
+From the summary statistics, we can clearly see that the mean return is close to zero, but with significant deviation. This is characteristic of financial data, where over long periods, the mean return tends to be small. This behavior of returns—small and steady on average, with occasional bursts of high variation—is precisely what ARCH/GARCH models aim to capture and quantify.
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+# Plot the returns
+autoplot(returns_xom, color="dodgerblue3") + 
+  theme_minimal() +
+  ggtitle("Exxon Mobil Stock Price Returns") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+```
+
+
+The plot shows the daily returns on Exxon Mobil's stock from 1990 to 2024. The returns, calculated using logarithmic differences, fluctuate around zero, with spikes that indicate days of particularly high volatility. The distribution of returns is fairly symmetric, there is volatility clustering in the returns.
+
+
+
+
+## Chevron Corporation
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+# Convert to a time series object
+Chevron_ts <- ts(Chevron_stockprice$CVX.Adjusted, start=decimal_date(as.Date("1990-01-01")), frequency = 365.25)
+
+# Calculate log returns
+returns_cvx <- log(Chevron_ts)%>% diff()
+knitr::kable(summary(returns_cvx))
+
+```
+
+
+The summary statistics for Chevron's returns highlight a median value slightly above zero, suggesting that half of the observed returns were positive over the long term. However, the minimum and maximum values point to significant swings in the stock's performance.
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+# Plot the returns
+autoplot(returns_cvx, color="dodgerblue3") + 
+  theme_minimal() +
+  ggtitle("Chevron Stock Price Returns") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+
+```
+
+
+The plotted returns of Chevron's stock, similar to Exxon Mobil's, show clusters of volatility. These clusters where the spikes are denser indicate periods of heightened uncertainty or market activity. This pattern is a key feature that the forthcoming ARCH/GARCH analysis will aim to capture.
+
+
+
+:::
+
+
+
+# 4. ACF/PACF Plots
+
+To further investigate the nature of the stock price returns and prepare for ARCH/GARCH modeling, it's essential to look at the autocorrelations. 
+
+Autocorrelation Function (ACF) and Partial Autocorrelation Function (PACF) plots help us identify whether returns are influenced by their own past values (autocorrelation) and to what extent (partial autocorrelation). This step is key in determining the appropriate lag order for the ARCH/GARCH models.
+
+
+## 4.1 Returns
+
+::: panel-tabset
+
+
+## Exxon Mobil
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+#ACF Plot for Exxon Mobil Stock
+Exxon_acf <- ggAcf(returns_xom,40) + 
+  ggtitle("ACF Plot for Exxon Mobil Returns ") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+#PACF Plot for Exxon Mobil Stock
+Exxon_pacf <- ggPacf(returns_xom,40) + 
+  ggtitle("PACF Plot for Exxon Mobil Returns") + 
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+grid.arrange(Exxon_acf, Exxon_pacf, nrow = 2)
+```
+
+
+Upon examining the ACF and PACF plots we can see values quickly drop off and mostly lie within the significance bounds, the returns appear to be stationary. Possible q and p values would  be q = 0, 1, 2 and p = 0, 1, 2
+
+
+
+
+
+## Chevron Corporation
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+#ACF Plot for Chevron Stock
+Chevron_acf <- ggAcf(returns_cvx,40) + 
+  ggtitle("ACF Plot for Chevron Stock Returns ") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+#PACF Plot for Chevron Stock
+Chevron_pacf <- ggPacf(returns_cvx,40) + 
+  ggtitle("PACF Plot for Chevron Stock Returns") + 
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+grid.arrange(Chevron_acf, Chevron_pacf, nrow = 2)
+
+
+```
+
+
+Upon examining the ACF and PACF plots we can see values quickly drop off and mostly lie within the significance bounds, the returns appear to be stationary. Possible q and p values would be q = 0, 1 and p = 0, 1
+
+
+:::
+
+
+## 4.2 Absolute Returns
+
+::: panel-tabset
+
+
+## Exxon Mobil
+
+
+```{r}
+
+```
+
+
+## Chevron Corporation
+
+```{r}
+
+```
+
+
+
+::: 
+
+
+
+
+
+
+
+# 5. ARCH Test
+
+To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data. 
+
+Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data
+
+
+::: panel-tabset
+
+
+## Exxon Mobil
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+## Chevron Corporation
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+:::
+
+
+# 6. Fitting ARIMA model
+
+To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data. 
+
+Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data
+
+
+::: panel-tabset
+
+
+## Exxon Mobil
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+## Chevron Corporation
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+:::
+
+
+
+# 7. Analyising the Residuals
+
+To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data. 
+
+Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data
+
+
+::: panel-tabset
+
+
+## Exxon Mobil
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+## Chevron Corporation
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+:::
+
+
+
+# 8. Method 1: GARCH Model on ARIMA Residuals
+
+To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data. 
+
+Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data
+
+
+::: panel-tabset
+
+
+## Exxon Mobil
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+## Chevron Corporation
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+:::
+
+
+# 9. Method 2: GARCH Model
+
+To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data. 
+
+Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data
+
+
+::: panel-tabset
+
+
+## Exxon Mobil
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+## Chevron Corporation
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+:::
+
+
+
+# 10. Model Diagnostics
+
+To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data. 
+
+Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data
+
+
+::: panel-tabset
+
+
+## Exxon Mobil
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+## Chevron Corporation
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+:::
+
+
+
+# 11. Cross-Validation
+
+To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data. 
+
+Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data
+
+::: panel-tabset
+
+
+## Exxon Mobil
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+## Chevron Corporation
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+:::
+
+
+
+# 12. Final Model
+
+To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data. 
+
+Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data
+
+
+::: panel-tabset
+
+
+## Exxon Mobil
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+## Chevron Corporation
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+:::
+
+
+
+# 13. Final Model Selection & Forecasting
+
+To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data. 
+
+Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data
+
+
+::: panel-tabset
+
+
+## Exxon Mobil
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+## Chevron Corporation
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+:::
+
+
+
+# 14. Volatality Plot
+
+To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data. 
+
+Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data
+
+
+::: panel-tabset
+
+
+## Exxon Mobil
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+## Chevron Corporation
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+:::
+
+
+
+# 15. Model Equations
+
+To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data. 
+
+Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data
+
+
+::: panel-tabset
+
+
+## Exxon Mobil
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+## Chevron Corporation
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+
+
+
+
+```
+
+
+:::
+
+
+
+

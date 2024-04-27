@@ -175,7 +175,7 @@ window.Quarto = {
 <span class="menu-text">Multivariate TS Models (ARIMAX/SARIMAX/VAR)</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./financial-ts-models.qmd"> 
+    <a class="nav-link" href="./financial-ts-models.html"> 
 <span class="menu-text">Financial Time Series Models (ARCH/GARCH)</span></a>
   </li>  
   <li class="nav-item">
@@ -1947,7 +1947,7 @@ Training set -0.002015252</code></pre>
 <h2 class="anchored" data-anchor-id="variable-selection-1">1. Variable Selection</h2>
 <p>The selection of variables in VAR model is a critical process that informs the quality and reliability of our findings. For our analysis, we have chosen variables that have significant theoretical underpinnings to the energy and economic sectors.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">(VAR) Crude Oil Prices ~ CPI</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">(VAR) Crude Oil Prices ~ CPI</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">(VAR) Electricity Prices ~ Crude Oil Prices + Natural Gas Prices</a></li></ul>
 <div class="tab-content">
 <div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
 <div class="cell">
@@ -1968,12 +1968,15 @@ Training set -0.002015252</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="multivariate-ts-models_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="multivariate-ts-models_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <p>There is an upward trend in both series, although the crude oil prices show more volatility. The CPI appears to have a steadier upward trend. It’s important to remember that the visual correlation does not imply causation, and that’s why VAR model’s analysis will be used.</p>
+</div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+
 </div>
 </div>
 </div>
@@ -2275,7 +2278,7 @@ Log_CPI              0.5208  1.0000</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="multivariate-ts-models_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="multivariate-ts-models_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -2294,7 +2297,7 @@ Log_CPI              0.5208  1.0000</code></pre>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="multivariate-ts-models_files/figure-html/unnamed-chunk-28-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="multivariate-ts-models_files/figure-html/unnamed-chunk-29-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
