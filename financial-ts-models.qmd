@@ -838,7 +838,7 @@ plot6 <- ggPacf(chevron.res, 40) +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-grid.arrange(plot1, plot2,nrow=2)
+grid.arrange(plot5, plot6,nrow=2)
 ```
 
 The autocorrelations appear to be within the confidence bands for most lags, suggesting there is no significant autocorrelation remaining in the residuals. Similarly, the PACF shows that the partial autocorrelations are also within the confidence bounds for most of the lags
