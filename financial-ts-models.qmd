@@ -1022,9 +1022,7 @@ Thus for method 2 fitting GARCH(1,1) model directly to the returns of Exxon Mobi
 
 # 10. Model Diagnostics
 
-To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data. 
-
-Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data
+Now lets do Model Diagnostics for both the models selected in Method 1 and Method 2 above
 
 
 ::: panel-tabset
@@ -1033,7 +1031,64 @@ Graphical representations provide intuitive insights into the financial performa
 ## Exxon Mobil
 
 
-Method 1: ARIMA(1,0,1) + GARCH(1,1)
+### Method 1: ARIMA(1,0,1) + GARCH(1,1)
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+summary(fit_exxon)
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+garch_exxon <- garchFit(~garch(1,1), exxon.res,trace = F)
+summary(garch_exxon)
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+summary(garch(exxon.res, order = c(1,1),trace = F))
+
+```
+
+
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+checkresiduals(garch(exxon.res, order = c(1,1),trace = F))
+
+```
+
+The residuals do not show any obvious trends or seasonality, which suggests that the ARIMA model has captured the linear structure of the data. However, there are some visible outliers. Residuals are normally distributed, which supports one of the underlying assumptions of the ARIMA model.
+
+The Ljung-Box test on residuals with a p-value of 0.1078 suggests that there is no significant autocorrelation in the residuals. This implies that the model residuals are random.
+
+The coefficients of the GARCH(1,1) model are all statistically significant.
+
+
+### Method 2: GARCH(1,1)
 
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
@@ -1043,11 +1098,26 @@ Method 1: ARIMA(1,0,1) + GARCH(1,1)
 #| output: true
 
 
+garch_returns_exxon1 <- garch(returns_exxon, order = c(1,1), trace = F)
+summary(garch_returns_exxon1)
+```
 
 
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
 
+
+checkresiduals(garch_returns_exxon1)
 
 ```
+
+The estimated GARCH(1,1) model coefficients are statistically significant. 
+
+The p-value from the Ljung-Box test suggests that there's no significant autocorrelation in the residuals. 
+
 
 
 ## Chevron Corporation
@@ -1071,9 +1141,7 @@ Method 1: ARIMA(1,0,1) + GARCH(1,1)
 
 # 11. Cross-Validation
 
-To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data. 
-
-Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data
+Cross-validation is an essential technique in model validation, which helps to ensure that the results of our time series analysis generalize to independent data sets. Now lets do cross-validation
 
 ::: panel-tabset
 
@@ -1087,7 +1155,9 @@ Graphical representations provide intuitive insights into the financial performa
 #| warning: false
 #| output: true
 
-
+k <- 900
+n <- length(returns_exxon)
+n-k 
 
 
 
