@@ -348,15 +348,15 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">Min. :-0.1502715</td>
+<td style="text-align: left;">Min. :-0.1502710</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">1st Qu.:-0.0076625</td>
+<td style="text-align: left;">1st Qu.:-0.0076629</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">Median : 0.0001236</td>
+<td style="text-align: left;">Median : 0.0001234</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
@@ -416,15 +416,15 @@ window.Quarto = {
 <tbody>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">Min. :-0.2500622</td>
+<td style="text-align: left;">Min. :-0.2500621</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">1st Qu.:-0.0079805</td>
+<td style="text-align: left;">1st Qu.:-0.0079804</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">Median : 0.0004278</td>
+<td style="text-align: left;">Median : 0.0004269</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
@@ -594,6 +594,8 @@ window.Quarto = {
 </div>
 </div>
 </div>
+<p>The ACF plot for the absolute returns shows significant autocorrelation across all the lags, this indicates persistent volatility in the stock price returns. This is also indicative of the volatility clustering seen in financial time series.</p>
+<p>The PACF plot shows significant correlations at the early lags (from 1 to 11). After these initial lags, the correlations in the PACF plot decrease and generally stay within the confidence interval</p>
 </div>
 </div>
 </div>
@@ -661,6 +663,9 @@ window.Quarto = {
 </div>
 </div>
 </div>
+<p>The ACF plot here suggests that volatility shocks are persistent, with a high level of autocorrelation.</p>
+<p>The PACF plot for squared returns, while also showing some significant lags, doesn’t carry the same pattern of persistence as the ACF.</p>
+<p>This persistence of volatility as indicated by the squared returns ACF and PACF plots reinforces the need for a GARCH model in capturing the time-varying volatility in the stock returns</p>
 </div>
 </div>
 </div>
@@ -688,25 +693,27 @@ Chi-squared = 590.35, df = 1, p-value &lt; 2.2e-16</code></pre>
 </div>
 </div>
 <p>The result of the ARCH test indicates a Chi-squared statistic of 590.35 with 1 degree of freedom and a p-value less than 2.2e-16, which is extremely low. This leads us to reject the null hypothesis of no ARCH effects. There is very strong evidence of autoregressive conditional heteroskedasticity in the Exxon Mobil stock returns.</p>
-<p>Given these results, it is appropriate to proceed with fitting an ARCH/GARCH model to Exxon Mobil’s stock returns to better understand and predict the volatility patterns.</p>
 </div>
 <div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ArchTest</span>(returns_chevron, <span class="at">lags=</span><span class="dv">1</span>, <span class="at">demean=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Conduct the ARCH test</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">ArchTest</span>(returns_chevron, <span class="at">lags=</span><span class="dv">1</span>, <span class="at">demean=</span><span class="cn">TRUE</span>)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     ARCH LM-test; Null hypothesis: no ARCH effects
 
 data:  returns_chevron
-Chi-squared = 260.57, df = 1, p-value &lt; 2.2e-16</code></pre>
+Chi-squared = 260.56, df = 1, p-value &lt; 2.2e-16</code></pre>
+</div>
+</div>
+<p>The result of the ARCH test indicates a Chi-squared statistic of 260.57 with 1 degree of freedom and a p-value less than 2.2e-16, which is extremely low. This leads us to reject the null hypothesis of no ARCH effects. There is very strong evidence of autoregressive conditional heteroskedasticity.</p>
 </div>
 </div>
 </div>
-</div>
-</div>
+<p>Given these results, it is appropriate to proceed with fitting an ARCH/GARCH model to the stock returns to better understand and predict the volatility patterns.</p>
 </section>
 <section id="fitting-arima-model" class="level1">
 <h1>6. Fitting ARIMA model</h1>
@@ -759,23 +766,23 @@ Chi-squared = 260.57, df = 1, p-value &lt; 2.2e-16</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>   p d q       AIC       BIC      AICc
 1  0 0 0 -47296.18 -47282.05 -47296.18
-2  0 1 0 -40683.01 -40675.95 -40683.01
-3  0 0 1 -47347.75 -47326.56 -47347.75
-4  0 1 1 -47280.64 -47266.51 -47280.64
+2  0 1 0 -40683.02 -40675.95 -40683.02
+3  0 0 1 -47347.76 -47326.56 -47347.75
+4  0 1 1 -47280.64 -47266.52 -47280.64
 5  0 0 2 -47370.17 -47341.91 -47370.16
-6  0 1 2 -47332.04 -47310.84 -47332.04
-7  1 0 0 -47341.95 -47320.75 -47341.95
+6  0 1 2 -47332.04 -47310.85 -47332.04
+7  1 0 0 -47341.95 -47320.76 -47341.95
 8  1 1 0 -43299.59 -43285.46 -43299.59
-9  1 0 1 -47373.03 -47344.77 -47373.03
-10 1 1 1 -47326.26 -47305.07 -47326.26
-11 1 0 2 -47371.46 -47336.13 -47371.45
+9  1 0 1 -47373.03 -47344.78 -47373.03
+10 1 1 1 -47326.27 -47305.07 -47326.26
+11 1 0 2 -47371.46 -47336.14 -47371.45
 12 1 1 2 -47356.93 -47328.67 -47356.92
-13 2 0 0 -47366.91 -47338.65 -47366.90
+13 2 0 0 -47366.91 -47338.65 -47366.91
 14 2 1 0 -44522.54 -44501.35 -44522.54
-15 2 0 1 -47371.37 -47336.05 -47371.36
+15 2 0 1 -47371.37 -47336.05 -47371.37
 16 2 1 1 -47351.11 -47322.85 -47351.11
 17 2 0 2 -47370.15 -47327.76 -47370.14
-18 2 1 2 -47355.50 -47320.17 -47355.49</code></pre>
+18 2 1 2 -47355.49 -47320.17 -47355.49</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
@@ -783,7 +790,7 @@ Chi-squared = 260.57, df = 1, p-value &lt; 2.2e-16</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>  p d q       AIC       BIC      AICc
-9 1 0 1 -47373.03 -47344.77 -47373.03</code></pre>
+9 1 0 1 -47373.03 -47344.78 -47373.03</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
@@ -791,7 +798,7 @@ Chi-squared = 260.57, df = 1, p-value &lt; 2.2e-16</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>  p d q       AIC       BIC      AICc
-9 1 0 1 -47373.03 -47344.77 -47373.03</code></pre>
+9 1 0 1 -47373.03 -47344.78 -47373.03</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
@@ -799,7 +806,7 @@ Chi-squared = 260.57, df = 1, p-value &lt; 2.2e-16</code></pre>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>  p d q       AIC       BIC      AICc
-9 1 0 1 -47373.03 -47344.77 -47373.03</code></pre>
+9 1 0 1 -47373.03 -47344.78 -47373.03</code></pre>
 </div>
 </div>
 <p>The best ARIMA model according to the lowest AIC, BIC and AICC is ARIMA(1,0,1)</p>
@@ -819,22 +826,23 @@ Coefficients:
 s.e.  0.0723   0.0673  1e-04
 
 sigma^2 = 0.000244:  log likelihood = 23690.52
-AIC=-47373.03   AICc=-47373.03   BIC=-47344.77
+AIC=-47373.03   AICc=-47373.03   BIC=-47344.78
 
 Training set error measures:
                         ME       RMSE        MAE MPE MAPE      MASE        ACF1
-Training set -2.384065e-06 0.01561831 0.01100162 NaN  Inf 0.6700628 0.001893208</code></pre>
+Training set -2.384125e-06 0.01561831 0.01100162 NaN  Inf 0.6700628 0.001893271</code></pre>
 </div>
 </div>
 <p>The standard errors are relatively small compared to the coefficients, suggesting that the coefficients are likely to be significantly different from zero.</p>
 </div>
 <div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<p>To find the best ARIMA model, we search across different combinations of p (autoregressive terms), d (differencing terms), and q (moving average terms), and select the model with the lowest information criteria (AIC, BIC, and AICc).</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>ARIMA.c<span class="ot">=</span><span class="cf">function</span>(p1,p2,q1,q2,data){</span>
 <span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>temp<span class="ot">=</span><span class="fu">c</span>()</span>
-<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>d<span class="ot">=</span><span class="dv">1</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="co">#d=1</span></span>
 <span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>i<span class="ot">=</span><span class="dv">1</span></span>
 <span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>temp<span class="ot">=</span> <span class="fu">data.frame</span>()</span>
 <span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>ls<span class="ot">=</span><span class="fu">matrix</span>(<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">6</span><span class="sc">*</span><span class="dv">18</span>),<span class="at">nrow=</span><span class="dv">18</span>)</span>
@@ -873,24 +881,24 @@ Training set -2.384065e-06 0.01561831 0.01100162 NaN  Inf 0.6700628 0.001893208<
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>   p d q       AIC       BIC      AICc
-1  0 0 0 -46406.59 -46392.46 -46406.59
+1  0 0 0 -46406.59 -46392.46 -46406.58
 2  0 1 0 -39788.46 -39781.40 -39788.46
 3  0 0 1 -46454.39 -46433.19 -46454.38
-4  0 1 1 -46391.15 -46377.03 -46391.15
+4  0 1 1 -46391.15 -46377.02 -46391.15
 5  0 0 2 -46453.61 -46425.35 -46453.60
 6  0 1 2 -46438.72 -46417.53 -46438.72
 7  1 0 0 -46452.96 -46431.76 -46452.95
-8  1 1 0 -42629.60 -42615.47 -42629.59
-9  1 0 1 -46453.75 -46425.49 -46453.74
+8  1 1 0 -42629.59 -42615.46 -42629.59
+9  1 0 1 -46453.74 -46425.49 -46453.74
 10 1 1 1 -46437.37 -46416.18 -46437.37
 11 1 0 2 -46451.60 -46416.28 -46451.59
-12 1 1 2 -46438.04 -46409.78 -46438.03
+12 1 1 2 -46436.28 -46408.02 -46436.28
 13 2 0 0 -46453.49 -46425.23 -46453.49
-14 2 1 0 -43806.11 -43784.91 -43806.10
-15 2 0 1 -46451.51 -46416.18 -46451.50
+14 2 1 0 -43806.10 -43784.91 -43806.10
+15 2 0 1 -46451.50 -46416.18 -46451.50
 16 2 1 1 -46437.88 -46409.62 -46437.87
-17 2 0 2 -46449.84 -46407.46 -46449.83
-18 2 1 2 -46436.18 -46400.86 -46436.17</code></pre>
+17 2 0 2 -46449.84 -46407.45 -46449.83
+18 2 1 2 -46436.18 -46400.85 -46436.17</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
@@ -937,23 +945,23 @@ sigma^2 = 0.0002714:  log likelihood = 23230.19
 AIC=-46454.39   AICc=-46454.38   BIC=-46433.19
 
 Training set error measures:
-                        ME       RMSE        MAE MPE MAPE      MASE
-Training set -3.755846e-08 0.01647249 0.01143942 NaN  Inf 0.6712263
-                     ACF1
-Training set 0.0008956264</code></pre>
+                       ME       RMSE        MAE MPE MAPE      MASE        ACF1
+Training set -3.75565e-08 0.01647249 0.01143943 NaN  Inf 0.6712266 0.000895629</code></pre>
 </div>
 </div>
+<p>The zero autocorrelation at the first lag (ACF1) of residuals indicates that the model is capturing the correlation in the data quite well.</p>
 </div>
 </div>
 </div>
 </section>
 <section id="analyising-the-residuals" class="level1">
 <h1>7. Analyising the Residuals</h1>
-<p>After fitting an ARIMA(1,0,1) model to the Exxon Mobil returns, we need to analyze the residuals to ensure that the model has captured the data’s structure adequately. This step is crucial because any pattern left in the residuals can indicate that the model hasn’t fully captured the underlying process.</p>
+<p>Now we will analyse the residual in depth, this step is crucial because any pattern left in the residuals can indicate that the model hasn’t fully captured the underlying process.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">Exxon Mobil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">Chevron Corporation</a></li></ul>
 <div class="tab-content">
 <div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<p>After fitting an ARIMA(1,0,1) model to the Exxon Mobil returns, we need to analyze the residuals to ensure that the model has captured the data’s structure adequately.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
@@ -982,9 +990,9 @@ ar1     0.5315 0.0723  7.3550  0.0000
 ma1    -0.6136 0.0673 -9.1150  0.0000
 xmean   0.0004 0.0001  2.8431  0.0045
 
-sigma^2 estimated as 0.0002439316 on 8642 degrees of freedom 
+sigma^2 estimated as 0.0002439315 on 8642 degrees of freedom 
  
-AIC = -5.479819  AICc = -5.479818  BIC = -5.47655 
+AIC = -5.479819  AICc = -5.479819  BIC = -5.47655 
  
  </code></pre>
 </div>
@@ -1041,35 +1049,12 @@ AIC = -5.479819  AICc = -5.479818  BIC = -5.47655
 <p>These plots are indicative of conditional heteroskedasticity in the series, which is not captured by the ARIMA model. It is recommended to proceed with fitting a GARCH model. The significant ACF in the squared residuals indicates that a GARCH(1,1) model is appropriate.</p>
 </div>
 <div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<p>After fitting an ARIMA(0,0,1) model to the Chevron returns, we need to analyze the residuals to ensure that the model has captured the data’s structure adequately.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sarima</span>(returns_chevron,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>model_output_c <span class="ot">&lt;-</span> <span class="fu">capture.output</span>(<span class="fu">sarima</span>(returns_chevron,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>))</span></code></pre></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code>initial  value -4.103183 
-iter   2 value -4.106061
-iter   3 value -4.106063
-iter   3 value -4.106063
-iter   3 value -4.106063
-final  value -4.106063 
-converged
-initial  value -4.106063 
-iter   1 value -4.106063
-final  value -4.106063 
-converged
-&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;
- 
-Coefficients: 
-      Estimate     SE t.value p.value
-ma1    -0.0769 0.0109 -7.0862  0.0000
-xmean   0.0004 0.0002  2.4946  0.0126
-
-sigma^2 estimated as 0.0002713429 on 8643 degrees of freedom 
- 
-AIC = -5.373556  AICc = -5.373555  BIC = -5.371104 
- </code></pre>
-</div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -1077,21 +1062,45 @@ AIC = -5.373556  AICc = -5.373555  BIC = -5.371104
 </figure>
 </div>
 </div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co">#model_output_c</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(model_output_c[<span class="dv">11</span><span class="sc">:</span><span class="dv">22</span>], model_output_c[<span class="fu">length</span>(model_output_c)], <span class="at">sep =</span> <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>) </span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>converged
+&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;
+ 
+Coefficients: 
+      Estimate     SE t.value p.value
+ma1    -0.0769 0.0109 -7.0863  0.0000
+xmean   0.0004 0.0002  2.4946  0.0126
+
+sigma^2 estimated as 0.0002713429 on 8643 degrees of freedom 
+ 
+AIC = -5.373555  AICc = -5.373555  BIC = -5.371104 
+ 
+ </code></pre>
 </div>
+</div>
+<p>The Standardized Residuals plot does show some volatility left, around 2003, and then 2010 to 2012. These spikes indicate that the ARIMA model may not have fully captured the variability during these periods.</p>
+<p>Both the coefficient estimates are significant.</p>
+<p>Moving forward with the analysis, after fitting an ARIMA(0,0,1) model, we will now examine the autocorrelation in both the residuals and the squared residuals. This step is crucial as it helps us to understand the nature of the residuals and assess whether a GARCH model is necessary.</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>chevron.res<span class="ot">&lt;-</span>fit_chevron<span class="sc">$</span>residuals</span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>plot5 <span class="ot">&lt;-</span> <span class="fu">ggAcf</span>(chevron.res, <span class="dv">40</span>) <span class="sc">+</span></span>
-<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
-<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>plot6 <span class="ot">&lt;-</span> <span class="fu">ggPacf</span>(chevron.res, <span class="dv">40</span>) <span class="sc">+</span></span>
-<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
-<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(plot5, plot6,<span class="at">nrow=</span><span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>chevron.res<span class="ot">&lt;-</span>fit_chevron<span class="sc">$</span>residuals</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>plot5 <span class="ot">&lt;-</span> <span class="fu">ggAcf</span>(chevron.res, <span class="dv">40</span>) <span class="sc">+</span></span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>plot6 <span class="ot">&lt;-</span> <span class="fu">ggPacf</span>(chevron.res, <span class="dv">40</span>) <span class="sc">+</span></span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb45-10"><a href="#cb45-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb45-11"><a href="#cb45-11" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(plot1, plot2,<span class="at">nrow=</span><span class="dv">2</span>)</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -1101,18 +1110,19 @@ AIC = -5.373556  AICc = -5.373555  BIC = -5.371104
 </div>
 </div>
 </div>
+<p>The autocorrelations appear to be within the confidence bands for most lags, suggesting there is no significant autocorrelation remaining in the residuals. Similarly, the PACF shows that the partial autocorrelations are also within the confidence bounds for most of the lags</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>plot7 <span class="ot">&lt;-</span> <span class="fu">ggAcf</span>(chevron.res<span class="sc">^</span><span class="dv">2</span>, <span class="dv">40</span>) <span class="sc">+</span></span>
-<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
-<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>plot8 <span class="ot">&lt;-</span> <span class="fu">ggPacf</span>(chevron.res<span class="sc">^</span><span class="dv">2</span>, <span class="dv">40</span>) <span class="sc">+</span></span>
-<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
-<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(plot7,plot8,<span class="at">nrow=</span><span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>plot7 <span class="ot">&lt;-</span> <span class="fu">ggAcf</span>(chevron.res<span class="sc">^</span><span class="dv">2</span>, <span class="dv">40</span>) <span class="sc">+</span></span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>plot8 <span class="ot">&lt;-</span> <span class="fu">ggPacf</span>(chevron.res<span class="sc">^</span><span class="dv">2</span>, <span class="dv">40</span>) <span class="sc">+</span></span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(plot7,plot8,<span class="at">nrow=</span><span class="dv">2</span>)</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
@@ -1122,6 +1132,8 @@ AIC = -5.373556  AICc = -5.373555  BIC = -5.371104
 </div>
 </div>
 </div>
+<p>The slow decay in autocorrelation across lags indicates that there is high volatility clustering. The PACF plot also shows some spikes at early lags (from 1 to 9), suggesting that there is some volatility.</p>
+<p>These plots are indicative of conditional heteroskedasticity in the series, which is not captured by the ARIMA model. It is recommended to proceed with fitting a GARCH model. The significant ACF in the squared residuals indicates that a GARCH(1,1) model is appropriate.</p>
 </div>
 </div>
 </div>
@@ -1136,27 +1148,27 @@ AIC = -5.373556  AICc = -5.373555  BIC = -5.371104
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">list</span>() </span>
-<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
-<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (q <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
-<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">suppressWarnings</span>({</span>
-<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>      model[[cc]] <span class="ot">&lt;-</span> <span class="fu">garch</span>(exxon.res, <span class="at">order=</span><span class="fu">c</span>(p,q), <span class="at">trace=</span>F)</span>
-<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> cc <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>} </span>
-<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a><span class="do">## get AIC values for model evaluation</span></span>
-<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>GARCH_AIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>(model, AIC) <span class="do">## model with lowest AIC is the best</span></span>
-<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">list</span>() </span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (q <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">suppressWarnings</span>({</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>      model[[cc]] <span class="ot">&lt;-</span> <span class="fu">garch</span>(exxon.res, <span class="at">order=</span><span class="fu">c</span>(p,q), <span class="at">trace=</span>F)</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> cc <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>} </span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a><span class="do">## get AIC values for model evaluation</span></span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>GARCH_AIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>(model, AIC) <span class="do">## model with lowest AIC is the best</span></span>
+<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>model[[<span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))]]</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>model[[<span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))]]</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1172,11 +1184,11 @@ Coefficient(s):
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Fit the GARCH(1,1) model on the residuals</span></span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>garch_fit_exxon <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>, <span class="dv">1</span>), <span class="at">data =</span> exxon.res, <span class="at">trace =</span> F)</span>
-<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Summary of the fitted GARCH model</span></span>
-<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(garch_fit_exxon)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Fit the GARCH(1,1) model on the residuals</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>garch_fit_exxon <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>, <span class="dv">1</span>), <span class="at">data =</span> exxon.res, <span class="at">trace =</span> F)</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Summary of the fitted GARCH model</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(garch_fit_exxon)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1188,7 +1200,7 @@ Call:
 
 Mean and Variance Equation:
  data ~ garch(1, 1)
-&lt;environment: 0x105022d68&gt;
+&lt;environment: 0x10e9075b8&gt;
  [data = exxon.res]
 
 Conditional Distribution:
@@ -1211,27 +1223,27 @@ beta1  9.189e-01   6.110e-03  150.407  &lt; 2e-16 ***
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Log Likelihood:
- 24997.65    normalized:  2.891574 
+ 24997.66    normalized:  2.891574 
 
 Description:
- Sun Apr 28 02:29:51 2024 by user:  
+ Sun Apr 28 15:15:13 2024 by user:  
 
 
 Standardised Residuals Tests:
                                 Statistic p-Value   
- Jarque-Bera Test   R    Chi^2  664.2732  0         
+ Jarque-Bera Test   R    Chi^2  664.2605  0         
  Shapiro-Wilk Test  R    W      NA        NA        
- Ljung-Box Test     R    Q(10)  20.21923  0.02724602
- Ljung-Box Test     R    Q(15)  22.61764  0.09260248
- Ljung-Box Test     R    Q(20)  32.17146  0.04150525
- Ljung-Box Test     R^2  Q(10)  20.8043   0.0225003 
- Ljung-Box Test     R^2  Q(15)  28.27121  0.01993171
- Ljung-Box Test     R^2  Q(20)  30.62473  0.06034362
- LM Arch Test       R    TR^2   24.05791  0.0199752 
+ Ljung-Box Test     R    Q(10)  20.21947  0.02724386
+ Ljung-Box Test     R    Q(15)  22.61768  0.09260144
+ Ljung-Box Test     R    Q(20)  32.1715   0.0415048 
+ Ljung-Box Test     R^2  Q(10)  20.80417  0.02250123
+ Ljung-Box Test     R^2  Q(15)  28.27111  0.01993234
+ Ljung-Box Test     R^2  Q(20)  30.62472  0.06034371
+ LM Arch Test       R    TR^2   24.0576   0.01997717
 
 Information Criterion Statistics:
       AIC       BIC       SIC      HQIC 
--5.782222 -5.778953 -5.782222 -5.781107 </code></pre>
+-5.782223 -5.778954 -5.782223 -5.781108 </code></pre>
 </div>
 </div>
 <p>All coefficients (omega, alpha1, beta1) are highly significant. This implies that the GARCH(1,1) model captures the volatility clustering effectively.</p>
@@ -1241,106 +1253,47 @@ Information Criterion Statistics:
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">list</span>() <span class="do">## set counter</span></span>
-<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>) {</span>
-<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (q <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>) {</span>
-<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>model[[cc]] <span class="ot">&lt;-</span> <span class="fu">garch</span>(chevron.res,<span class="at">order=</span><span class="fu">c</span>(q,p),<span class="at">trace=</span>F)</span>
-<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> cc <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>} </span></code></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
-
-Warning in garch(chevron.res, order = c(q, p), trace = F): singular information</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="do">## get AIC values for model evaluation</span></span>
-<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>GARCH_AIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>(model, AIC) <span class="do">## model with lowest AIC is the best</span></span>
-<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">list</span>() </span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (q <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">suppressWarnings</span>({</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>      model[[cc]] <span class="ot">&lt;-</span> <span class="fu">garch</span>(chevron.res, <span class="at">order=</span><span class="fu">c</span>(p,q), <span class="at">trace=</span>F)</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> cc <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>} </span>
+<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a><span class="do">## get AIC values for model evaluation</span></span>
+<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a>GARCH_AIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>(model, AIC) <span class="do">## model with lowest AIC is the best</span></span>
+<span id="cb53-14"><a href="#cb53-14" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>model[[<span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))]]</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>model[[<span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))]]</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-garch(x = chevron.res, order = c(q, p), trace = F)
+garch(x = chevron.res, order = c(p, q), trace = F)
 
 Coefficient(s):
        a0         a1         b1  
-3.951e-06  7.042e-02  9.132e-01  </code></pre>
+3.951e-06  7.041e-02  9.132e-01  </code></pre>
 </div>
+</div>
+<p>The model with the lowest AIC appears to be a GARCH (1,1). Now lets fit GARCH (1,1)</p>
+<div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>,<span class="dv">1</span>), chevron.res,<span class="at">trace =</span> F))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Fit the GARCH(1,1) model on the residuals</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>garch_fit_chevron <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>, <span class="dv">1</span>), <span class="at">data =</span> chevron.res, <span class="at">trace =</span> F)</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Summary of the fitted GARCH model</span></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(garch_fit_chevron)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1352,7 +1305,7 @@ Call:
 
 Mean and Variance Equation:
  data ~ garch(1, 1)
-&lt;environment: 0x105513140&gt;
+&lt;environment: 0x112ee2928&gt;
  [data = chevron.res]
 
 Conditional Distribution:
@@ -1360,14 +1313,14 @@ Conditional Distribution:
 
 Coefficient(s):
          mu        omega       alpha1        beta1  
--3.7450e-08   3.9501e-06   7.0414e-02   9.1319e-01  
+-3.7460e-08   3.9502e-06   7.0413e-02   9.1319e-01  
 
 Std. Errors:
  based on Hessian 
 
 Error Analysis:
          Estimate  Std. Error  t value Pr(&gt;|t|)    
-mu     -3.745e-08   1.393e-04    0.000        1    
+mu     -3.746e-08   1.393e-04    0.000        1    
 omega   3.950e-06   5.741e-07    6.881 5.94e-12 ***
 alpha1  7.041e-02   5.254e-03   13.402  &lt; 2e-16 ***
 beta1   9.132e-01   6.489e-03  140.719  &lt; 2e-16 ***
@@ -1378,26 +1331,29 @@ Log Likelihood:
  24533.25    normalized:  2.837854 
 
 Description:
- Sun Apr 28 02:29:52 2024 by user:  
+ Sun Apr 28 15:15:15 2024 by user:  
 
 
 Standardised Residuals Tests:
                                 Statistic p-Value     
- Jarque-Bera Test   R    Chi^2  979.4904  0           
+ Jarque-Bera Test   R    Chi^2  979.4794  0           
  Shapiro-Wilk Test  R    W      NA        NA          
- Ljung-Box Test     R    Q(10)  35.03331  0.0001232413
- Ljung-Box Test     R    Q(15)  39.04061  0.0006319607
- Ljung-Box Test     R    Q(20)  50.24906  0.0002040023
- Ljung-Box Test     R^2  Q(10)  18.43982  0.04798249  
- Ljung-Box Test     R^2  Q(15)  19.64699  0.1858966   
- Ljung-Box Test     R^2  Q(20)  26.45813  0.1512086   
- LM Arch Test       R    TR^2   18.51565  0.100907    
+ Ljung-Box Test     R    Q(10)  35.03301  0.0001232557
+ Ljung-Box Test     R    Q(15)  39.04026  0.0006320363
+ Ljung-Box Test     R    Q(20)  50.24885  0.0002040166
+ Ljung-Box Test     R^2  Q(10)  18.4405   0.04797226  
+ Ljung-Box Test     R^2  Q(15)  19.6476   0.1858717   
+ Ljung-Box Test     R^2  Q(20)  26.45853  0.1511966   
+ LM Arch Test       R    TR^2   18.51628  0.1008901   
 
 Information Criterion Statistics:
       AIC       BIC       SIC      HQIC 
--5.674783 -5.671514 -5.674784 -5.673669 </code></pre>
+-5.674782 -5.671514 -5.674783 -5.673668 </code></pre>
 </div>
 </div>
+<p>All coefficients (omega, alpha1, beta1) are highly significant, with very small p-values. This implies that the GARCH(1,1) model captures the volatility clustering effectively. The high log likelihood suggest that the model is a good fit.</p>
+<p>The GARCH(1,1) model effectively captures the conditional heteroscedasticity of Chevron’s stock returns.</p>
+<p>The best model according to method 1 is ARIMA(0,0,1) + GARCH(1,1).</p>
 </div>
 </div>
 </div>
@@ -1412,20 +1368,20 @@ Information Criterion Statistics:
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">list</span>() </span>
-<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
-<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (q <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
-<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">suppressWarnings</span>({</span>
-<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>      model[[cc]] <span class="ot">&lt;-</span> <span class="fu">garch</span>(returns_exxon, <span class="at">order=</span><span class="fu">c</span>(p,q), <span class="at">trace=</span>F)</span>
-<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> cc <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a>  }</span>
-<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a>} </span>
-<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb60-12"><a href="#cb60-12" aria-hidden="true" tabindex="-1"></a><span class="do">## get AIC values for model evaluation</span></span>
-<span id="cb60-13"><a href="#cb60-13" aria-hidden="true" tabindex="-1"></a>GARCH_AIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>(model, AIC) <span class="do">## model with lowest AIC is the best</span></span>
-<span id="cb60-14"><a href="#cb60-14" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">list</span>() </span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (q <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">suppressWarnings</span>({</span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>      model[[cc]] <span class="ot">&lt;-</span> <span class="fu">garch</span>(returns_exxon, <span class="at">order=</span><span class="fu">c</span>(p,q), <span class="at">trace=</span>F)</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> cc <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>} </span>
+<span id="cb59-11"><a href="#cb59-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-12"><a href="#cb59-12" aria-hidden="true" tabindex="-1"></a><span class="do">## get AIC values for model evaluation</span></span>
+<span id="cb59-13"><a href="#cb59-13" aria-hidden="true" tabindex="-1"></a>GARCH_AIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>(model, AIC) <span class="do">## model with lowest AIC is the best</span></span>
+<span id="cb59-14"><a href="#cb59-14" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1</code></pre>
@@ -1434,7 +1390,7 @@ Information Criterion Statistics:
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>model[[<span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))]]</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>model[[<span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))]]</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1450,8 +1406,8 @@ Coefficient(s):
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>garch_fit_returns_exxon <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">data =</span> returns_exxon, <span class="at">trace =</span> F)</span>
-<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(garch_fit_returns_exxon)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>garch_fit_returns_exxon <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">data =</span> returns_exxon, <span class="at">trace =</span> F)</span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(garch_fit_returns_exxon)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1463,7 +1419,7 @@ Call:
 
 Mean and Variance Equation:
  data ~ garch(1, 1)
-&lt;environment: 0x12b3ec000&gt;
+&lt;environment: 0x112d54340&gt;
  [data = returns_exxon]
 
 Conditional Distribution:
@@ -1471,7 +1427,7 @@ Conditional Distribution:
 
 Coefficient(s):
         mu       omega      alpha1       beta1  
-5.1878e-04  2.4184e-06  7.0484e-02  9.1945e-01  
+5.1878e-04  2.4184e-06  7.0485e-02  9.1945e-01  
 
 Std. Errors:
  based on Hessian 
@@ -1481,39 +1437,138 @@ Error Analysis:
 mu     5.188e-04   1.277e-04    4.064 4.83e-05 ***
 omega  2.418e-06   3.965e-07    6.100 1.06e-09 ***
 alpha1 7.048e-02   5.335e-03   13.213  &lt; 2e-16 ***
-beta1  9.195e-01   6.050e-03  151.980  &lt; 2e-16 ***
+beta1  9.195e-01   6.050e-03  151.979  &lt; 2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Log Likelihood:
- 24975.39    normalized:  2.888998 
+ 24975.39    normalized:  2.888999 
 
 Description:
- Sun Apr 28 02:29:55 2024 by user:  
+ Sun Apr 28 15:15:18 2024 by user:  
 
 
 Standardised Residuals Tests:
                                 Statistic p-Value    
- Jarque-Bera Test   R    Chi^2  618.5361  0          
+ Jarque-Bera Test   R    Chi^2  618.5234  0          
  Shapiro-Wilk Test  R    W      NA        NA         
- Ljung-Box Test     R    Q(10)  28.25277  0.001644409
- Ljung-Box Test     R    Q(15)  31.10346  0.008509004
- Ljung-Box Test     R    Q(20)  41.97728  0.0027845  
- Ljung-Box Test     R^2  Q(10)  21.13785  0.02015259 
- Ljung-Box Test     R^2  Q(15)  28.7468   0.01733528 
- Ljung-Box Test     R^2  Q(20)  31.14756  0.05327235 
- LM Arch Test       R    TR^2   24.2292   0.01892881 
+ Ljung-Box Test     R    Q(10)  28.25264  0.001644488
+ Ljung-Box Test     R    Q(15)  31.10312  0.008509918
+ Ljung-Box Test     R    Q(20)  41.9769   0.002784817
+ Ljung-Box Test     R^2  Q(10)  21.13752  0.02015477 
+ Ljung-Box Test     R^2  Q(15)  28.74659  0.01733636 
+ Ljung-Box Test     R^2  Q(20)  31.14744  0.05327391 
+ LM Arch Test       R    TR^2   24.22871  0.0189317  
 
 Information Criterion Statistics:
       AIC       BIC       SIC      HQIC 
--5.777071 -5.773802 -5.777071 -5.775957 </code></pre>
+-5.777072 -5.773803 -5.777073 -5.775958 </code></pre>
 </div>
 </div>
 <p>All parameters in the model are statistically significant, as indicated by the p-values being less than 0.05.</p>
 <p>Thus for method 2 fitting GARCH(1,1) model directly to the returns of Exxon Mobil is the best model.</p>
 </div>
 <div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">list</span>() </span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (q <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">suppressWarnings</span>({</span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a>      model[[cc]] <span class="ot">&lt;-</span> <span class="fu">garch</span>(returns_chevron, <span class="at">order=</span><span class="fu">c</span>(p,q), <span class="at">trace=</span>F)</span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> cc <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb65-10"><a href="#cb65-10" aria-hidden="true" tabindex="-1"></a>} </span>
+<span id="cb65-11"><a href="#cb65-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-12"><a href="#cb65-12" aria-hidden="true" tabindex="-1"></a><span class="do">## get AIC values for model evaluation</span></span>
+<span id="cb65-13"><a href="#cb65-13" aria-hidden="true" tabindex="-1"></a>GARCH_AIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>(model, AIC) <span class="do">## model with lowest AIC is the best</span></span>
+<span id="cb65-14"><a href="#cb65-14" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>model[[<span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))]]</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+garch(x = returns_chevron, order = c(p, q), trace = F)
 
+Coefficient(s):
+       a0         a1         b1  
+3.859e-06  6.939e-02  9.146e-01  </code></pre>
+</div>
+</div>
+<p>GARCH(1,1) model has the lowest AIC.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>garch_fit_returns_chevron <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">data =</span> returns_chevron, <span class="at">trace =</span> F)</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(garch_fit_returns_chevron)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Title:
+ GARCH Modelling 
+
+Call:
+ garchFit(formula = ~garch(1, 1), data = returns_chevron, trace = F) 
+
+Mean and Variance Equation:
+ data ~ garch(1, 1)
+&lt;environment: 0x112ccf2a0&gt;
+ [data = returns_chevron]
+
+Conditional Distribution:
+ norm 
+
+Coefficient(s):
+        mu       omega      alpha1       beta1  
+6.4475e-04  3.9248e-06  7.0866e-02  9.1285e-01  
+
+Std. Errors:
+ based on Hessian 
+
+Error Analysis:
+        Estimate  Std. Error  t value Pr(&gt;|t|)    
+mu     6.448e-04   1.381e-04    4.668 3.05e-06 ***
+omega  3.925e-06   5.688e-07    6.900 5.20e-12 ***
+alpha1 7.087e-02   5.254e-03   13.489  &lt; 2e-16 ***
+beta1  9.128e-01   6.455e-03  141.417  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Log Likelihood:
+ 24543.46    normalized:  2.839035 
+
+Description:
+ Sun Apr 28 15:15:20 2024 by user:  
+
+
+Standardised Residuals Tests:
+                                Statistic p-Value   
+ Jarque-Bera Test   R    Chi^2  964.5669  0         
+ Shapiro-Wilk Test  R    W      NA        NA        
+ Ljung-Box Test     R    Q(10)  8.52447   0.5777468 
+ Ljung-Box Test     R    Q(15)  12.45872  0.6440281 
+ Ljung-Box Test     R    Q(20)  24.55933  0.2188126 
+ Ljung-Box Test     R^2  Q(10)  19.57814  0.03350497
+ Ljung-Box Test     R^2  Q(15)  20.8192   0.1427061 
+ Ljung-Box Test     R^2  Q(20)  27.81164  0.1139338 
+ LM Arch Test       R    TR^2   19.53609  0.07638632
+
+Information Criterion Statistics:
+      AIC       BIC       SIC      HQIC 
+-5.677145 -5.673876 -5.677146 -5.676031 </code></pre>
+</div>
+</div>
+<p>All parameters in the model are statistically significant, as indicated by the p-values being less than 0.05. The significant mu, omega, alpha, and beta parameters ensure that the model not only captures the average price movements but also effectively models the observed volatility patterns.</p>
+<p>The GARCH(1,1) model, applied directly to the returns, appears to be the optimal model.</p>
 </div>
 </div>
 </div>
@@ -1530,7 +1585,7 @@ Information Criterion Statistics:
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_exxon)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_exxon)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>Series: returns_exxon 
@@ -1542,18 +1597,18 @@ Coefficients:
 s.e.  0.0723   0.0673  1e-04
 
 sigma^2 = 0.000244:  log likelihood = 23690.52
-AIC=-47373.03   AICc=-47373.03   BIC=-47344.77
+AIC=-47373.03   AICc=-47373.03   BIC=-47344.78
 
 Training set error measures:
                         ME       RMSE        MAE MPE MAPE      MASE        ACF1
-Training set -2.384065e-06 0.01561831 0.01100162 NaN  Inf 0.6700628 0.001893208</code></pre>
+Training set -2.384125e-06 0.01561831 0.01100162 NaN  Inf 0.6700628 0.001893271</code></pre>
 </div>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="#cb68-1" aria-hidden="true" tabindex="-1"></a>garch_exxon <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>,<span class="dv">1</span>), exxon.res,<span class="at">trace =</span> F)</span>
-<span id="cb68-2"><a href="#cb68-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(garch_exxon)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb73"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb73-1"><a href="#cb73-1" aria-hidden="true" tabindex="-1"></a>garch_exxon <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>,<span class="dv">1</span>), exxon.res,<span class="at">trace =</span> F)</span>
+<span id="cb73-2"><a href="#cb73-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(garch_exxon)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1565,7 +1620,7 @@ Call:
 
 Mean and Variance Equation:
  data ~ garch(1, 1)
-&lt;environment: 0x12af0c600&gt;
+&lt;environment: 0x10f6c36c8&gt;
  [data = exxon.res]
 
 Conditional Distribution:
@@ -1588,33 +1643,33 @@ beta1  9.189e-01   6.110e-03  150.407  &lt; 2e-16 ***
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Log Likelihood:
- 24997.65    normalized:  2.891574 
+ 24997.66    normalized:  2.891574 
 
 Description:
- Sun Apr 28 02:29:56 2024 by user:  
+ Sun Apr 28 15:15:20 2024 by user:  
 
 
 Standardised Residuals Tests:
                                 Statistic p-Value   
- Jarque-Bera Test   R    Chi^2  664.2732  0         
+ Jarque-Bera Test   R    Chi^2  664.2605  0         
  Shapiro-Wilk Test  R    W      NA        NA        
- Ljung-Box Test     R    Q(10)  20.21923  0.02724602
- Ljung-Box Test     R    Q(15)  22.61764  0.09260248
- Ljung-Box Test     R    Q(20)  32.17146  0.04150525
- Ljung-Box Test     R^2  Q(10)  20.8043   0.0225003 
- Ljung-Box Test     R^2  Q(15)  28.27121  0.01993171
- Ljung-Box Test     R^2  Q(20)  30.62473  0.06034362
- LM Arch Test       R    TR^2   24.05791  0.0199752 
+ Ljung-Box Test     R    Q(10)  20.21947  0.02724386
+ Ljung-Box Test     R    Q(15)  22.61768  0.09260144
+ Ljung-Box Test     R    Q(20)  32.1715   0.0415048 
+ Ljung-Box Test     R^2  Q(10)  20.80417  0.02250123
+ Ljung-Box Test     R^2  Q(15)  28.27111  0.01993234
+ Ljung-Box Test     R^2  Q(20)  30.62472  0.06034371
+ LM Arch Test       R    TR^2   24.0576   0.01997717
 
 Information Criterion Statistics:
       AIC       BIC       SIC      HQIC 
--5.782222 -5.778953 -5.782222 -5.781107 </code></pre>
+-5.782223 -5.778954 -5.782223 -5.781108 </code></pre>
 </div>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">garch</span>(exxon.res, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>),<span class="at">trace =</span> F))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">garch</span>(exxon.res, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>),<span class="at">trace =</span> F))</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1626,13 +1681,13 @@ GARCH(1,1)
 
 Residuals:
       Min        1Q    Median        3Q       Max 
--5.626293 -0.615750  0.008538  0.627444  5.340125 
+-5.626225 -0.615750  0.008539  0.627481  5.340142 
 
 Coefficient(s):
     Estimate  Std. Error  t value Pr(&gt;|t|)    
 a0 2.446e-06   2.799e-07    8.736   &lt;2e-16 ***
 a1 7.078e-02   3.487e-03   20.294   &lt;2e-16 ***
-b1 9.190e-01   3.896e-03  235.891   &lt;2e-16 ***
+b1 9.190e-01   3.896e-03  235.890   &lt;2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -1640,24 +1695,24 @@ Diagnostic Tests:
     Jarque Bera Test
 
 data:  Residuals
-X-squared = 664.87, df = 2, p-value &lt; 2.2e-16
+X-squared = 664.86, df = 2, p-value &lt; 2.2e-16
 
 
     Box-Ljung test
 
 data:  Squared.Residuals
-X-squared = 4.6787, df = 1, p-value = 0.03054</code></pre>
+X-squared = 4.6789, df = 1, p-value = 0.03054</code></pre>
 </div>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a><span class="fu">checkresiduals</span>(<span class="fu">garch</span>(exxon.res, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>),<span class="at">trace =</span> F))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">checkresiduals</span>(<span class="fu">garch</span>(exxon.res, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>),<span class="at">trace =</span> F))</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-38-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1666,7 +1721,7 @@ X-squared = 4.6787, df = 1, p-value = 0.03054</code></pre>
     Ljung-Box test
 
 data:  Residuals
-Q* = 778.16, df = 730.5, p-value = 0.1078
+Q* = 778.17, df = 730.5, p-value = 0.1078
 
 Model df: 0.   Total lags used: 730.5</code></pre>
 </div>
@@ -1680,8 +1735,8 @@ Model df: 0.   Total lags used: 730.5</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>garch_returns_exxon1 <span class="ot">&lt;-</span> <span class="fu">garch</span>(returns_exxon, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">trace =</span> F)</span>
-<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(garch_returns_exxon1)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a>garch_returns_exxon1 <span class="ot">&lt;-</span> <span class="fu">garch</span>(returns_exxon, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">trace =</span> F)</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(garch_returns_exxon1)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1693,13 +1748,13 @@ GARCH(1,1)
 
 Residuals:
      Min       1Q   Median       3Q      Max 
--5.43624 -0.59095  0.01182  0.65548  5.29900 
+-5.43618 -0.59094  0.01181  0.65548  5.29902 
 
 Coefficient(s):
     Estimate  Std. Error  t value Pr(&gt;|t|)    
 a0 2.387e-06   2.776e-07    8.599   &lt;2e-16 ***
 a1 6.937e-02   3.475e-03   19.964   &lt;2e-16 ***
-b1 9.207e-01   3.887e-03  236.859   &lt;2e-16 ***
+b1 9.207e-01   3.887e-03  236.857   &lt;2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -1707,7 +1762,7 @@ Diagnostic Tests:
     Jarque Bera Test
 
 data:  Residuals
-X-squared = 631.51, df = 2, p-value &lt; 2.2e-16
+X-squared = 631.5, df = 2, p-value &lt; 2.2e-16
 
 
     Box-Ljung test
@@ -1719,12 +1774,12 @@ X-squared = 2.5949, df = 1, p-value = 0.1072</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="fu">checkresiduals</span>(garch_returns_exxon1)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="fu">checkresiduals</span>(garch_returns_exxon1)</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-40-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-42-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -1743,14 +1798,230 @@ Model df: 0.   Total lags used: 730.5</code></pre>
 </section>
 </div>
 <div id="tabset-11-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-11-2-tab">
+<section id="method-1-arima001-garch11" class="level3">
+<h3 class="anchored" data-anchor-id="method-1-arima001-garch11">Method 1: ARIMA(0,0,1) + GARCH(1,1)</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_chevron)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: returns_chevron 
+ARIMA(0,0,1) with non-zero mean 
 
+Coefficients:
+          ma1   mean
+      -0.0769  4e-04
+s.e.   0.0109  2e-04
+
+sigma^2 = 0.0002714:  log likelihood = 23230.19
+AIC=-46454.39   AICc=-46454.38   BIC=-46433.19
+
+Training set error measures:
+                       ME       RMSE        MAE MPE MAPE      MASE        ACF1
+Training set -3.75565e-08 0.01647249 0.01143943 NaN  Inf 0.6712266 0.000895629</code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a>garch_chevron <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>,<span class="dv">1</span>), chevron.res,<span class="at">trace =</span> F)</span>
+<span id="cb85-2"><a href="#cb85-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(garch_chevron)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Title:
+ GARCH Modelling 
+
+Call:
+ garchFit(formula = ~garch(1, 1), data = chevron.res, trace = F) 
+
+Mean and Variance Equation:
+ data ~ garch(1, 1)
+&lt;environment: 0x11183da88&gt;
+ [data = chevron.res]
+
+Conditional Distribution:
+ norm 
+
+Coefficient(s):
+         mu        omega       alpha1        beta1  
+-3.7460e-08   3.9502e-06   7.0413e-02   9.1319e-01  
+
+Std. Errors:
+ based on Hessian 
+
+Error Analysis:
+         Estimate  Std. Error  t value Pr(&gt;|t|)    
+mu     -3.746e-08   1.393e-04    0.000        1    
+omega   3.950e-06   5.741e-07    6.881 5.94e-12 ***
+alpha1  7.041e-02   5.254e-03   13.402  &lt; 2e-16 ***
+beta1   9.132e-01   6.489e-03  140.719  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Log Likelihood:
+ 24533.25    normalized:  2.837854 
+
+Description:
+ Sun Apr 28 15:15:21 2024 by user:  
+
+
+Standardised Residuals Tests:
+                                Statistic p-Value     
+ Jarque-Bera Test   R    Chi^2  979.4794  0           
+ Shapiro-Wilk Test  R    W      NA        NA          
+ Ljung-Box Test     R    Q(10)  35.03301  0.0001232557
+ Ljung-Box Test     R    Q(15)  39.04026  0.0006320363
+ Ljung-Box Test     R    Q(20)  50.24885  0.0002040166
+ Ljung-Box Test     R^2  Q(10)  18.4405   0.04797226  
+ Ljung-Box Test     R^2  Q(15)  19.6476   0.1858717   
+ Ljung-Box Test     R^2  Q(20)  26.45853  0.1511966   
+ LM Arch Test       R    TR^2   18.51628  0.1008901   
+
+Information Criterion Statistics:
+      AIC       BIC       SIC      HQIC 
+-5.674782 -5.671514 -5.674783 -5.673668 </code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">garch</span>(chevron.res, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>),<span class="at">trace =</span> F))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+garch(x = chevron.res, order = c(1, 1), trace = F)
+
+Model:
+GARCH(1,1)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-7.32431 -0.60080  0.01345  0.61856  5.70811 
+
+Coefficient(s):
+    Estimate  Std. Error  t value Pr(&gt;|t|)    
+a0 3.951e-06   4.034e-07    9.793   &lt;2e-16 ***
+a1 7.041e-02   3.261e-03   21.594   &lt;2e-16 ***
+b1 9.132e-01   4.312e-03  211.796   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Diagnostic Tests:
+    Jarque Bera Test
+
+data:  Residuals
+X-squared = 979.95, df = 2, p-value &lt; 2.2e-16
+
+
+    Box-Ljung test
+
+data:  Squared.Residuals
+X-squared = 0.26255, df = 1, p-value = 0.6084</code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="#cb89-1" aria-hidden="true" tabindex="-1"></a><span class="fu">checkresiduals</span>(<span class="fu">garch</span>(chevron.res, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>),<span class="at">trace =</span> F))</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-46-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Ljung-Box test
+
+data:  Residuals
+Q* = 776.54, df = 730.5, p-value = 0.1156
+
+Model df: 0.   Total lags used: 730.5</code></pre>
+</div>
+</div>
+<p>The residuals do not show any obvious trends or seasonality, which suggests that the ARIMA model has captured the linear structure of the data.</p>
+<p>The Ljung-Box test on residuals with a p-value of 0.1156 suggests that there is no significant autocorrelation in the residuals. This implies that the model residuals are random.</p>
+<p>The coefficients of the GARCH(1,1) model are all statistically significant.</p>
+<p>The diagnostic checks on the ARIMA(0,0,1) + GARCH(1,1) model reveal that the residuals do not show significant trends or seasonality. The GARCH model’s significant coefficients for omega, alpha, and beta confirm its efficacy in capturing the stock’s volatility clustering. The absence of autocorrelation in the residuals post-modelling further validates the model fit.</p>
+</section>
+<section id="method-2-garch11-1" class="level3">
+<h3 class="anchored" data-anchor-id="method-2-garch11-1">Method 2: GARCH(1,1)</h3>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="#cb91-1" aria-hidden="true" tabindex="-1"></a>garch_returns_chevron1 <span class="ot">&lt;-</span> <span class="fu">garch</span>(returns_chevron, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">trace =</span> F)</span>
+<span id="cb91-2"><a href="#cb91-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(garch_returns_chevron1)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+garch(x = returns_chevron, order = c(1, 1), trace = F)
+
+Model:
+GARCH(1,1)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-7.35622 -0.57359  0.03137  0.65034  5.80267 
+
+Coefficient(s):
+    Estimate  Std. Error  t value Pr(&gt;|t|)    
+a0 3.859e-06   3.993e-07    9.663   &lt;2e-16 ***
+a1 6.939e-02   3.179e-03   21.827   &lt;2e-16 ***
+b1 9.146e-01   4.221e-03  216.677   &lt;2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Diagnostic Tests:
+    Jarque Bera Test
+
+data:  Residuals
+X-squared = 1002.6, df = 2, p-value &lt; 2.2e-16
+
+
+    Box-Ljung test
+
+data:  Squared.Residuals
+X-squared = 0.021602, df = 1, p-value = 0.8832</code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="fu">checkresiduals</span>(garch_returns_chevron1)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-48-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Ljung-Box test
+
+data:  Residuals
+Q* = 740.68, df = 730.5, p-value = 0.3888
+
+Model df: 0.   Total lags used: 730.5</code></pre>
+</div>
+</div>
+<p>The estimated GARCH(1,1) model coefficients are statistically significant.</p>
+<p>The p-value from the Ljung-Box test suggests that there’s no significant autocorrelation in the residuals.</p>
+</section>
 </div>
 </div>
 </div>
 </section>
 <section id="cross-validation" class="level1">
 <h1>11. Cross-Validation</h1>
-<p>Cross-validation is an essential technique in model validation, which helps to ensure that the results of our time series analysis generalize to independent data sets. Now lets do cross-validation</p>
+<p>Cross-validation is an essential technique in model validation, which helps to ensure that the results of our time series analysis generalize to independent data sets. Now lets do cross-validation, I have employed a rolling forecasting methodology to to validate both the models selected above.</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-12-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-1" role="tab" aria-controls="tabset-12-1" aria-selected="true">Exxon Mobil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-12-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-12-2" role="tab" aria-controls="tabset-12-2" aria-selected="false">Chevron Corporation</a></li></ul>
 <div class="tab-content">
@@ -1758,46 +2029,46 @@ Model df: 0.   Total lags used: 730.5</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="dv">900</span></span>
-<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(returns_exxon)</span>
-<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a>err1 <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a>err2 <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
-<span id="cb78-6"><a href="#cb78-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb78-7"><a href="#cb78-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n<span class="sc">-</span>k)) {</span>
-<span id="cb78-8"><a href="#cb78-8" aria-hidden="true" tabindex="-1"></a>  xtrain <span class="ot">&lt;-</span> returns_exxon[<span class="dv">1</span><span class="sc">:</span>(k<span class="dv">-1</span>)<span class="sc">+</span>i]</span>
-<span id="cb78-9"><a href="#cb78-9" aria-hidden="true" tabindex="-1"></a>  xtest <span class="ot">&lt;-</span> returns_exxon[k<span class="sc">+</span>i]</span>
-<span id="cb78-10"><a href="#cb78-10" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb78-11"><a href="#cb78-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ARIMA(1,0,1) + GARCH(1,1)</span></span>
-<span id="cb78-12"><a href="#cb78-12" aria-hidden="true" tabindex="-1"></a>  arima.fit <span class="ot">&lt;-</span> <span class="fu">Arima</span>(xtrain, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="at">include.drift =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb78-13"><a href="#cb78-13" aria-hidden="true" tabindex="-1"></a>  arima.res <span class="ot">&lt;-</span> <span class="fu">residuals</span>(arima.fit)</span>
-<span id="cb78-14"><a href="#cb78-14" aria-hidden="true" tabindex="-1"></a>  fit1 <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>, <span class="dv">1</span>), <span class="at">data =</span> arima.res, <span class="at">trace =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb78-15"><a href="#cb78-15" aria-hidden="true" tabindex="-1"></a>  fcast1 <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit1, <span class="at">n.ahead =</span> <span class="dv">1</span>)</span>
-<span id="cb78-16"><a href="#cb78-16" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb78-17"><a href="#cb78-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># GARCH(1,1)</span></span>
-<span id="cb78-18"><a href="#cb78-18" aria-hidden="true" tabindex="-1"></a>  returns_diff <span class="ot">&lt;-</span> <span class="fu">diff</span>(xtrain)  </span>
-<span id="cb78-19"><a href="#cb78-19" aria-hidden="true" tabindex="-1"></a>  fit2 <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>, <span class="dv">1</span>), <span class="at">data =</span> xtrain, <span class="at">trace =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb78-20"><a href="#cb78-20" aria-hidden="true" tabindex="-1"></a>  fcast2 <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit2, <span class="at">n.ahead =</span> <span class="dv">1</span>)</span>
-<span id="cb78-21"><a href="#cb78-21" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb78-22"><a href="#cb78-22" aria-hidden="true" tabindex="-1"></a>  err1 <span class="ot">&lt;-</span> <span class="fu">c</span>(err1, (fcast1<span class="sc">$</span>meanForecast <span class="sc">-</span> xtest)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb78-23"><a href="#cb78-23" aria-hidden="true" tabindex="-1"></a>  err2 <span class="ot">&lt;-</span> <span class="fu">c</span>(err2, (fcast2<span class="sc">$</span>meanForecast <span class="sc">-</span> xtest)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb78-24"><a href="#cb78-24" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb78-25"><a href="#cb78-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb78-26"><a href="#cb78-26" aria-hidden="true" tabindex="-1"></a>RMSE1 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>(err1))</span>
-<span id="cb78-27"><a href="#cb78-27" aria-hidden="true" tabindex="-1"></a>RMSE2 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>(err2))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="dv">900</span></span>
+<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(returns_exxon)</span>
+<span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb95-4"><a href="#cb95-4" aria-hidden="true" tabindex="-1"></a>err1 <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb95-5"><a href="#cb95-5" aria-hidden="true" tabindex="-1"></a>err2 <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb95-6"><a href="#cb95-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb95-7"><a href="#cb95-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n<span class="sc">-</span>k)) {</span>
+<span id="cb95-8"><a href="#cb95-8" aria-hidden="true" tabindex="-1"></a>  xtrain <span class="ot">&lt;-</span> returns_exxon[<span class="dv">1</span><span class="sc">:</span>(k<span class="dv">-1</span>)<span class="sc">+</span>i]</span>
+<span id="cb95-9"><a href="#cb95-9" aria-hidden="true" tabindex="-1"></a>  xtest <span class="ot">&lt;-</span> returns_exxon[k<span class="sc">+</span>i]</span>
+<span id="cb95-10"><a href="#cb95-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb95-11"><a href="#cb95-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ARIMA(1,0,1) + GARCH(1,1)</span></span>
+<span id="cb95-12"><a href="#cb95-12" aria-hidden="true" tabindex="-1"></a>  arima.fit <span class="ot">&lt;-</span> <span class="fu">Arima</span>(xtrain, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="at">include.drift =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb95-13"><a href="#cb95-13" aria-hidden="true" tabindex="-1"></a>  arima.res <span class="ot">&lt;-</span> <span class="fu">residuals</span>(arima.fit)</span>
+<span id="cb95-14"><a href="#cb95-14" aria-hidden="true" tabindex="-1"></a>  fit1 <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>, <span class="dv">1</span>), <span class="at">data =</span> arima.res, <span class="at">trace =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb95-15"><a href="#cb95-15" aria-hidden="true" tabindex="-1"></a>  fcast1 <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit1, <span class="at">n.ahead =</span> <span class="dv">1</span>)</span>
+<span id="cb95-16"><a href="#cb95-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb95-17"><a href="#cb95-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># GARCH(1,1)</span></span>
+<span id="cb95-18"><a href="#cb95-18" aria-hidden="true" tabindex="-1"></a>  returns_diff <span class="ot">&lt;-</span> <span class="fu">diff</span>(xtrain)  </span>
+<span id="cb95-19"><a href="#cb95-19" aria-hidden="true" tabindex="-1"></a>  fit2 <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>, <span class="dv">1</span>), <span class="at">data =</span> xtrain, <span class="at">trace =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb95-20"><a href="#cb95-20" aria-hidden="true" tabindex="-1"></a>  fcast2 <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit2, <span class="at">n.ahead =</span> <span class="dv">1</span>)</span>
+<span id="cb95-21"><a href="#cb95-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb95-22"><a href="#cb95-22" aria-hidden="true" tabindex="-1"></a>  err1 <span class="ot">&lt;-</span> <span class="fu">c</span>(err1, (fcast1<span class="sc">$</span>meanForecast <span class="sc">-</span> xtest)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb95-23"><a href="#cb95-23" aria-hidden="true" tabindex="-1"></a>  err2 <span class="ot">&lt;-</span> <span class="fu">c</span>(err2, (fcast2<span class="sc">$</span>meanForecast <span class="sc">-</span> xtest)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb95-24"><a href="#cb95-24" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb95-25"><a href="#cb95-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb95-26"><a href="#cb95-26" aria-hidden="true" tabindex="-1"></a>RMSE1 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>(err1))</span>
+<span id="cb95-27"><a href="#cb95-27" aria-hidden="true" tabindex="-1"></a>RMSE2 <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>(err2))</span></code></pre></div>
 </details>
 </div>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"The RMSE for model 1 -"</span>, RMSE1, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"The RMSE for model 1 -"</span>, RMSE1, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
-<pre><code>The RMSE for model 1 - 0.01608689 </code></pre>
+<pre><code>The RMSE for model 1 - 0.01608691 </code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb81"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb81-1"><a href="#cb81-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"The RMSE for model 2 -"</span>, RMSE2, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="#cb98-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"The RMSE for model 2 -"</span>, RMSE2, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>The RMSE for model 2 - 0.01608936 </code></pre>
@@ -1806,7 +2077,55 @@ Model df: 0.   Total lags used: 730.5</code></pre>
 <p>After performing cross-validation, we can see that Model 1 had slighlty lowest RMSE. Therefore, the best model according to diagnostics is Model 1: ARIMA(1,0,1) + GARCH(1,1)</p>
 </div>
 <div id="tabset-12-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-12-2-tab">
-
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="#cb100-1" aria-hidden="true" tabindex="-1"></a>k <span class="ot">&lt;-</span> <span class="dv">900</span></span>
+<span id="cb100-2"><a href="#cb100-2" aria-hidden="true" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="fu">length</span>(returns_chevron)</span>
+<span id="cb100-3"><a href="#cb100-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb100-4"><a href="#cb100-4" aria-hidden="true" tabindex="-1"></a>err1 <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb100-5"><a href="#cb100-5" aria-hidden="true" tabindex="-1"></a>err2 <span class="ot">&lt;-</span> <span class="fu">c</span>()</span>
+<span id="cb100-6"><a href="#cb100-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb100-7"><a href="#cb100-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>(n<span class="sc">-</span>k)) {</span>
+<span id="cb100-8"><a href="#cb100-8" aria-hidden="true" tabindex="-1"></a>  xtrain <span class="ot">&lt;-</span> returns_chevron[<span class="dv">1</span><span class="sc">:</span>(k<span class="dv">-1</span>)<span class="sc">+</span>i]</span>
+<span id="cb100-9"><a href="#cb100-9" aria-hidden="true" tabindex="-1"></a>  xtest <span class="ot">&lt;-</span> returns_chevron[k<span class="sc">+</span>i]</span>
+<span id="cb100-10"><a href="#cb100-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb100-11"><a href="#cb100-11" aria-hidden="true" tabindex="-1"></a>  <span class="co"># ARIMA(0,0,1) + GARCH(1,1)</span></span>
+<span id="cb100-12"><a href="#cb100-12" aria-hidden="true" tabindex="-1"></a>  arima.fit <span class="ot">&lt;-</span> <span class="fu">Arima</span>(xtrain, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>), <span class="at">include.drift =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb100-13"><a href="#cb100-13" aria-hidden="true" tabindex="-1"></a>  arima.res <span class="ot">&lt;-</span> <span class="fu">residuals</span>(arima.fit)</span>
+<span id="cb100-14"><a href="#cb100-14" aria-hidden="true" tabindex="-1"></a>  fit1 <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>, <span class="dv">1</span>), <span class="at">data =</span> arima.res, <span class="at">trace =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb100-15"><a href="#cb100-15" aria-hidden="true" tabindex="-1"></a>  fcast1 <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit1, <span class="at">n.ahead =</span> <span class="dv">1</span>)</span>
+<span id="cb100-16"><a href="#cb100-16" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb100-17"><a href="#cb100-17" aria-hidden="true" tabindex="-1"></a>  <span class="co"># GARCH(1,1)</span></span>
+<span id="cb100-18"><a href="#cb100-18" aria-hidden="true" tabindex="-1"></a>  returns_diff <span class="ot">&lt;-</span> <span class="fu">diff</span>(xtrain)  </span>
+<span id="cb100-19"><a href="#cb100-19" aria-hidden="true" tabindex="-1"></a>  fit2 <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>, <span class="dv">1</span>), <span class="at">data =</span> xtrain, <span class="at">trace =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb100-20"><a href="#cb100-20" aria-hidden="true" tabindex="-1"></a>  fcast2 <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit2, <span class="at">n.ahead =</span> <span class="dv">1</span>)</span>
+<span id="cb100-21"><a href="#cb100-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb100-22"><a href="#cb100-22" aria-hidden="true" tabindex="-1"></a>  err1 <span class="ot">&lt;-</span> <span class="fu">c</span>(err1, (fcast1<span class="sc">$</span>meanForecast <span class="sc">-</span> xtest)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb100-23"><a href="#cb100-23" aria-hidden="true" tabindex="-1"></a>  err2 <span class="ot">&lt;-</span> <span class="fu">c</span>(err2, (fcast2<span class="sc">$</span>meanForecast <span class="sc">-</span> xtest)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb100-24"><a href="#cb100-24" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb100-25"><a href="#cb100-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb100-26"><a href="#cb100-26" aria-hidden="true" tabindex="-1"></a>RMSE1_c <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>(err1))</span>
+<span id="cb100-27"><a href="#cb100-27" aria-hidden="true" tabindex="-1"></a>RMSE2_c <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>(err2))</span></code></pre></div>
+</details>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="#cb101-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"The RMSE for model 1 -"</span>, RMSE1_c, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>The RMSE for model 1 - 0.01696923 </code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="#cb103-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"The RMSE for model 2 -"</span>, RMSE2_c, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>The RMSE for model 2 - 0.01697319 </code></pre>
+</div>
+</div>
+<p>After performing cross-validation, we can see both models perform comparablybut Model 1 had slighlty lowest RMSE. Therefore, the best model according to diagnostics is Model 1: ARIMA(0,0,1) + GARCH(1,1)</p>
 </div>
 </div>
 </div>
@@ -1821,17 +2140,17 @@ Model df: 0.   Total lags used: 730.5</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb83"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb83-1"><a href="#cb83-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Fit the ARIMA model</span></span>
-<span id="cb83-2"><a href="#cb83-2" aria-hidden="true" tabindex="-1"></a>arima_exxon_final <span class="ot">&lt;-</span> <span class="fu">Arima</span>(returns_exxon, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>))</span>
-<span id="cb83-3"><a href="#cb83-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb83-4"><a href="#cb83-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Extract the residuals</span></span>
-<span id="cb83-5"><a href="#cb83-5" aria-hidden="true" tabindex="-1"></a>residuals_exxon_final <span class="ot">&lt;-</span> <span class="fu">residuals</span>(arima_exxon_final)</span>
-<span id="cb83-6"><a href="#cb83-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb83-7"><a href="#cb83-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the GARCH model on the residuals</span></span>
-<span id="cb83-8"><a href="#cb83-8" aria-hidden="true" tabindex="-1"></a>garch_exxon_final <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">data =</span> residuals_exxon_final, <span class="at">trace =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb83-9"><a href="#cb83-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb83-10"><a href="#cb83-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb83-11"><a href="#cb83-11" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(garch_exxon_final)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="#cb105-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Fit the ARIMA model</span></span>
+<span id="cb105-2"><a href="#cb105-2" aria-hidden="true" tabindex="-1"></a>arima_exxon_final <span class="ot">&lt;-</span> <span class="fu">Arima</span>(returns_exxon, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">1</span>))</span>
+<span id="cb105-3"><a href="#cb105-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb105-4"><a href="#cb105-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Extract the residuals</span></span>
+<span id="cb105-5"><a href="#cb105-5" aria-hidden="true" tabindex="-1"></a>residuals_exxon_final <span class="ot">&lt;-</span> <span class="fu">residuals</span>(arima_exxon_final)</span>
+<span id="cb105-6"><a href="#cb105-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb105-7"><a href="#cb105-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the GARCH model on the residuals</span></span>
+<span id="cb105-8"><a href="#cb105-8" aria-hidden="true" tabindex="-1"></a>garch_exxon_final <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">data =</span> residuals_exxon_final, <span class="at">trace =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb105-9"><a href="#cb105-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb105-10"><a href="#cb105-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb105-11"><a href="#cb105-11" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(garch_exxon_final)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1844,7 +2163,7 @@ Call:
 
 Mean and Variance Equation:
  data ~ garch(1, 1)
-&lt;environment: 0x12be5ec30&gt;
+&lt;environment: 0x10da49a88&gt;
  [data = residuals_exxon_final]
 
 Conditional Distribution:
@@ -1867,27 +2186,27 @@ beta1  9.189e-01   6.110e-03  150.407  &lt; 2e-16 ***
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Log Likelihood:
- 24997.65    normalized:  2.891574 
+ 24997.66    normalized:  2.891574 
 
 Description:
- Sun Apr 28 02:36:30 2024 by user:  
+ Sun Apr 28 15:27:26 2024 by user:  
 
 
 Standardised Residuals Tests:
                                 Statistic p-Value   
- Jarque-Bera Test   R    Chi^2  664.2732  0         
+ Jarque-Bera Test   R    Chi^2  664.2605  0         
  Shapiro-Wilk Test  R    W      NA        NA        
- Ljung-Box Test     R    Q(10)  20.21923  0.02724602
- Ljung-Box Test     R    Q(15)  22.61764  0.09260248
- Ljung-Box Test     R    Q(20)  32.17146  0.04150525
- Ljung-Box Test     R^2  Q(10)  20.8043   0.0225003 
- Ljung-Box Test     R^2  Q(15)  28.27121  0.01993171
- Ljung-Box Test     R^2  Q(20)  30.62473  0.06034362
- LM Arch Test       R    TR^2   24.05791  0.0199752 
+ Ljung-Box Test     R    Q(10)  20.21947  0.02724386
+ Ljung-Box Test     R    Q(15)  22.61768  0.09260144
+ Ljung-Box Test     R    Q(20)  32.1715   0.0415048 
+ Ljung-Box Test     R^2  Q(10)  20.80417  0.02250123
+ Ljung-Box Test     R^2  Q(15)  28.27111  0.01993234
+ Ljung-Box Test     R^2  Q(20)  30.62472  0.06034371
+ LM Arch Test       R    TR^2   24.0576   0.01997717
 
 Information Criterion Statistics:
       AIC       BIC       SIC      HQIC 
--5.782222 -5.778953 -5.782222 -5.781107 </code></pre>
+-5.782223 -5.778954 -5.782223 -5.781108 </code></pre>
 </div>
 </div>
 <ul>
@@ -1899,7 +2218,88 @@ Information Criterion Statistics:
 <p>The ARIMA(1,0,1) + GARCH(1,1) effectively captures the volatility dynamics in Exxon Mobil’s stock returns.</p>
 </div>
 <div id="tabset-13-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-13-2-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="#cb107-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Fit the ARIMA model</span></span>
+<span id="cb107-2"><a href="#cb107-2" aria-hidden="true" tabindex="-1"></a>arima_chevron_final <span class="ot">&lt;-</span> <span class="fu">Arima</span>(returns_chevron, <span class="at">order =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>))</span>
+<span id="cb107-3"><a href="#cb107-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb107-4"><a href="#cb107-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Extract the residuals</span></span>
+<span id="cb107-5"><a href="#cb107-5" aria-hidden="true" tabindex="-1"></a>residuals_chevron_final <span class="ot">&lt;-</span> <span class="fu">residuals</span>(arima_chevron_final)</span>
+<span id="cb107-6"><a href="#cb107-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb107-7"><a href="#cb107-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Fit the GARCH model on the residuals</span></span>
+<span id="cb107-8"><a href="#cb107-8" aria-hidden="true" tabindex="-1"></a>garch_chevron_final <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">data =</span> residuals_chevron_final, <span class="at">trace =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb107-9"><a href="#cb107-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb107-10"><a href="#cb107-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb107-11"><a href="#cb107-11" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(garch_chevron_final)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Title:
+ GARCH Modelling 
 
+Call:
+ garchFit(formula = ~garch(1, 1), data = residuals_chevron_final, 
+    trace = FALSE) 
+
+Mean and Variance Equation:
+ data ~ garch(1, 1)
+&lt;environment: 0x1124061c8&gt;
+ [data = residuals_chevron_final]
+
+Conditional Distribution:
+ norm 
+
+Coefficient(s):
+         mu        omega       alpha1        beta1  
+-3.7460e-08   3.9502e-06   7.0413e-02   9.1319e-01  
+
+Std. Errors:
+ based on Hessian 
+
+Error Analysis:
+         Estimate  Std. Error  t value Pr(&gt;|t|)    
+mu     -3.746e-08   1.393e-04    0.000        1    
+omega   3.950e-06   5.741e-07    6.881 5.94e-12 ***
+alpha1  7.041e-02   5.254e-03   13.402  &lt; 2e-16 ***
+beta1   9.132e-01   6.489e-03  140.719  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Log Likelihood:
+ 24533.25    normalized:  2.837854 
+
+Description:
+ Sun Apr 28 15:27:26 2024 by user:  
+
+
+Standardised Residuals Tests:
+                                Statistic p-Value     
+ Jarque-Bera Test   R    Chi^2  979.4794  0           
+ Shapiro-Wilk Test  R    W      NA        NA          
+ Ljung-Box Test     R    Q(10)  35.03301  0.0001232557
+ Ljung-Box Test     R    Q(15)  39.04026  0.0006320363
+ Ljung-Box Test     R    Q(20)  50.24885  0.0002040166
+ Ljung-Box Test     R^2  Q(10)  18.4405   0.04797226  
+ Ljung-Box Test     R^2  Q(15)  19.6476   0.1858717   
+ Ljung-Box Test     R^2  Q(20)  26.45853  0.1511966   
+ LM Arch Test       R    TR^2   18.51628  0.1008901   
+
+Information Criterion Statistics:
+      AIC       BIC       SIC      HQIC 
+-5.674782 -5.671514 -5.674783 -5.673668 </code></pre>
+</div>
+</div>
+<ul>
+<li>All the coefficients are significant</li>
+<li>The log likelihood of the model is 24533.25, suggesting a very good fit to the data.</li>
+<li>Ljung-Box Tests on Residuals and Squared Residuals:
+<ul>
+<li>For Residuals: The low p-values in earlier lags suggest significant autocorrelation</li>
+<li>For Squared Residuals: The higher p-values in the squared residuals suggest less evidence of autocorrelation in the volatility</li>
+</ul></li>
+</ul>
+<p>The ARIMA(0,0,1) + GARCH(1,1) effectively captures the volatility dynamics as evidenced by the significant coefficients for all model parameters.</p>
 </div>
 </div>
 </div>
@@ -1914,123 +2314,240 @@ Information Criterion Statistics:
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="#cb85-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(garch_exxon_final, <span class="at">n.ahead =</span> <span class="dv">100</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="#cb109-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(garch_exxon_final, <span class="at">n.ahead =</span> <span class="dv">100</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-47-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-55-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 <div class="cell-output cell-output-stdout">
 <pre><code>    meanForecast  meanError standardDeviation lowerInterval upperInterval
-1   2.384065e-05 0.01155372        0.01155372   -0.02262104    0.02266872
-2   2.384065e-05 0.01160034        0.01160034   -0.02271241    0.02276010
-3   2.384065e-05 0.01164630        0.01164630   -0.02280249    0.02285017
-4   2.384065e-05 0.01169161        0.01169161   -0.02289129    0.02293897
-5   2.384065e-05 0.01173628        0.01173628   -0.02297885    0.02302653
-6   2.384065e-05 0.01178033        0.01178033   -0.02306518    0.02311286
-7   2.384065e-05 0.01182376        0.01182376   -0.02315031    0.02319799
-8   2.384065e-05 0.01186659        0.01186659   -0.02323426    0.02328194
-9   2.384065e-05 0.01190884        0.01190884   -0.02331705    0.02336473
-10  2.384065e-05 0.01195050        0.01195050   -0.02339870    0.02344638
-11  2.384065e-05 0.01199159        0.01199159   -0.02347924    0.02352692
-12  2.384065e-05 0.01203212        0.01203212   -0.02355868    0.02360636
-13  2.384065e-05 0.01207210        0.01207210   -0.02363705    0.02368473
-14  2.384065e-05 0.01211155        0.01211155   -0.02371435    0.02376203
-15  2.384065e-05 0.01215046        0.01215046   -0.02379062    0.02383830
-16  2.384065e-05 0.01218885        0.01218885   -0.02386586    0.02391355
-17  2.384065e-05 0.01222673        0.01222673   -0.02394010    0.02398779
-18  2.384065e-05 0.01226410        0.01226410   -0.02401336    0.02406104
-19  2.384065e-05 0.01230098        0.01230098   -0.02408564    0.02413332
-20  2.384065e-05 0.01233738        0.01233738   -0.02415697    0.02420465
-21  2.384065e-05 0.01237329        0.01237329   -0.02422736    0.02427505
-22  2.384065e-05 0.01240874        0.01240874   -0.02429683    0.02434452
-23  2.384065e-05 0.01244372        0.01244372   -0.02436540    0.02441308
-24  2.384065e-05 0.01247824        0.01247824   -0.02443307    0.02448075
-25  2.384065e-05 0.01251232        0.01251232   -0.02449986    0.02454754
-26  2.384065e-05 0.01254596        0.01254596   -0.02456579    0.02461347
-27  2.384065e-05 0.01257917        0.01257917   -0.02463087    0.02467855
-28  2.384065e-05 0.01261194        0.01261194   -0.02469511    0.02474280
-29  2.384065e-05 0.01264430        0.01264430   -0.02475854    0.02480622
-30  2.384065e-05 0.01267625        0.01267625   -0.02482115    0.02486883
-31  2.384065e-05 0.01270779        0.01270779   -0.02488296    0.02493064
-32  2.384065e-05 0.01273892        0.01273892   -0.02494399    0.02499167
-33  2.384065e-05 0.01276967        0.01276967   -0.02500425    0.02505193
-34  2.384065e-05 0.01280003        0.01280003   -0.02506375    0.02511143
-35  2.384065e-05 0.01283000        0.01283000   -0.02512250    0.02517018
-36  2.384065e-05 0.01285960        0.01285960   -0.02518051    0.02522819
-37  2.384065e-05 0.01288883        0.01288883   -0.02523780    0.02528548
-38  2.384065e-05 0.01291769        0.01291769   -0.02529437    0.02534205
-39  2.384065e-05 0.01294620        0.01294620   -0.02535024    0.02539792
-40  2.384065e-05 0.01297435        0.01297435   -0.02540541    0.02545309
-41  2.384065e-05 0.01300215        0.01300215   -0.02545990    0.02550758
-42  2.384065e-05 0.01302961        0.01302961   -0.02551372    0.02556140
-43  2.384065e-05 0.01305673        0.01305673   -0.02556687    0.02561455
-44  2.384065e-05 0.01308351        0.01308351   -0.02561937    0.02566705
-45  2.384065e-05 0.01310997        0.01310997   -0.02567123    0.02571891
-46  2.384065e-05 0.01313610        0.01313610   -0.02572245    0.02577013
-47  2.384065e-05 0.01316192        0.01316192   -0.02577305    0.02582073
-48  2.384065e-05 0.01318742        0.01318742   -0.02582303    0.02587071
-49  2.384065e-05 0.01321261        0.01321261   -0.02587240    0.02592008
-50  2.384065e-05 0.01323750        0.01323750   -0.02592118    0.02596886
-51  2.384065e-05 0.01326208        0.01326208   -0.02596936    0.02601704
-52  2.384065e-05 0.01328637        0.01328637   -0.02601696    0.02606464
-53  2.384065e-05 0.01331036        0.01331036   -0.02606399    0.02611167
-54  2.384065e-05 0.01333407        0.01333407   -0.02611045    0.02615814
-55  2.384065e-05 0.01335749        0.01335749   -0.02615636    0.02620404
-56  2.384065e-05 0.01338063        0.01338063   -0.02620172    0.02624940
-57  2.384065e-05 0.01340350        0.01340350   -0.02624653    0.02629421
-58  2.384065e-05 0.01342609        0.01342609   -0.02629081    0.02633849
-59  2.384065e-05 0.01344841        0.01344841   -0.02633456    0.02638224
-60  2.384065e-05 0.01347047        0.01347047   -0.02637780    0.02642548
-61  2.384065e-05 0.01349227        0.01349227   -0.02642052    0.02646820
-62  2.384065e-05 0.01351380        0.01351380   -0.02646273    0.02651041
-63  2.384065e-05 0.01353509        0.01353509   -0.02650444    0.02655213
-64  2.384065e-05 0.01355612        0.01355612   -0.02654567    0.02659335
-65  2.384065e-05 0.01357690        0.01357690   -0.02658640    0.02663409
-66  2.384065e-05 0.01359745        0.01359745   -0.02662666    0.02667434
-67  2.384065e-05 0.01361774        0.01361774   -0.02666645    0.02671413
-68  2.384065e-05 0.01363781        0.01363781   -0.02670577    0.02675345
-69  2.384065e-05 0.01365763        0.01365763   -0.02674463    0.02679231
-70  2.384065e-05 0.01367723        0.01367723   -0.02678303    0.02683071
-71  2.384065e-05 0.01369659        0.01369659   -0.02682099    0.02686867
-72  2.384065e-05 0.01371574        0.01371574   -0.02685851    0.02690619
-73  2.384065e-05 0.01373465        0.01373465   -0.02689559    0.02694327
-74  2.384065e-05 0.01375335        0.01375335   -0.02693224    0.02697992
-75  2.384065e-05 0.01377184        0.01377184   -0.02696846    0.02701614
-76  2.384065e-05 0.01379010        0.01379010   -0.02700427    0.02705195
-77  2.384065e-05 0.01380816        0.01380816   -0.02703966    0.02708734
-78  2.384065e-05 0.01382601        0.01382601   -0.02707464    0.02712232
-79  2.384065e-05 0.01384365        0.01384365   -0.02710922    0.02715690
-80  2.384065e-05 0.01386109        0.01386109   -0.02714340    0.02719109
-81  2.384065e-05 0.01387833        0.01387833   -0.02717719    0.02722487
-82  2.384065e-05 0.01389538        0.01389538   -0.02721060    0.02725828
-83  2.384065e-05 0.01391222        0.01391222   -0.02724361    0.02729130
-84  2.384065e-05 0.01392888        0.01392888   -0.02727626    0.02732394
-85  2.384065e-05 0.01394534        0.01394534   -0.02730852    0.02735621
-86  2.384065e-05 0.01396162        0.01396162   -0.02734042    0.02738811
-87  2.384065e-05 0.01397771        0.01397771   -0.02737196    0.02741964
-88  2.384065e-05 0.01399361        0.01399361   -0.02740314    0.02745082
-89  2.384065e-05 0.01400934        0.01400934   -0.02743396    0.02748164
-90  2.384065e-05 0.01402489        0.01402489   -0.02746444    0.02751212
-91  2.384065e-05 0.01404026        0.01404026   -0.02749456    0.02754224
-92  2.384065e-05 0.01405546        0.01405546   -0.02752435    0.02757203
-93  2.384065e-05 0.01407048        0.01407048   -0.02755380    0.02760148
-94  2.384065e-05 0.01408534        0.01408534   -0.02758291    0.02763059
-95  2.384065e-05 0.01410003        0.01410003   -0.02761170    0.02765938
-96  2.384065e-05 0.01411455        0.01411455   -0.02764016    0.02768785
-97  2.384065e-05 0.01412891        0.01412891   -0.02766831    0.02771599
-98  2.384065e-05 0.01414310        0.01414310   -0.02769613    0.02774381
-99  2.384065e-05 0.01415714        0.01415714   -0.02772364    0.02777133
-100 2.384065e-05 0.01417102        0.01417102   -0.02775085    0.02779853</code></pre>
+1   2.384125e-05 0.01155372        0.01155372   -0.02262104    0.02266872
+2   2.384125e-05 0.01160034        0.01160034   -0.02271241    0.02276010
+3   2.384125e-05 0.01164630        0.01164630   -0.02280249    0.02285017
+4   2.384125e-05 0.01169161        0.01169161   -0.02289129    0.02293897
+5   2.384125e-05 0.01173628        0.01173628   -0.02297885    0.02302653
+6   2.384125e-05 0.01178033        0.01178033   -0.02306518    0.02311286
+7   2.384125e-05 0.01182376        0.01182376   -0.02315031    0.02319799
+8   2.384125e-05 0.01186659        0.01186659   -0.02323426    0.02328194
+9   2.384125e-05 0.01190884        0.01190884   -0.02331705    0.02336473
+10  2.384125e-05 0.01195050        0.01195050   -0.02339870    0.02344638
+11  2.384125e-05 0.01199159        0.01199159   -0.02347924    0.02352692
+12  2.384125e-05 0.01203212        0.01203212   -0.02355868    0.02360636
+13  2.384125e-05 0.01207210        0.01207210   -0.02363704    0.02368473
+14  2.384125e-05 0.01211155        0.01211155   -0.02371435    0.02376203
+15  2.384125e-05 0.01215046        0.01215046   -0.02379062    0.02383830
+16  2.384125e-05 0.01218885        0.01218885   -0.02386586    0.02391354
+17  2.384125e-05 0.01222673        0.01222673   -0.02394010    0.02398779
+18  2.384125e-05 0.01226410        0.01226410   -0.02401336    0.02406104
+19  2.384125e-05 0.01230098        0.01230098   -0.02408564    0.02413332
+20  2.384125e-05 0.01233738        0.01233738   -0.02415697    0.02420465
+21  2.384125e-05 0.01237329        0.01237329   -0.02422736    0.02427505
+22  2.384125e-05 0.01240873        0.01240873   -0.02429683    0.02434451
+23  2.384125e-05 0.01244372        0.01244372   -0.02436540    0.02441308
+24  2.384125e-05 0.01247824        0.01247824   -0.02443307    0.02448075
+25  2.384125e-05 0.01251232        0.01251232   -0.02449986    0.02454754
+26  2.384125e-05 0.01254596        0.01254596   -0.02456579    0.02461347
+27  2.384125e-05 0.01257916        0.01257916   -0.02463087    0.02467855
+28  2.384125e-05 0.01261194        0.01261194   -0.02469511    0.02474279
+29  2.384125e-05 0.01264430        0.01264430   -0.02475853    0.02480622
+30  2.384125e-05 0.01267625        0.01267625   -0.02482115    0.02486883
+31  2.384125e-05 0.01270779        0.01270779   -0.02488296    0.02493064
+32  2.384125e-05 0.01273892        0.01273892   -0.02494399    0.02499167
+33  2.384125e-05 0.01276967        0.01276967   -0.02500425    0.02505193
+34  2.384125e-05 0.01280002        0.01280002   -0.02506375    0.02511143
+35  2.384125e-05 0.01283000        0.01283000   -0.02512250    0.02517018
+36  2.384125e-05 0.01285960        0.01285960   -0.02518051    0.02522819
+37  2.384125e-05 0.01288883        0.01288883   -0.02523779    0.02528548
+38  2.384125e-05 0.01291769        0.01291769   -0.02529437    0.02534205
+39  2.384125e-05 0.01294619        0.01294619   -0.02535023    0.02539792
+40  2.384125e-05 0.01297434        0.01297434   -0.02540541    0.02545309
+41  2.384125e-05 0.01300215        0.01300215   -0.02545990    0.02550758
+42  2.384125e-05 0.01302960        0.01302960   -0.02551371    0.02556140
+43  2.384125e-05 0.01305672        0.01305672   -0.02556687    0.02561455
+44  2.384125e-05 0.01308351        0.01308351   -0.02561937    0.02566705
+45  2.384125e-05 0.01310997        0.01310997   -0.02567123    0.02571891
+46  2.384125e-05 0.01313610        0.01313610   -0.02572245    0.02577013
+47  2.384125e-05 0.01316192        0.01316192   -0.02577304    0.02582073
+48  2.384125e-05 0.01318742        0.01318742   -0.02582302    0.02587071
+49  2.384125e-05 0.01321261        0.01321261   -0.02587240    0.02592008
+50  2.384125e-05 0.01323750        0.01323750   -0.02592117    0.02596886
+51  2.384125e-05 0.01326208        0.01326208   -0.02596936    0.02601704
+52  2.384125e-05 0.01328637        0.01328637   -0.02601696    0.02606464
+53  2.384125e-05 0.01331036        0.01331036   -0.02606399    0.02611167
+54  2.384125e-05 0.01333407        0.01333407   -0.02611045    0.02615813
+55  2.384125e-05 0.01335749        0.01335749   -0.02615636    0.02620404
+56  2.384125e-05 0.01338063        0.01338063   -0.02620171    0.02624940
+57  2.384125e-05 0.01340350        0.01340350   -0.02624653    0.02629421
+58  2.384125e-05 0.01342609        0.01342609   -0.02629081    0.02633849
+59  2.384125e-05 0.01344841        0.01344841   -0.02633456    0.02638224
+60  2.384125e-05 0.01347047        0.01347047   -0.02637779    0.02642548
+61  2.384125e-05 0.01349227        0.01349227   -0.02642051    0.02646820
+62  2.384125e-05 0.01351380        0.01351380   -0.02646273    0.02651041
+63  2.384125e-05 0.01353509        0.01353509   -0.02650444    0.02655212
+64  2.384125e-05 0.01355612        0.01355612   -0.02654566    0.02659335
+65  2.384125e-05 0.01357690        0.01357690   -0.02658640    0.02663408
+66  2.384125e-05 0.01359744        0.01359744   -0.02662666    0.02667434
+67  2.384125e-05 0.01361774        0.01361774   -0.02666645    0.02671413
+68  2.384125e-05 0.01363780        0.01363780   -0.02670576    0.02675345
+69  2.384125e-05 0.01365763        0.01365763   -0.02674462    0.02679231
+70  2.384125e-05 0.01367723        0.01367723   -0.02678303    0.02683071
+71  2.384125e-05 0.01369659        0.01369659   -0.02682099    0.02686867
+72  2.384125e-05 0.01371573        0.01371573   -0.02685850    0.02690619
+73  2.384125e-05 0.01373465        0.01373465   -0.02689558    0.02694327
+74  2.384125e-05 0.01375335        0.01375335   -0.02693223    0.02697992
+75  2.384125e-05 0.01377183        0.01377183   -0.02696846    0.02701614
+76  2.384125e-05 0.01379010        0.01379010   -0.02700426    0.02705195
+77  2.384125e-05 0.01380816        0.01380816   -0.02703966    0.02708734
+78  2.384125e-05 0.01382601        0.01382601   -0.02707464    0.02712232
+79  2.384125e-05 0.01384365        0.01384365   -0.02710922    0.02715690
+80  2.384125e-05 0.01386109        0.01386109   -0.02714340    0.02719108
+81  2.384125e-05 0.01387833        0.01387833   -0.02717719    0.02722487
+82  2.384125e-05 0.01389538        0.01389538   -0.02721059    0.02725828
+83  2.384125e-05 0.01391222        0.01391222   -0.02724361    0.02729130
+84  2.384125e-05 0.01392888        0.01392888   -0.02727625    0.02732394
+85  2.384125e-05 0.01394534        0.01394534   -0.02730852    0.02735621
+86  2.384125e-05 0.01396162        0.01396162   -0.02734042    0.02738811
+87  2.384125e-05 0.01397771        0.01397771   -0.02737196    0.02741964
+88  2.384125e-05 0.01399361        0.01399361   -0.02740314    0.02745082
+89  2.384125e-05 0.01400934        0.01400934   -0.02743396    0.02748164
+90  2.384125e-05 0.01402489        0.01402489   -0.02746443    0.02751212
+91  2.384125e-05 0.01404026        0.01404026   -0.02749456    0.02754224
+92  2.384125e-05 0.01405546        0.01405546   -0.02752435    0.02757203
+93  2.384125e-05 0.01407048        0.01407048   -0.02755380    0.02760148
+94  2.384125e-05 0.01408534        0.01408534   -0.02758291    0.02763059
+95  2.384125e-05 0.01410002        0.01410002   -0.02761170    0.02765938
+96  2.384125e-05 0.01411455        0.01411455   -0.02764016    0.02768784
+97  2.384125e-05 0.01412891        0.01412891   -0.02766830    0.02771599
+98  2.384125e-05 0.01414310        0.01414310   -0.02769613    0.02774381
+99  2.384125e-05 0.01415714        0.01415714   -0.02772364    0.02777132
+100 2.384125e-05 0.01417102        0.01417102   -0.02775085    0.02779853</code></pre>
 </div>
 </div>
 <p>Future will be similar but with higher uncertainty because of the bigger confidence intervals.</p>
 </div>
 <div id="tabset-14-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-14-2-tab">
-
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="#cb111-1" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(garch_chevron_final, <span class="at">n.ahead =</span> <span class="dv">100</span>, <span class="at">plot =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-56-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     meanForecast  meanError standardDeviation lowerInterval upperInterval
+1   -3.746004e-08 0.01043131        0.01043131   -0.02044503    0.02044496
+2   -3.746004e-08 0.01053461        0.01053461   -0.02064749    0.02064741
+3   -3.746004e-08 0.01063523        0.01063523   -0.02084471    0.02084463
+4   -3.746004e-08 0.01073328        0.01073328   -0.02103689    0.02103681
+5   -3.746004e-08 0.01082886        0.01082886   -0.02122422    0.02122415
+6   -3.746004e-08 0.01092206        0.01092206   -0.02140688    0.02140681
+7   -3.746004e-08 0.01101296        0.01101296   -0.02158504    0.02158497
+8   -3.746004e-08 0.01110164        0.01110164   -0.02175885    0.02175878
+9   -3.746004e-08 0.01118818        0.01118818   -0.02192847    0.02192840
+10  -3.746004e-08 0.01127266        0.01127266   -0.02209404    0.02209396
+11  -3.746004e-08 0.01135513        0.01135513   -0.02225569    0.02225561
+12  -3.746004e-08 0.01143568        0.01143568   -0.02241355    0.02241348
+13  -3.746004e-08 0.01151435        0.01151435   -0.02256775    0.02256767
+14  -3.746004e-08 0.01159121        0.01159121   -0.02271839    0.02271832
+15  -3.746004e-08 0.01166632        0.01166632   -0.02286560    0.02286552
+16  -3.746004e-08 0.01173972        0.01173972   -0.02300947    0.02300940
+17  -3.746004e-08 0.01181148        0.01181148   -0.02315012    0.02315004
+18  -3.746004e-08 0.01188164        0.01188164   -0.02328763    0.02328755
+19  -3.746004e-08 0.01195025        0.01195025   -0.02342209    0.02342202
+20  -3.746004e-08 0.01201735        0.01201735   -0.02355360    0.02355353
+21  -3.746004e-08 0.01208298        0.01208298   -0.02368224    0.02368217
+22  -3.746004e-08 0.01214719        0.01214719   -0.02380810    0.02380802
+23  -3.746004e-08 0.01221002        0.01221002   -0.02393124    0.02393117
+24  -3.746004e-08 0.01227151        0.01227151   -0.02405175    0.02405168
+25  -3.746004e-08 0.01233169        0.01233169   -0.02416970    0.02416963
+26  -3.746004e-08 0.01239059        0.01239059   -0.02428516    0.02428508
+27  -3.746004e-08 0.01244826        0.01244826   -0.02439818    0.02439811
+28  -3.746004e-08 0.01250473        0.01250473   -0.02450885    0.02450878
+29  -3.746004e-08 0.01256002        0.01256002   -0.02461722    0.02461714
+30  -3.746004e-08 0.01261416        0.01261416   -0.02472334    0.02472327
+31  -3.746004e-08 0.01266720        0.01266720   -0.02482729    0.02482721
+32  -3.746004e-08 0.01271914        0.01271914   -0.02492910    0.02492903
+33  -3.746004e-08 0.01277003        0.01277003   -0.02502884    0.02502877
+34  -3.746004e-08 0.01281989        0.01281989   -0.02512656    0.02512649
+35  -3.746004e-08 0.01286874        0.01286874   -0.02522231    0.02522224
+36  -3.746004e-08 0.01291661        0.01291661   -0.02531614    0.02531606
+37  -3.746004e-08 0.01296353        0.01296353   -0.02540808    0.02540801
+38  -3.746004e-08 0.01300951        0.01300951   -0.02549820    0.02549812
+39  -3.746004e-08 0.01305457        0.01305457   -0.02558653    0.02558645
+40  -3.746004e-08 0.01309875        0.01309875   -0.02567311    0.02567304
+41  -3.746004e-08 0.01314206        0.01314206   -0.02575799    0.02575792
+42  -3.746004e-08 0.01318451        0.01318451   -0.02584121    0.02584113
+43  -3.746004e-08 0.01322614        0.01322614   -0.02592280    0.02592272
+44  -3.746004e-08 0.01326696        0.01326696   -0.02600280    0.02600273
+45  -3.746004e-08 0.01330699        0.01330699   -0.02608125    0.02608118
+46  -3.746004e-08 0.01334624        0.01334624   -0.02615819    0.02615811
+47  -3.746004e-08 0.01338474        0.01338474   -0.02623364    0.02623357
+48  -3.746004e-08 0.01342250        0.01342250   -0.02630765    0.02630757
+49  -3.746004e-08 0.01345953        0.01345953   -0.02638024    0.02638016
+50  -3.746004e-08 0.01349586        0.01349586   -0.02645144    0.02645137
+51  -3.746004e-08 0.01353150        0.01353150   -0.02652129    0.02652122
+52  -3.746004e-08 0.01356646        0.01356646   -0.02658982    0.02658974
+53  -3.746004e-08 0.01360077        0.01360077   -0.02665705    0.02665697
+54  -3.746004e-08 0.01363442        0.01363442   -0.02672301    0.02672294
+55  -3.746004e-08 0.01366744        0.01366744   -0.02678773    0.02678766
+56  -3.746004e-08 0.01369985        0.01369985   -0.02685124    0.02685117
+57  -3.746004e-08 0.01373164        0.01373164   -0.02691356    0.02691349
+58  -3.746004e-08 0.01376285        0.01376285   -0.02697472    0.02697465
+59  -3.746004e-08 0.01379347        0.01379347   -0.02703474    0.02703467
+60  -3.746004e-08 0.01382353        0.01382353   -0.02709365    0.02709357
+61  -3.746004e-08 0.01385302        0.01385302   -0.02715147    0.02715139
+62  -3.746004e-08 0.01388198        0.01388198   -0.02720821    0.02720814
+63  -3.746004e-08 0.01391040        0.01391040   -0.02726392    0.02726384
+64  -3.746004e-08 0.01393829        0.01393829   -0.02731859    0.02731852
+65  -3.746004e-08 0.01396568        0.01396568   -0.02737227    0.02737219
+66  -3.746004e-08 0.01399256        0.01399256   -0.02742496    0.02742489
+67  -3.746004e-08 0.01401896        0.01401896   -0.02747669    0.02747661
+68  -3.746004e-08 0.01404487        0.01404487   -0.02752748    0.02752740
+69  -3.746004e-08 0.01407031        0.01407031   -0.02757734    0.02757726
+70  -3.746004e-08 0.01409529        0.01409529   -0.02762629    0.02762622
+71  -3.746004e-08 0.01411981        0.01411981   -0.02767436    0.02767429
+72  -3.746004e-08 0.01414390        0.01414390   -0.02772156    0.02772149
+73  -3.746004e-08 0.01416754        0.01416754   -0.02776791    0.02776784
+74  -3.746004e-08 0.01419076        0.01419076   -0.02781342    0.02781335
+75  -3.746004e-08 0.01421357        0.01421357   -0.02785811    0.02785804
+76  -3.746004e-08 0.01423596        0.01423596   -0.02790201    0.02790193
+77  -3.746004e-08 0.01425795        0.01425795   -0.02794511    0.02794503
+78  -3.746004e-08 0.01427955        0.01427955   -0.02798744    0.02798736
+79  -3.746004e-08 0.01430076        0.01430076   -0.02802901    0.02802894
+80  -3.746004e-08 0.01432160        0.01432160   -0.02806985    0.02806977
+81  -3.746004e-08 0.01434206        0.01434206   -0.02810995    0.02810988
+82  -3.746004e-08 0.01436216        0.01436216   -0.02814935    0.02814927
+83  -3.746004e-08 0.01438190        0.01438190   -0.02818804    0.02818796
+84  -3.746004e-08 0.01440129        0.01440129   -0.02822604    0.02822597
+85  -3.746004e-08 0.01442034        0.01442034   -0.02826338    0.02826330
+86  -3.746004e-08 0.01443905        0.01443905   -0.02830005    0.02829998
+87  -3.746004e-08 0.01445743        0.01445743   -0.02833608    0.02833600
+88  -3.746004e-08 0.01447548        0.01447548   -0.02837146    0.02837139
+89  -3.746004e-08 0.01449322        0.01449322   -0.02840623    0.02840616
+90  -3.746004e-08 0.01451065        0.01451065   -0.02844039    0.02844031
+91  -3.746004e-08 0.01452777        0.01452777   -0.02847394    0.02847387
+92  -3.746004e-08 0.01454459        0.01454459   -0.02850691    0.02850683
+93  -3.746004e-08 0.01456111        0.01456111   -0.02853929    0.02853922
+94  -3.746004e-08 0.01457735        0.01457735   -0.02857112    0.02857104
+95  -3.746004e-08 0.01459330        0.01459330   -0.02860238    0.02860231
+96  -3.746004e-08 0.01460897        0.01460897   -0.02863310    0.02863302
+97  -3.746004e-08 0.01462437        0.01462437   -0.02866328    0.02866321
+98  -3.746004e-08 0.01463950        0.01463950   -0.02869294    0.02869286
+99  -3.746004e-08 0.01465437        0.01465437   -0.02872208    0.02872200
+100 -3.746004e-08 0.01466898        0.01466898   -0.02875071    0.02875064</code></pre>
+</div>
+</div>
+<p>The forecast plot, based on the ARIMA(0,0,1) + GARCH(1,1) model, shows future trends in the volatility of Chevron’s stock returns.</p>
+<p>The model anticipates continuity in the return patterns, the forecasted confidence intervals widen, signaling increased uncertainty about future price volatility.</p>
 </div>
 </div>
 </div>
@@ -2045,24 +2562,27 @@ Information Criterion Statistics:
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="#cb87-1" aria-hidden="true" tabindex="-1"></a>ht <span class="ot">&lt;-</span> garch_exxon_final<span class="sc">@</span>h.t </span>
-<span id="cb87-2"><a href="#cb87-2" aria-hidden="true" tabindex="-1"></a>exxon_stockprice_df <span class="ot">=</span> <span class="fu">data.frame</span>(Exxon_stockprice)</span>
-<span id="cb87-3"><a href="#cb87-3" aria-hidden="true" tabindex="-1"></a>exxon_stockprice_df <span class="ot">&lt;-</span> <span class="fu">head</span>(exxon_stockprice_df, <span class="sc">-</span><span class="dv">1</span>)</span>
-<span id="cb87-4"><a href="#cb87-4" aria-hidden="true" tabindex="-1"></a>exxon_stockprice_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(exxon_stockprice_df,<span class="fu">rownames</span>(exxon_stockprice_df))</span>
-<span id="cb87-5"><a href="#cb87-5" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(exxon_stockprice_df)[<span class="dv">7</span>] <span class="ot">=</span> <span class="st">"date"</span></span>
-<span id="cb87-6"><a href="#cb87-6" aria-hidden="true" tabindex="-1"></a>exxon_stockprice_df<span class="sc">$</span>date<span class="ot">&lt;-</span><span class="fu">as.Date</span>(exxon_stockprice_df<span class="sc">$</span>date,<span class="st">"%Y-%m-%d"</span>)</span>
-<span id="cb87-7"><a href="#cb87-7" aria-hidden="true" tabindex="-1"></a>data_spot <span class="ot">=</span> <span class="fu">data.frame</span>(ht,exxon_stockprice_df<span class="sc">$</span>date)</span>
-<span id="cb87-8"><a href="#cb87-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb87-9"><a href="#cb87-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb87-10"><a href="#cb87-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_spot, <span class="fu">aes</span>(<span class="at">y =</span> ht, <span class="at">x =</span> exxon_stockprice_df.date)) <span class="sc">+</span> <span class="fu">geom_line</span>() <span class="sc">+</span> <span class="fu">ylab</span>(<span class="st">'Conditional Variance'</span>) <span class="sc">+</span> <span class="fu">xlab</span>(<span class="st">'Date'</span>) <span class="sc">+</span></span>
-<span id="cb87-11"><a href="#cb87-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb87-12"><a href="#cb87-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Volatility plot for Exxon Mobil Stock Price"</span>) <span class="sc">+</span></span>
-<span id="cb87-13"><a href="#cb87-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="#cb113-1" aria-hidden="true" tabindex="-1"></a>ht <span class="ot">&lt;-</span> garch_exxon_final<span class="sc">@</span>h.t </span>
+<span id="cb113-2"><a href="#cb113-2" aria-hidden="true" tabindex="-1"></a>exxon_stockprice_df <span class="ot">=</span> <span class="fu">data.frame</span>(Exxon_stockprice)</span>
+<span id="cb113-3"><a href="#cb113-3" aria-hidden="true" tabindex="-1"></a>exxon_stockprice_df <span class="ot">&lt;-</span> <span class="fu">head</span>(exxon_stockprice_df, <span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb113-4"><a href="#cb113-4" aria-hidden="true" tabindex="-1"></a>exxon_stockprice_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(exxon_stockprice_df,<span class="fu">rownames</span>(exxon_stockprice_df))</span>
+<span id="cb113-5"><a href="#cb113-5" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(exxon_stockprice_df)[<span class="dv">7</span>] <span class="ot">=</span> <span class="st">"date"</span></span>
+<span id="cb113-6"><a href="#cb113-6" aria-hidden="true" tabindex="-1"></a>exxon_stockprice_df<span class="sc">$</span>date<span class="ot">&lt;-</span><span class="fu">as.Date</span>(exxon_stockprice_df<span class="sc">$</span>date,<span class="st">"%Y-%m-%d"</span>)</span>
+<span id="cb113-7"><a href="#cb113-7" aria-hidden="true" tabindex="-1"></a>data_spot <span class="ot">=</span> <span class="fu">data.frame</span>(ht,exxon_stockprice_df<span class="sc">$</span>date)</span>
+<span id="cb113-8"><a href="#cb113-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb113-9"><a href="#cb113-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb113-10"><a href="#cb113-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_spot, <span class="fu">aes</span>(<span class="at">y =</span> ht, <span class="at">x =</span> exxon_stockprice_df.date)) <span class="sc">+</span> </span>
+<span id="cb113-11"><a href="#cb113-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"dodgerblue3"</span>)  <span class="sc">+</span> </span>
+<span id="cb113-12"><a href="#cb113-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">'Conditional Variance'</span>) <span class="sc">+</span> </span>
+<span id="cb113-13"><a href="#cb113-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">'Date'</span>) <span class="sc">+</span></span>
+<span id="cb113-14"><a href="#cb113-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb113-15"><a href="#cb113-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Volatility plot for Exxon Mobil Stock Price"</span>) <span class="sc">+</span></span>
+<span id="cb113-16"><a href="#cb113-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-49-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-57-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -2070,7 +2590,35 @@ Information Criterion Statistics:
 <p>In the graph, we observe periods with peaks indicating heightened volatility, esp around 2008-2009 and then after 2020.</p>
 </div>
 <div id="tabset-15-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-15-2-tab">
-
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="#cb114-1" aria-hidden="true" tabindex="-1"></a>ht <span class="ot">&lt;-</span> garch_chevron_final<span class="sc">@</span>h.t </span>
+<span id="cb114-2"><a href="#cb114-2" aria-hidden="true" tabindex="-1"></a>chevron_stockprice_df <span class="ot">=</span> <span class="fu">data.frame</span>(Chevron_stockprice)</span>
+<span id="cb114-3"><a href="#cb114-3" aria-hidden="true" tabindex="-1"></a>chevron_stockprice_df <span class="ot">&lt;-</span> <span class="fu">head</span>(chevron_stockprice_df, <span class="sc">-</span><span class="dv">1</span>)</span>
+<span id="cb114-4"><a href="#cb114-4" aria-hidden="true" tabindex="-1"></a>chevron_stockprice_df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(chevron_stockprice_df,<span class="fu">rownames</span>(chevron_stockprice_df))</span>
+<span id="cb114-5"><a href="#cb114-5" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(chevron_stockprice_df)[<span class="dv">7</span>] <span class="ot">=</span> <span class="st">"date"</span></span>
+<span id="cb114-6"><a href="#cb114-6" aria-hidden="true" tabindex="-1"></a>chevron_stockprice_df<span class="sc">$</span>date<span class="ot">&lt;-</span><span class="fu">as.Date</span>(chevron_stockprice_df<span class="sc">$</span>date,<span class="st">"%Y-%m-%d"</span>)</span>
+<span id="cb114-7"><a href="#cb114-7" aria-hidden="true" tabindex="-1"></a>data_spot <span class="ot">=</span> <span class="fu">data.frame</span>(ht,chevron_stockprice_df<span class="sc">$</span>date)</span>
+<span id="cb114-8"><a href="#cb114-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb114-9"><a href="#cb114-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb114-10"><a href="#cb114-10" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(data_spot, <span class="fu">aes</span>(<span class="at">y =</span> ht, <span class="at">x =</span> chevron_stockprice_df.date)) <span class="sc">+</span></span>
+<span id="cb114-11"><a href="#cb114-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"dodgerblue3"</span>) <span class="sc">+</span></span>
+<span id="cb114-12"><a href="#cb114-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylab</span>(<span class="st">'Conditional Variance'</span>) <span class="sc">+</span></span>
+<span id="cb114-13"><a href="#cb114-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlab</span>(<span class="st">'Date'</span>) <span class="sc">+</span></span>
+<span id="cb114-14"><a href="#cb114-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb114-15"><a href="#cb114-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Volatility plot for Chevron Corporation Stock Price"</span>) <span class="sc">+</span></span>
+<span id="cb114-16"><a href="#cb114-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-58-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>In the graph, we observe periods with peaks indicating heightened volatility, esp around 2008-2009 and a significant spike after 2020.</p>
 </div>
 </div>
 </div>
@@ -2093,7 +2641,15 @@ Information Criterion Statistics:
 \]</span></p>
 </div>
 <div id="tabset-16-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-16-2-tab">
-
+<p>The best performing model was ARIMA(0,0,1) + GARCH(1,1). The model equation is as follows:</p>
+<p><strong>ARIMA(0,0,1)</strong> equation:</p>
+<p><span class="math display">\[
+Y_t = \theta_1 \epsilon_{t-1} + \epsilon_t
+\]</span></p>
+<p><strong>GARCH(1,1)</strong> equation:</p>
+<p><span class="math display">\[
+\sigma_{t}^{2} = \alpha_{0} + \alpha_{1}\epsilon^{2}_{t-1}+\beta_{1}\sigma^{2}_{t-1}
+\]</span></p>
 </div>
 </div>
 </div>

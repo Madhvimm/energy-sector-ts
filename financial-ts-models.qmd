@@ -386,6 +386,10 @@ grid.arrange(Chevron_acf_abs, Chevron_pacf_abs, nrow = 2)
 ```
 
 
+The ACF plot for the absolute returns shows significant autocorrelation across all the lags, this indicates persistent volatility in the stock price returns. This is also indicative of the volatility clustering seen in financial time series.
+
+The PACF plot shows significant correlations at the early lags (from 1 to 11). After these initial lags, the correlations in the PACF plot decrease and generally stay within the confidence interval
+
 
 ::: 
 
@@ -458,6 +462,14 @@ grid.arrange(Chevron_acf_se, Chevron_pacf_se, nrow = 2)
 ```
 
 
+The ACF plot here suggests that volatility shocks are persistent, with a high level of autocorrelation.
+
+The PACF plot for squared returns, while also showing some significant lags, doesn't carry the same pattern of persistence as the ACF. 
+
+
+This persistence of volatility as indicated by the squared returns ACF and PACF plots reinforces the need for a GARCH model in capturing the time-varying volatility in the stock returns
+
+
 
 ::: 
 
@@ -491,7 +503,6 @@ ArchTest(returns_exxon, lags=1, demean=TRUE)
 
 The result of the ARCH test indicates a Chi-squared statistic of 590.35 with 1 degree of freedom and a p-value less than 2.2e-16, which is extremely low. This leads us to reject the null hypothesis of no ARCH effects. There is very strong evidence of autoregressive conditional heteroskedasticity in the Exxon Mobil stock returns. 
 
-Given these results, it is appropriate to proceed with fitting an ARCH/GARCH model to Exxon Mobil's stock returns to better understand and predict the volatility patterns.
 
 
 ## Chevron Corporation
@@ -502,14 +513,21 @@ Given these results, it is appropriate to proceed with fitting an ARCH/GARCH mod
 #| warning: false
 #| output: true
 
-
+# Conduct the ARCH test
 ArchTest(returns_chevron, lags=1, demean=TRUE)
 
 
 ```
 
 
+The result of the ARCH test indicates a Chi-squared statistic of 260.57 with 1 degree of freedom and a p-value less than 2.2e-16, which is extremely low. This leads us to reject the null hypothesis of no ARCH effects. There is very strong evidence of autoregressive conditional heteroskedasticity.
+
+
 :::
+
+
+Given these results, it is appropriate to proceed with fitting an ARCH/GARCH model to the stock returns to better understand and predict the volatility patterns.
+
 
 
 # 6. Fitting ARIMA model
@@ -604,6 +622,9 @@ The standard errors are relatively small compared to the coefficients, suggestin
 
 ## Chevron Corporation
 
+To find the best ARIMA model, we search across different combinations of p (autoregressive terms), d (differencing terms), and q (moving average terms), and select the model with the lowest information criteria (AIC, BIC, and AICc).
+
+
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
@@ -614,7 +635,7 @@ The standard errors are relatively small compared to the coefficients, suggestin
 
 ARIMA.c=function(p1,p2,q1,q2,data){
 temp=c()
-d=1
+#d=1
 i=1
 temp= data.frame()
 ls=matrix(rep(NA,6*18),nrow=18)
@@ -676,7 +697,7 @@ fit_chevron <- Arima(returns_chevron,order=c(0,0,1))
 summary(fit_chevron)
 ```
 
-
+The zero autocorrelation at the first lag (ACF1) of residuals indicates that the model is capturing the correlation in the data quite well.
 
 
 :::
@@ -685,14 +706,14 @@ summary(fit_chevron)
 
 # 7. Analyising the Residuals
 
-After fitting an ARIMA(1,0,1) model to the Exxon Mobil returns, we need to analyze the residuals to ensure that the model has captured the data's structure adequately. This step is crucial because any pattern left in the residuals can indicate that the model hasn't fully captured the underlying process.
-
-
+Now we will analyse the residual in depth, this step is crucial because any pattern left in the residuals can indicate that the model hasn’t fully captured the underlying process.
 
 ::: panel-tabset
 
 
 ## Exxon Mobil
+
+After fitting an ARIMA(1,0,1) model to the Exxon Mobil returns, we need to analyze the residuals to ensure that the model has captured the data's structure adequately.
 
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
@@ -773,6 +794,10 @@ These plots are indicative of conditional heteroskedasticity in the series, whic
 
 ## Chevron Corporation
 
+
+After fitting an ARIMA(0,0,1) model to the Chevron returns, we need to analyze the residuals to ensure that the model has captured the data’s structure adequately. 
+
+
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
@@ -780,13 +805,21 @@ These plots are indicative of conditional heteroskedasticity in the series, whic
 #| output: true
 
 
+model_output_c <- capture.output(sarima(returns_chevron,0,0,1))
 
-sarima(returns_chevron,0,0,1)
+#model_output_c
 
-
+cat(model_output_c[11:22], model_output_c[length(model_output_c)], sep = "\n") 
 
 ```
 
+The Standardized Residuals plot does show some volatility left, around 2003, and then 2010 to 2012. These spikes indicate that the ARIMA model may not have fully captured the variability during these periods.
+
+Both the coefficient estimates are significant.
+
+Moving forward with the analysis, after fitting an ARIMA(0,0,1) model, we will now examine the autocorrelation in both the residuals and the squared residuals. This step is crucial as it helps us to understand the nature of the residuals and assess whether a GARCH model is necessary.
+
+
 
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
@@ -794,7 +827,6 @@ sarima(returns_chevron,0,0,1)
 #| code-summary: 'Code'
 #| warning: false
 #| output: true
-
 
 chevron.res<-fit_chevron$residuals
 
@@ -806,9 +838,10 @@ plot6 <- ggPacf(chevron.res, 40) +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
-grid.arrange(plot5, plot6,nrow=2)
+grid.arrange(plot1, plot2,nrow=2)
 ```
 
+The autocorrelations appear to be within the confidence bands for most lags, suggesting there is no significant autocorrelation remaining in the residuals. Similarly, the PACF shows that the partial autocorrelations are also within the confidence bounds for most of the lags
 
 
 
@@ -830,6 +863,11 @@ grid.arrange(plot7,plot8,nrow=2)
 
 
 ```
+
+The slow decay in autocorrelation across lags indicates that there is high volatility clustering. The PACF plot also shows some spikes at early lags (from 1 to 9), suggesting that there is some volatility.
+
+These plots are indicative of conditional heteroskedasticity in the series, which is not captured by the ARIMA model. It is recommended to proceed with fitting a GARCH model. The significant ACF in the squared residuals indicates that a GARCH(1,1) model is appropriate.
+
 
 
 :::
@@ -905,14 +943,15 @@ The best model according to method 1 is ARIMA(1,0,1) + GARCH(1,1).
 #| warning: false
 #| output: true
 
-model <- list() ## set counter
+model <- list() 
 cc <- 1
-for (p in 1:7) {
-  for (q in 1:7) {
-  
-model[[cc]] <- garch(chevron.res,order=c(q,p),trace=F)
-cc <- cc + 1
-}
+for (p in 1:9) {
+  for (q in 1:9) {
+    suppressWarnings({
+      model[[cc]] <- garch(chevron.res, order=c(p,q), trace=F)
+    })
+    cc <- cc + 1
+  }
 } 
 
 ## get AIC values for model evaluation
@@ -921,11 +960,30 @@ which(GARCH_AIC == min(GARCH_AIC))
 
 model[[which(GARCH_AIC == min(GARCH_AIC))]]
 
-summary(garchFit(~garch(1,1), chevron.res,trace = F))
-
-
 
 ```
+The model with the lowest AIC appears to be a GARCH (1,1). Now lets fit GARCH (1,1)
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+#Fit the GARCH(1,1) model on the residuals
+garch_fit_chevron <- garchFit(~garch(1, 1), data = chevron.res, trace = F)
+
+#Summary of the fitted GARCH model
+summary(garch_fit_chevron)
+```
+
+All coefficients (omega, alpha1, beta1) are highly significant, with very small p-values. This implies that the GARCH(1,1) model captures the volatility clustering effectively. The high log likelihood suggest that the model is a good fit. 
+
+The GARCH(1,1) model effectively captures the conditional heteroscedasticity of Chevron’s stock returns.
+
+The best model according to method 1 is ARIMA(0,0,1) + GARCH(1,1).
 
 
 :::
@@ -1009,11 +1067,47 @@ Thus for method 2 fitting GARCH(1,1) model directly to the returns of Exxon Mobi
 #| warning: false
 #| output: true
 
+model <- list() 
+cc <- 1
+for (p in 1:9) {
+  for (q in 1:9) {
+    suppressWarnings({
+      model[[cc]] <- garch(returns_chevron, order=c(p,q), trace=F)
+    })
+    cc <- cc + 1
+  }
+} 
 
+## get AIC values for model evaluation
+GARCH_AIC <- sapply(model, AIC) ## model with lowest AIC is the best
+which(GARCH_AIC == min(GARCH_AIC))
 
+model[[which(GARCH_AIC == min(GARCH_AIC))]]
 
 
 ```
+
+GARCH(1,1) model has the lowest AIC.
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+garch_fit_returns_chevron <- garchFit(~garch(1,1), data = returns_chevron, trace = F)
+summary(garch_fit_returns_chevron)
+
+```
+
+All parameters in the model are statistically significant, as indicated by the p-values being less than 0.05. The significant mu, omega, alpha, and beta parameters ensure that the model not only captures the average price movements but also effectively models the observed volatility patterns. 
+
+The GARCH(1,1) model, applied directly to the returns, appears to be the optimal model.
+
+
+
 
 
 :::
@@ -1122,6 +1216,36 @@ The p-value from the Ljung-Box test suggests that there's no significant autocor
 
 ## Chevron Corporation
 
+
+### Method 1: ARIMA(0,0,1) + GARCH(1,1)
+
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+summary(fit_chevron)
+
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+garch_chevron <- garchFit(~garch(1,1), chevron.res,trace = F)
+summary(garch_chevron)
+
+```
+
+
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
@@ -1129,10 +1253,64 @@ The p-value from the Ljung-Box test suggests that there's no significant autocor
 #| output: true
 
 
+summary(garch(chevron.res, order = c(1,1),trace = F))
 
+```
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+checkresiduals(garch(chevron.res, order = c(1,1),trace = F))
+
+```
+
+The residuals do not show any obvious trends or seasonality, which suggests that the ARIMA model has captured the linear structure of the data. 
+
+The Ljung-Box test on residuals with a p-value of 0.1156 suggests that there is no significant autocorrelation in the residuals. This implies that the model residuals are random.
+
+The coefficients of the GARCH(1,1) model are all statistically significant.
+
+The diagnostic checks on the ARIMA(0,0,1) + GARCH(1,1) model reveal that the residuals do not show significant trends or seasonality. The GARCH model's significant coefficients for omega, alpha, and beta confirm its efficacy in capturing the stock's volatility clustering. The absence of autocorrelation in the residuals post-modelling further validates the model fit.
+
+
+
+### Method 2: GARCH(1,1)
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+garch_returns_chevron1 <- garch(returns_chevron, order = c(1,1), trace = F)
+summary(garch_returns_chevron1)
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+checkresiduals(garch_returns_chevron1)
 
 
 ```
+
+
+The estimated GARCH(1,1) model coefficients are statistically significant.
+
+The p-value from the Ljung-Box test suggests that there’s no significant autocorrelation in the residuals.
 
 
 :::
@@ -1141,7 +1319,9 @@ The p-value from the Ljung-Box test suggests that there's no significant autocor
 
 # 11. Cross-Validation
 
-Cross-validation is an essential technique in model validation, which helps to ensure that the results of our time series analysis generalize to independent data sets. Now lets do cross-validation
+Cross-validation is an essential technique in model validation, which helps to ensure that the results of our time series analysis generalize to independent data sets. Now lets do cross-validation, I have employed a rolling forecasting methodology to to validate both the models selected above.
+
+
 
 ::: panel-tabset
 
@@ -1207,17 +1387,62 @@ After performing cross-validation, we can see that Model 1 had slighlty lowest R
 
 ## Chevron Corporation
 
+
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
 #| output: true
 
+k <- 900
+n <- length(returns_chevron)
 
+err1 <- c()
+err2 <- c()
+
+for(i in 1:(n-k)) {
+  xtrain <- returns_chevron[1:(k-1)+i]
+  xtest <- returns_chevron[k+i]
+  
+  # ARIMA(0,0,1) + GARCH(1,1)
+  arima.fit <- Arima(xtrain, order = c(0, 0, 1), include.drift = TRUE)
+  arima.res <- residuals(arima.fit)
+  fit1 <- garchFit(~garch(1, 1), data = arima.res, trace = FALSE)
+  fcast1 <- predict(fit1, n.ahead = 1)
+  
+  # GARCH(1,1)
+  returns_diff <- diff(xtrain)  
+  fit2 <- garchFit(~garch(1, 1), data = xtrain, trace = FALSE)
+  fcast2 <- predict(fit2, n.ahead = 1)
+  
+  err1 <- c(err1, (fcast1$meanForecast - xtest)^2)
+  err2 <- c(err2, (fcast2$meanForecast - xtest)^2)
+}
+
+RMSE1_c <- sqrt(mean(err1))
+RMSE2_c <- sqrt(mean(err2))
 
 
 
 ```
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+cat("The RMSE for model 1 -", RMSE1_c, "\n")
+cat("The RMSE for model 2 -", RMSE2_c, "\n")
+
+```
+
+
+
+After performing cross-validation, we can see both models perform comparablybut Model 1 had slighlty lowest RMSE. Therefore, the best model according to diagnostics is Model 1: ARIMA(0,0,1) + GARCH(1,1)
+
 
 
 :::
@@ -1268,6 +1493,7 @@ The ARIMA(1,0,1) + GARCH(1,1) effectively captures the volatility dynamics in Ex
 
 ## Chevron Corporation
 
+
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
@@ -1275,10 +1501,31 @@ The ARIMA(1,0,1) + GARCH(1,1) effectively captures the volatility dynamics in Ex
 #| output: true
 
 
+#Fit the ARIMA model
+arima_chevron_final <- Arima(returns_chevron, order = c(0, 0, 1))
 
+#Extract the residuals
+residuals_chevron_final <- residuals(arima_chevron_final)
+
+# Fit the GARCH model on the residuals
+garch_chevron_final <- garchFit(~garch(1,1), data = residuals_chevron_final, trace = FALSE)
+
+
+summary(garch_chevron_final)
 
 
 ```
+
+
+  - All the coefficients are significant
+  - The log likelihood of the model is 24533.25, suggesting a very good fit to the data.
+  - Ljung-Box Tests on Residuals and Squared Residuals: 
+      -   For Residuals: The low p-values in earlier lags suggest significant autocorrelation
+      -   For Squared Residuals: The higher p-values in the squared residuals suggest less evidence of autocorrelation in the                 volatility
+
+
+The ARIMA(0,0,1) + GARCH(1,1) effectively captures the volatility dynamics as evidenced by the significant coefficients for all model parameters.
+
 
 
 :::
@@ -1322,10 +1569,14 @@ Future will be similar but with higher uncertainty because of the bigger confide
 #| output: true
 
 
-
+predict(garch_chevron_final, n.ahead = 100, plot = TRUE)
 
 
 ```
+
+The forecast plot, based on the ARIMA(0,0,1) + GARCH(1,1) model, shows future trends in the volatility of Chevron's stock returns.
+
+The model anticipates continuity in the return patterns, the forecasted confidence intervals widen, signaling increased uncertainty about future price volatility.
 
 
 :::
@@ -1359,7 +1610,10 @@ exxon_stockprice_df$date<-as.Date(exxon_stockprice_df$date,"%Y-%m-%d")
 data_spot = data.frame(ht,exxon_stockprice_df$date)
 
 
-ggplot(data_spot, aes(y = ht, x = exxon_stockprice_df.date)) + geom_line() + ylab('Conditional Variance') + xlab('Date') +
+ggplot(data_spot, aes(y = ht, x = exxon_stockprice_df.date)) + 
+  geom_line(color = "dodgerblue3")  + 
+  ylab('Conditional Variance') + 
+  xlab('Date') +
   theme_minimal() +
   ggtitle("Volatility plot for Exxon Mobil Stock Price") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -1379,10 +1633,33 @@ In the graph, we observe periods with peaks indicating heightened volatility, es
 #| output: true
 
 
+ht <- garch_chevron_final@h.t 
+chevron_stockprice_df = data.frame(Chevron_stockprice)
+chevron_stockprice_df <- head(chevron_stockprice_df, -1)
+chevron_stockprice_df <- data.frame(chevron_stockprice_df,rownames(chevron_stockprice_df))
+colnames(chevron_stockprice_df)[7] = "date"
+chevron_stockprice_df$date<-as.Date(chevron_stockprice_df$date,"%Y-%m-%d")
+data_spot = data.frame(ht,chevron_stockprice_df$date)
 
+
+ggplot(data_spot, aes(y = ht, x = chevron_stockprice_df.date)) +
+  geom_line(color = "dodgerblue3") +
+  ylab('Conditional Variance') +
+  xlab('Date') +
+  theme_minimal() +
+  ggtitle("Volatility plot for Chevron Corporation Stock Price") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 
 ```
+
+
+
+In the graph, we observe periods with peaks indicating heightened volatility, esp around 2008-2009 and a significant spike after 2020.
+
+
+
+
 
 
 :::
@@ -1423,22 +1700,30 @@ $$
 
 
 
-
-
-
 ## Chevron Corporation
 
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
+
+The best performing model was ARIMA(0,0,1) + GARCH(1,1). The model equation is as follows:
+
+
+
+**ARIMA(0,0,1)** equation:
+
+$$
+Y_t = \theta_1 \epsilon_{t-1} + \epsilon_t
+$$
 
 
 
 
 
-```
+**GARCH(1,1)** equation:
+
+
+$$
+\sigma_{t}^{2} = \alpha_{0} + \alpha_{1}\epsilon^{2}_{t-1}+\beta_{1}\sigma^{2}_{t-1}
+$$
+
 
 
 :::
