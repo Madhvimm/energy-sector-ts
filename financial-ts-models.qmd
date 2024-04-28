@@ -857,10 +857,11 @@ model <- list()
 cc <- 1
 for (p in 1:9) {
   for (q in 1:9) {
-  
-model[[cc]] <- garch(exxon.res,order=c(p,q),trace=F)
-cc <- cc + 1
-}
+    suppressWarnings({
+      model[[cc]] <- garch(exxon.res, order=c(p,q), trace=F)
+    })
+    cc <- cc + 1
+  }
 } 
 
 ## get AIC values for model evaluation
@@ -870,12 +871,6 @@ which(GARCH_AIC == min(GARCH_AIC))
 model[[which(GARCH_AIC == min(GARCH_AIC))]]
 
 ```
-
-```{r}
-#best_model <- model[[which.min(GARCH_AIC)]]
-#summary(best_model)
-```
-
 
 
 The model with the lowest AIC appears to be a GARCH (1,1). Now lets fit GARCH (1,1)
@@ -938,9 +933,7 @@ summary(garchFit(~garch(1,1), chevron.res,trace = F))
 
 # 9. Method 2: GARCH Model
 
-To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data. 
-
-Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data
+The GARCH model is designed to model the volatility clustering evident in financial time series, allowing for more accurate forecasting of risk and volatility. Here we will fit the model on the returns
 
 
 ::: panel-tabset
@@ -955,14 +948,15 @@ Graphical representations provide intuitive insights into the financial performa
 #| warning: false
 #| output: true
 
-model <- list() ## set counter
+model <- list() 
 cc <- 1
 for (p in 1:9) {
   for (q in 1:9) {
-  
-model[[cc]] <- garch(returns_exxon,order=c(p,q),trace=F)
-cc <- cc + 1
-}
+    suppressWarnings({
+      model[[cc]] <- garch(returns_exxon, order=c(p,q), trace=F)
+    })
+    cc <- cc + 1
+  }
 } 
 
 ## get AIC values for model evaluation
@@ -973,6 +967,7 @@ which(GARCH_AIC == min(GARCH_AIC))
 ```
 
 
+
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
@@ -980,7 +975,6 @@ which(GARCH_AIC == min(GARCH_AIC))
 #| output: true
 
 model[[which(GARCH_AIC == min(GARCH_AIC))]]
-
 
 ```
 
@@ -995,8 +989,6 @@ GARCH(1,1) model has the lowest AIC.
 
 garch_fit_returns_exxon <- garchFit(~garch(1,1), data = returns_exxon, trace = F)
 summary(garch_fit_returns_exxon)
-
-
 
 ```
 
@@ -1041,6 +1033,7 @@ Graphical representations provide intuitive insights into the financial performa
 ## Exxon Mobil
 
 
+Method 1: ARIMA(1,0,1) + GARCH(1,1)
 
 
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
@@ -1048,6 +1041,7 @@ Graphical representations provide intuitive insights into the financial performa
 #| code-summary: 'Code'
 #| warning: false
 #| output: true
+
 
 
 

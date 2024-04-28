@@ -323,11 +323,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">1st Qu.:-0.0076630</td>
+<td style="text-align: left;">1st Qu.:-0.0076631</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">Median : 0.0001238</td>
+<td style="text-align: left;">Median : 0.0001237</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
@@ -335,11 +335,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">3rd Qu.: 0.0085812</td>
+<td style="text-align: left;">3rd Qu.: 0.0085813</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">Max. : 0.1586311</td>
+<td style="text-align: left;">Max. : 0.1586304</td>
 </tr>
 </tbody>
 </table>
@@ -387,7 +387,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">Min. :-0.2500624</td>
+<td style="text-align: left;">Min. :-0.2500623</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
@@ -395,7 +395,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">Median : 0.0004269</td>
+<td style="text-align: left;">Median : 0.0004271</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
@@ -403,11 +403,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">3rd Qu.: 0.0089683</td>
+<td style="text-align: left;">3rd Qu.: 0.0089687</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">Max. : 0.2049037</td>
+<td style="text-align: left;">Max. : 0.2049039</td>
 </tr>
 </tbody>
 </table>
@@ -740,13 +740,13 @@ Chi-squared = 260.57, df = 1, p-value &lt; 2.2e-16</code></pre>
 9  1 0 1 -47373.04 -47344.78 -47373.03
 10 1 1 1 -47326.27 -47305.07 -47326.26
 11 1 0 2 -47371.46 -47336.14 -47371.46
-12 1 1 2 -47356.94 -47328.68 -47356.93
+12 1 1 2 -47356.94 -47328.68 -47356.94
 13 2 0 0 -47366.91 -47338.65 -47366.91
-14 2 1 0 -44522.55 -44501.35 -44522.54
+14 2 1 0 -44522.55 -44501.36 -44522.55
 15 2 0 1 -47371.37 -47336.05 -47371.37
 16 2 1 1 -47351.11 -47322.86 -47351.11
 17 2 0 2 -47370.15 -47327.76 -47370.14
-18 2 1 2 -47354.96 -47319.64 -47354.95</code></pre>
+18 2 1 2 -47354.48 -47319.16 -47354.47</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
@@ -793,8 +793,8 @@ sigma^2 = 0.000244:  log likelihood = 23690.52
 AIC=-47373.04   AICc=-47373.03   BIC=-47344.78
 
 Training set error measures:
-                        ME       RMSE        MAE MPE MAPE      MASE       ACF1
-Training set -2.384193e-06 0.01561831 0.01100162 NaN  Inf 0.6700632 0.00189324</code></pre>
+                        ME       RMSE        MAE MPE MAPE      MASE        ACF1
+Training set -2.384192e-06 0.01561831 0.01100162 NaN  Inf 0.6700628 0.001893187</code></pre>
 </div>
 </div>
 <p>The standard errors are relatively small compared to the coefficients, suggesting that the coefficients are likely to be significantly different from zero.</p>
@@ -844,22 +844,22 @@ Training set -2.384193e-06 0.01561831 0.01100162 NaN  Inf 0.6700632 0.00189324</
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>   p d q       AIC       BIC      AICc
-1  0 0 0 -46406.59 -46392.46 -46406.58
-2  0 1 0 -39788.46 -39781.39 -39788.46
+1  0 0 0 -46406.59 -46392.46 -46406.59
+2  0 1 0 -39788.46 -39781.40 -39788.46
 3  0 0 1 -46454.39 -46433.19 -46454.38
 4  0 1 1 -46391.15 -46377.02 -46391.15
 5  0 0 2 -46453.61 -46425.35 -46453.60
 6  0 1 2 -46438.72 -46417.52 -46438.72
 7  1 0 0 -46452.96 -46431.76 -46452.95
-8  1 1 0 -42629.60 -42615.47 -42629.59
+8  1 1 0 -42629.59 -42615.47 -42629.59
 9  1 0 1 -46453.74 -46425.49 -46453.74
 10 1 1 1 -46437.37 -46416.18 -46437.37
-11 1 0 2 -46451.60 -46416.27 -46451.59
-12 1 1 2 -46432.61 -46404.35 -46432.60
+11 1 0 2 -46451.60 -46416.28 -46451.59
+12 1 1 2 -46431.09 -46402.83 -46431.09
 13 2 0 0 -46453.49 -46425.23 -46453.49
 14 2 1 0 -43806.10 -43784.91 -43806.10
 15 2 0 1 -46451.50 -46416.18 -46451.50
-16 2 1 1 -46437.87 -46409.62 -46437.87
+16 2 1 1 -46437.88 -46409.62 -46437.87
 17 2 0 2 -46449.84 -46407.45 -46449.83
 18 2 1 2 -46436.18 -46400.85 -46436.17</code></pre>
 </div>
@@ -908,10 +908,8 @@ sigma^2 = 0.0002714:  log likelihood = 23230.19
 AIC=-46454.39   AICc=-46454.38   BIC=-46433.19
 
 Training set error measures:
-                        ME       RMSE        MAE MPE MAPE      MASE
-Training set -3.755608e-08 0.01647249 0.01143942 NaN  Inf 0.6712264
-                     ACF1
-Training set 0.0008956045</code></pre>
+                        ME       RMSE        MAE MPE MAPE      MASE        ACF1
+Training set -3.755843e-08 0.01647249 0.01143943 NaN  Inf 0.6712263 0.000895636</code></pre>
 </div>
 </div>
 </div>
@@ -950,7 +948,7 @@ Training set 0.0008956045</code></pre>
 Coefficients: 
       Estimate     SE t.value p.value
 ar1     0.5315 0.0723  7.3550  0.0000
-ma1    -0.6136 0.0673 -9.1150  0.0000
+ma1    -0.6136 0.0673 -9.1149  0.0000
 xmean   0.0004 0.0001  2.8431  0.0045
 
 sigma^2 estimated as 0.0002439315 on 8642 degrees of freedom 
@@ -1033,7 +1031,7 @@ converged
  
 Coefficients: 
       Estimate     SE t.value p.value
-ma1    -0.0769 0.0109 -7.0863  0.0000
+ma1    -0.0769 0.0109 -7.0862  0.0000
 xmean   0.0004 0.0002  2.4946  0.0126
 
 sigma^2 estimated as 0.0002713429 on 8643 degrees of freedom 
@@ -1111,155 +1109,23 @@ AIC = -5.373555  AICc = -5.373555  BIC = -5.371104
 <span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> <span class="dv">1</span></span>
 <span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
 <span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (q <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
-<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>model[[cc]] <span class="ot">&lt;-</span> <span class="fu">garch</span>(exxon.res,<span class="at">order=</span><span class="fu">c</span>(p,q),<span class="at">trace=</span>F)</span>
-<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> cc <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>} </span></code></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in sqrt(pred$e): NaNs produced</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information
-
-Warning in garch(exxon.res, order = c(p, q), trace = F): singular information</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="do">## get AIC values for model evaluation</span></span>
-<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>GARCH_AIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>(model, AIC) <span class="do">## model with lowest AIC is the best</span></span>
-<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))</span></code></pre></div>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">suppressWarnings</span>({</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>      model[[cc]] <span class="ot">&lt;-</span> <span class="fu">garch</span>(exxon.res, <span class="at">order=</span><span class="fu">c</span>(p,q), <span class="at">trace=</span>F)</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> cc <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>} </span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a><span class="do">## get AIC values for model evaluation</span></span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a>GARCH_AIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>(model, AIC) <span class="do">## model with lowest AIC is the best</span></span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>model[[<span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))]]</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>model[[<span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))]]</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1271,22 +1137,15 @@ Coefficient(s):
 2.446e-06  7.078e-02  9.190e-01  </code></pre>
 </div>
 </div>
-<div class="cell">
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="co">#best_model &lt;- model[[which.min(GARCH_AIC)]]</span></span>
-<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a><span class="co">#summary(best_model)</span></span></code></pre></div>
-</details>
-</div>
 <p>The model with the lowest AIC appears to be a GARCH (1,1). Now lets fit GARCH (1,1)</p>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Fit the GARCH(1,1) model on the residuals</span></span>
-<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>garch_fit_exxon <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>, <span class="dv">1</span>), <span class="at">data =</span> exxon.res, <span class="at">trace =</span> F)</span>
-<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Summary of the fitted GARCH model</span></span>
-<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(garch_fit_exxon)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Fit the GARCH(1,1) model on the residuals</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>garch_fit_exxon <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>, <span class="dv">1</span>), <span class="at">data =</span> exxon.res, <span class="at">trace =</span> F)</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a><span class="co">#Summary of the fitted GARCH model</span></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(garch_fit_exxon)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1298,7 +1157,7 @@ Call:
 
 Mean and Variance Equation:
  data ~ garch(1, 1)
-&lt;environment: 0x12cca9200&gt;
+&lt;environment: 0x135ceac00&gt;
  [data = exxon.res]
 
 Conditional Distribution:
@@ -1306,7 +1165,7 @@ Conditional Distribution:
 
 Coefficient(s):
         mu       omega      alpha1       beta1  
-2.3842e-05  2.4480e-06  7.0832e-02  9.1892e-01  
+2.3842e-05  2.4480e-06  7.0833e-02  9.1892e-01  
 
 Std. Errors:
  based on Hessian 
@@ -1316,7 +1175,7 @@ Error Analysis:
 mu     2.384e-05   1.289e-04    0.185    0.853    
 omega  2.448e-06   3.988e-07    6.138 8.36e-10 ***
 alpha1 7.083e-02   5.377e-03   13.173  &lt; 2e-16 ***
-beta1  9.189e-01   6.110e-03  150.406  &lt; 2e-16 ***
+beta1  9.189e-01   6.110e-03  150.404  &lt; 2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -1324,24 +1183,24 @@ Log Likelihood:
  24997.66    normalized:  2.891574 
 
 Description:
- Sat Apr 27 23:53:14 2024 by user:  
+ Sun Apr 28 00:05:23 2024 by user:  
 
 
 Standardised Residuals Tests:
                                 Statistic p-Value   
- Jarque-Bera Test   R    Chi^2  664.2756  0         
+ Jarque-Bera Test   R    Chi^2  664.2642  0         
  Shapiro-Wilk Test  R    W      NA        NA        
- Ljung-Box Test     R    Q(10)  20.21939  0.02724456
- Ljung-Box Test     R    Q(15)  22.61767  0.09260178
- Ljung-Box Test     R    Q(20)  32.17187  0.04150099
- Ljung-Box Test     R^2  Q(10)  20.80411  0.02250168
- Ljung-Box Test     R^2  Q(15)  28.27088  0.01993364
- Ljung-Box Test     R^2  Q(20)  30.62458  0.06034578
- LM Arch Test       R    TR^2   24.05763  0.01997698
+ Ljung-Box Test     R    Q(10)  20.21937  0.02724474
+ Ljung-Box Test     R    Q(15)  22.61771  0.09260083
+ Ljung-Box Test     R    Q(20)  32.17155  0.04150433
+ Ljung-Box Test     R^2  Q(10)  20.80305  0.02250954
+ Ljung-Box Test     R^2  Q(15)  28.27003  0.01993862
+ Ljung-Box Test     R^2  Q(20)  30.6235   0.0603612 
+ LM Arch Test       R    TR^2   24.05662  0.01998332
 
 Information Criterion Statistics:
       AIC       BIC       SIC      HQIC 
--5.782222 -5.778953 -5.782223 -5.781108 </code></pre>
+-5.782222 -5.778954 -5.782223 -5.781108 </code></pre>
 </div>
 </div>
 <p>All coefficients (omega, alpha1, beta1) are highly significant. This implies that the GARCH(1,1) model captures the volatility clustering effectively.</p>
@@ -1351,15 +1210,15 @@ Information Criterion Statistics:
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">list</span>() <span class="do">## set counter</span></span>
-<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>) {</span>
-<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (q <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>) {</span>
-<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>model[[cc]] <span class="ot">&lt;-</span> <span class="fu">garch</span>(chevron.res,<span class="at">order=</span><span class="fu">c</span>(q,p),<span class="at">trace=</span>F)</span>
-<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> cc <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>} </span></code></pre></div>
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">list</span>() <span class="do">## set counter</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>) {</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (q <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>) {</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>model[[cc]] <span class="ot">&lt;-</span> <span class="fu">garch</span>(chevron.res,<span class="at">order=</span><span class="fu">c</span>(q,p),<span class="at">trace=</span>F)</span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> cc <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>} </span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
@@ -1428,16 +1287,16 @@ Warning in garch(chevron.res, order = c(q, p), trace = F): singular information<
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="do">## get AIC values for model evaluation</span></span>
-<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>GARCH_AIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>(model, AIC) <span class="do">## model with lowest AIC is the best</span></span>
-<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="do">## get AIC values for model evaluation</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>GARCH_AIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>(model, AIC) <span class="do">## model with lowest AIC is the best</span></span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1</code></pre>
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>model[[<span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))]]</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>model[[<span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))]]</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1450,7 +1309,7 @@ Coefficient(s):
 </div>
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>,<span class="dv">1</span>), chevron.res,<span class="at">trace =</span> F))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>,<span class="dv">1</span>), chevron.res,<span class="at">trace =</span> F))</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1462,7 +1321,7 @@ Call:
 
 Mean and Variance Equation:
  data ~ garch(1, 1)
-&lt;environment: 0x12b65a228&gt;
+&lt;environment: 0x13123c0a8&gt;
  [data = chevron.res]
 
 Conditional Distribution:
@@ -1470,7 +1329,7 @@ Conditional Distribution:
 
 Coefficient(s):
          mu        omega       alpha1        beta1  
--3.7459e-08   3.9502e-06   7.0414e-02   9.1319e-01  
+-3.7462e-08   3.9502e-06   7.0414e-02   9.1319e-01  
 
 Std. Errors:
  based on Hessian 
@@ -1480,7 +1339,7 @@ Error Analysis:
 mu     -3.746e-08   1.393e-04    0.000        1    
 omega   3.950e-06   5.741e-07    6.881 5.94e-12 ***
 alpha1  7.041e-02   5.254e-03   13.402  &lt; 2e-16 ***
-beta1   9.132e-01   6.489e-03  140.719  &lt; 2e-16 ***
+beta1   9.132e-01   6.489e-03  140.718  &lt; 2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -1488,20 +1347,20 @@ Log Likelihood:
  24533.25    normalized:  2.837854 
 
 Description:
- Sat Apr 27 23:53:15 2024 by user:  
+ Sun Apr 28 00:05:24 2024 by user:  
 
 
 Standardised Residuals Tests:
                                 Statistic p-Value     
- Jarque-Bera Test   R    Chi^2  979.4803  0           
+ Jarque-Bera Test   R    Chi^2  979.48    0           
  Shapiro-Wilk Test  R    W      NA        NA          
- Ljung-Box Test     R    Q(10)  35.03314  0.0001232495
- Ljung-Box Test     R    Q(15)  39.04032  0.0006320249
- Ljung-Box Test     R    Q(20)  50.24896  0.000204009 
- Ljung-Box Test     R^2  Q(10)  18.44032  0.04797507  
- Ljung-Box Test     R^2  Q(15)  19.64754  0.1858743   
- Ljung-Box Test     R^2  Q(20)  26.45875  0.1511898   
- LM Arch Test       R    TR^2   18.5162   0.1008921   
+ Ljung-Box Test     R    Q(10)  35.03325  0.0001232441
+ Ljung-Box Test     R    Q(15)  39.04025  0.0006320395
+ Ljung-Box Test     R    Q(20)  50.24857  0.0002040355
+ Ljung-Box Test     R^2  Q(10)  18.44053  0.04797182  
+ Ljung-Box Test     R^2  Q(15)  19.64765  0.1858698   
+ Ljung-Box Test     R^2  Q(20)  26.45851  0.1511971   
+ LM Arch Test       R    TR^2   18.51633  0.1008886   
 
 Information Criterion Statistics:
       AIC       BIC       SIC      HQIC 
@@ -1514,8 +1373,7 @@ Information Criterion Statistics:
 </section>
 <section id="method-2-garch-model" class="level1">
 <h1>9. Method 2: GARCH Model</h1>
-<p>To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data.</p>
-<p>Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data</p>
+<p>The GARCH model is designed to model the volatility clustering evident in financial time series, allowing for more accurate forecasting of risk and volatility. Here we will fit the model on the returns</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true">Exxon Mobil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false">Chevron Corporation</a></li></ul>
 <div class="tab-content">
@@ -1523,218 +1381,20 @@ Information Criterion Statistics:
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">list</span>() <span class="do">## set counter</span></span>
-<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> <span class="dv">1</span></span>
-<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
-<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (q <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
-<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>  </span>
-<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a>model[[cc]] <span class="ot">&lt;-</span> <span class="fu">garch</span>(returns_exxon,<span class="at">order=</span><span class="fu">c</span>(p,q),<span class="at">trace=</span>F)</span>
-<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> cc <span class="sc">+</span> <span class="dv">1</span></span>
-<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a>}</span>
-<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a>} </span></code></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in sqrt(pred$e): NaNs produced</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in sqrt(pred$e): NaNs produced</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information
-
-Warning in garch(returns_exxon, order = c(p, q), trace = F): singular
-information</code></pre>
-</div>
-<details class="code-fold">
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb70"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb70-1"><a href="#cb70-1" aria-hidden="true" tabindex="-1"></a><span class="do">## get AIC values for model evaluation</span></span>
-<span id="cb70-2"><a href="#cb70-2" aria-hidden="true" tabindex="-1"></a>GARCH_AIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>(model, AIC) <span class="do">## model with lowest AIC is the best</span></span>
-<span id="cb70-3"><a href="#cb70-3" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">list</span>() </span>
+<span id="cb60-2"><a href="#cb60-2" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb60-3"><a href="#cb60-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
+<span id="cb60-4"><a href="#cb60-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (q <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) {</span>
+<span id="cb60-5"><a href="#cb60-5" aria-hidden="true" tabindex="-1"></a>    <span class="fu">suppressWarnings</span>({</span>
+<span id="cb60-6"><a href="#cb60-6" aria-hidden="true" tabindex="-1"></a>      model[[cc]] <span class="ot">&lt;-</span> <span class="fu">garch</span>(returns_exxon, <span class="at">order=</span><span class="fu">c</span>(p,q), <span class="at">trace=</span>F)</span>
+<span id="cb60-7"><a href="#cb60-7" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb60-8"><a href="#cb60-8" aria-hidden="true" tabindex="-1"></a>    cc <span class="ot">&lt;-</span> cc <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb60-9"><a href="#cb60-9" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb60-10"><a href="#cb60-10" aria-hidden="true" tabindex="-1"></a>} </span>
+<span id="cb60-11"><a href="#cb60-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb60-12"><a href="#cb60-12" aria-hidden="true" tabindex="-1"></a><span class="do">## get AIC values for model evaluation</span></span>
+<span id="cb60-13"><a href="#cb60-13" aria-hidden="true" tabindex="-1"></a>GARCH_AIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>(model, AIC) <span class="do">## model with lowest AIC is the best</span></span>
+<span id="cb60-14"><a href="#cb60-14" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1</code></pre>
@@ -1743,7 +1403,7 @@ information</code></pre>
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>model[[<span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))]]</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="#cb62-1" aria-hidden="true" tabindex="-1"></a>model[[<span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))]]</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1759,8 +1419,8 @@ Coefficient(s):
 <div class="cell">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a>garch_fit_returns_exxon <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">data =</span> returns_exxon, <span class="at">trace =</span> F)</span>
-<span id="cb74-2"><a href="#cb74-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(garch_fit_returns_exxon)</span></code></pre></div>
+<div class="sourceCode cell-code" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>garch_fit_returns_exxon <span class="ot">&lt;-</span> <span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>,<span class="dv">1</span>), <span class="at">data =</span> returns_exxon, <span class="at">trace =</span> F)</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(garch_fit_returns_exxon)</span></code></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1772,7 +1432,7 @@ Call:
 
 Mean and Variance Equation:
  data ~ garch(1, 1)
-&lt;environment: 0x12cb3cf98&gt;
+&lt;environment: 0x134c38710&gt;
  [data = returns_exxon]
 
 Conditional Distribution:
@@ -1790,28 +1450,28 @@ Error Analysis:
 mu     5.188e-04   1.277e-04    4.064 4.83e-05 ***
 omega  2.418e-06   3.965e-07    6.100 1.06e-09 ***
 alpha1 7.048e-02   5.335e-03   13.213  &lt; 2e-16 ***
-beta1  9.195e-01   6.050e-03  151.979  &lt; 2e-16 ***
+beta1  9.195e-01   6.050e-03  151.980  &lt; 2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Log Likelihood:
- 24975.39    normalized:  2.888998 
+ 24975.39    normalized:  2.888999 
 
 Description:
- Sat Apr 27 23:53:18 2024 by user:  
+ Sun Apr 28 00:05:27 2024 by user:  
 
 
 Standardised Residuals Tests:
                                 Statistic p-Value    
- Jarque-Bera Test   R    Chi^2  618.5365  0          
+ Jarque-Bera Test   R    Chi^2  618.5269  0          
  Shapiro-Wilk Test  R    W      NA        NA         
- Ljung-Box Test     R    Q(10)  28.25271  0.001644446
- Ljung-Box Test     R    Q(15)  31.10327  0.008509505
- Ljung-Box Test     R    Q(20)  41.97749  0.002784319
- Ljung-Box Test     R^2  Q(10)  21.1377   0.0201536  
- Ljung-Box Test     R^2  Q(15)  28.74658  0.01733644 
- Ljung-Box Test     R^2  Q(20)  31.14751  0.05327292 
- LM Arch Test       R    TR^2   24.22898  0.01893011 
+ Ljung-Box Test     R    Q(10)  28.25274  0.001644428
+ Ljung-Box Test     R    Q(15)  31.10336  0.008509272
+ Ljung-Box Test     R    Q(20)  41.9772   0.002784565
+ Ljung-Box Test     R^2  Q(10)  21.13742  0.02015544 
+ Ljung-Box Test     R^2  Q(15)  28.74624  0.01733814 
+ Ljung-Box Test     R^2  Q(20)  31.14696  0.05328    
+ LM Arch Test       R    TR^2   24.22859  0.01893244 
 
 Information Criterion Statistics:
       AIC       BIC       SIC      HQIC 
@@ -1835,7 +1495,7 @@ Information Criterion Statistics:
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-11-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-1" role="tab" aria-controls="tabset-11-1" aria-selected="true">Exxon Mobil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-11-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-11-2" role="tab" aria-controls="tabset-11-2" aria-selected="false">Chevron Corporation</a></li></ul>
 <div class="tab-content">
 <div id="tabset-11-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-11-1-tab">
-
+<p>Method 1: ARIMA(1,0,1) + GARCH(1,1)</p>
 </div>
 <div id="tabset-11-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-11-2-tab">
 
