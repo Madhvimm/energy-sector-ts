@@ -185,6 +185,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#returns" id="toc-returns" class="nav-link" data-scroll-target="#returns">4.1 Returns</a></li>
   <li><a href="#absolute-returns" id="toc-absolute-returns" class="nav-link" data-scroll-target="#absolute-returns">4.2 Absolute Returns</a></li>
+  <li><a href="#squared-returns" id="toc-squared-returns" class="nav-link" data-scroll-target="#squared-returns">4.3 Squared Returns</a></li>
   </ul></li>
   <li><a href="#arch-test" id="toc-arch-test" class="nav-link" data-scroll-target="#arch-test">5. ARCH Test</a></li>
   <li><a href="#fitting-arima-model" id="toc-fitting-arima-model" class="nav-link" data-scroll-target="#fitting-arima-model">6. Fitting ARIMA model</a></li>
@@ -259,7 +260,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -279,7 +280,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -304,8 +305,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>Exxon_ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(Exxon_stockprice<span class="sc">$</span>XOM.Adjusted, <span class="at">start=</span><span class="fu">decimal_date</span>(<span class="fu">as.Date</span>(<span class="st">"1990-01-01"</span>)), <span class="at">frequency =</span> <span class="fl">365.25</span>)</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate log returns</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>returns_xom <span class="ot">&lt;-</span> <span class="fu">log</span>(Exxon_ts)<span class="sc">%&gt;%</span> <span class="fu">diff</span>()</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">summary</span>(returns_xom))</span></code></pre></div>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>returns_exxon <span class="ot">&lt;-</span> <span class="fu">log</span>(Exxon_ts)<span class="sc">%&gt;%</span> <span class="fu">diff</span>()</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">summary</span>(returns_exxon))</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
@@ -326,7 +327,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">Median : 0.0001233</td>
+<td style="text-align: left;">Median : 0.0001234</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
@@ -334,11 +335,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">3rd Qu.: 0.0085811</td>
+<td style="text-align: left;">3rd Qu.: 0.0085812</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">Max. : 0.1586309</td>
+<td style="text-align: left;">Max. : 0.1586308</td>
 </tr>
 </tbody>
 </table>
@@ -349,7 +350,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the returns</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(returns_xom, <span class="at">color=</span><span class="st">"dodgerblue3"</span>) <span class="sc">+</span> </span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(returns_exxon, <span class="at">color=</span><span class="st">"dodgerblue3"</span>) <span class="sc">+</span> </span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Exxon Mobil Stock Price Returns"</span>) <span class="sc">+</span></span>
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span></code></pre></div>
@@ -357,7 +358,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -372,8 +373,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>Chevron_ts <span class="ot">&lt;-</span> <span class="fu">ts</span>(Chevron_stockprice<span class="sc">$</span>CVX.Adjusted, <span class="at">start=</span><span class="fu">decimal_date</span>(<span class="fu">as.Date</span>(<span class="st">"1990-01-01"</span>)), <span class="at">frequency =</span> <span class="fl">365.25</span>)</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Calculate log returns</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>returns_cvx <span class="ot">&lt;-</span> <span class="fu">log</span>(Chevron_ts)<span class="sc">%&gt;%</span> <span class="fu">diff</span>()</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">summary</span>(returns_cvx))</span></code></pre></div>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>returns_chevron <span class="ot">&lt;-</span> <span class="fu">log</span>(Chevron_ts)<span class="sc">%&gt;%</span> <span class="fu">diff</span>()</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="fu">summary</span>(returns_chevron))</span></code></pre></div>
 </details>
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
@@ -386,15 +387,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">Min. :-0.2500622</td>
+<td style="text-align: left;">Min. :-0.2500623</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">1st Qu.:-0.0079803</td>
+<td style="text-align: left;">1st Qu.:-0.0079805</td>
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">Median : 0.0004276</td>
+<td style="text-align: left;">Median : 0.0004275</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
@@ -402,11 +403,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 <tr class="odd">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">3rd Qu.: 0.0089681</td>
+<td style="text-align: left;">3rd Qu.: 0.0089684</td>
 </tr>
 <tr class="even">
 <td style="text-align: left;"></td>
-<td style="text-align: left;">Max. : 0.2049038</td>
+<td style="text-align: left;">Max. : 0.2049034</td>
 </tr>
 </tbody>
 </table>
@@ -417,7 +418,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot the returns</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(returns_cvx, <span class="at">color=</span><span class="st">"dodgerblue3"</span>) <span class="sc">+</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">autoplot</span>(returns_chevron, <span class="at">color=</span><span class="st">"dodgerblue3"</span>) <span class="sc">+</span> </span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
 <span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"Chevron Stock Price Returns"</span>) <span class="sc">+</span></span>
 <span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span></code></pre></div>
@@ -425,7 +426,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -449,13 +450,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#ACF Plot for Exxon Mobil Stock</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>Exxon_acf <span class="ot">&lt;-</span> <span class="fu">ggAcf</span>(returns_xom,<span class="dv">40</span>) <span class="sc">+</span> </span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>Exxon_acf <span class="ot">&lt;-</span> <span class="fu">ggAcf</span>(returns_exxon,<span class="dv">40</span>) <span class="sc">+</span> </span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"ACF Plot for Exxon Mobil Returns "</span>) <span class="sc">+</span></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
 <span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">#PACF Plot for Exxon Mobil Stock</span></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>Exxon_pacf <span class="ot">&lt;-</span> <span class="fu">ggPacf</span>(returns_xom,<span class="dv">40</span>) <span class="sc">+</span> </span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>Exxon_pacf <span class="ot">&lt;-</span> <span class="fu">ggPacf</span>(returns_exxon,<span class="dv">40</span>) <span class="sc">+</span> </span>
 <span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"PACF Plot for Exxon Mobil Returns"</span>) <span class="sc">+</span> </span>
 <span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
 <span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
@@ -465,7 +466,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -477,13 +478,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <details class="code-fold">
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co">#ACF Plot for Chevron Stock</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>Chevron_acf <span class="ot">&lt;-</span> <span class="fu">ggAcf</span>(returns_cvx,<span class="dv">40</span>) <span class="sc">+</span> </span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"ACF Plot for Chevron Stock Returns "</span>) <span class="sc">+</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>Chevron_acf <span class="ot">&lt;-</span> <span class="fu">ggAcf</span>(returns_chevron,<span class="dv">40</span>) <span class="sc">+</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"ACF Plot for Chevron Stock Returns"</span>) <span class="sc">+</span></span>
 <span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
 <span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
 <span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co">#PACF Plot for Chevron Stock</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>Chevron_pacf <span class="ot">&lt;-</span> <span class="fu">ggPacf</span>(returns_cvx,<span class="dv">40</span>) <span class="sc">+</span> </span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>Chevron_pacf <span class="ot">&lt;-</span> <span class="fu">ggPacf</span>(returns_chevron,<span class="dv">40</span>) <span class="sc">+</span> </span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"PACF Plot for Chevron Stock Returns"</span>) <span class="sc">+</span> </span>
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
@@ -493,7 +494,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -509,10 +510,120 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-4-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-1" role="tab" aria-controls="tabset-4-1" aria-selected="true">Exxon Mobil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-4-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-4-2" role="tab" aria-controls="tabset-4-2" aria-selected="false">Chevron Corporation</a></li></ul>
 <div class="tab-content">
 <div id="tabset-4-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-4-1-tab">
-
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co">#ACF Plot for Exxon Mobil Stock</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>Exxon_acf_abs <span class="ot">&lt;-</span> <span class="fu">ggAcf</span>(<span class="fu">abs</span>(returns_exxon),<span class="dv">40</span>) <span class="sc">+</span> </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"ACF Plot for Exxon Mobil Absolute Returns"</span>) <span class="sc">+</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co">#PACF Plot for Exxon Mobil Stock</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>Exxon_pacf_abs <span class="ot">&lt;-</span> <span class="fu">ggPacf</span>(<span class="fu">abs</span>(returns_exxon),<span class="dv">40</span>) <span class="sc">+</span> </span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"PACF Plot for Exxon Mobil Absolute Returns"</span>) <span class="sc">+</span> </span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(Exxon_acf_abs, Exxon_pacf_abs, <span class="at">nrow =</span> <span class="dv">2</span>)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 </div>
 <div id="tabset-4-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-4-2-tab">
-
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co">#ACF Plot for Chevron Stock</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>Chevron_acf_abs <span class="ot">&lt;-</span> <span class="fu">ggAcf</span>(<span class="fu">abs</span>(returns_chevron),<span class="dv">40</span>) <span class="sc">+</span> </span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"ACF Plot for Chevron Stock Absolute Returns"</span>) <span class="sc">+</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a><span class="co">#PACF Plot for Chevron Stock</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>Chevron_pacf_abs <span class="ot">&lt;-</span> <span class="fu">ggPacf</span>(<span class="fu">abs</span>(returns_chevron),<span class="dv">40</span>) <span class="sc">+</span> </span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"PACF Plot for Chevron Stock Absolute Returns"</span>) <span class="sc">+</span> </span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(Chevron_acf_abs, Chevron_pacf_abs, <span class="at">nrow =</span> <span class="dv">2</span>)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<section id="squared-returns" class="level2">
+<h2 class="anchored" data-anchor-id="squared-returns">4.3 Squared Returns</h2>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">Exxon Mobil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">Chevron Corporation</a></li></ul>
+<div class="tab-content">
+<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co">#ACF Plot for Exxon Mobil Stock</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>Exxon_acf_se <span class="ot">&lt;-</span> <span class="fu">ggAcf</span>(returns_exxon<span class="sc">^</span><span class="dv">2</span>,<span class="dv">40</span>) <span class="sc">+</span> </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"ACF Plot for Exxon Mobil Squared Returns "</span>) <span class="sc">+</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="co">#PACF Plot for Exxon Mobil Stock</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>Exxon_pacf_se <span class="ot">&lt;-</span> <span class="fu">ggPacf</span>(returns_exxon<span class="sc">^</span><span class="dv">2</span>,<span class="dv">40</span>) <span class="sc">+</span> </span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"PACF Plot for Exxon Mobil Squared Returns"</span>) <span class="sc">+</span> </span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(Exxon_acf_se, Exxon_pacf_se, <span class="at">nrow =</span> <span class="dv">2</span>)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co">#ACF Plot for Chevron Stock</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>Chevron_acf_se <span class="ot">&lt;-</span> <span class="fu">ggAcf</span>(returns_chevron<span class="sc">^</span><span class="dv">2</span>,<span class="dv">40</span>) <span class="sc">+</span> </span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"ACF Plot for Chevron Stock Squared Returns"</span>) <span class="sc">+</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a><span class="co">#PACF Plot for Chevron Stock</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>Chevron_pacf_se <span class="ot">&lt;-</span> <span class="fu">ggPacf</span>(returns_chevron<span class="sc">^</span><span class="dv">2</span>,<span class="dv">40</span>) <span class="sc">+</span> </span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggtitle</span>(<span class="st">"PACF Plot for Chevron Stock Squared Returns"</span>) <span class="sc">+</span> </span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="sc">+</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(Chevron_acf_se, Chevron_pacf_se, <span class="at">nrow =</span> <span class="dv">2</span>)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -523,13 +634,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data.</p>
 <p>Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-5-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-1" role="tab" aria-controls="tabset-5-1" aria-selected="true">Exxon Mobil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-5-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-5-2" role="tab" aria-controls="tabset-5-2" aria-selected="false">Chevron Corporation</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">Exxon Mobil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">Chevron Corporation</a></li></ul>
 <div class="tab-content">
-<div id="tabset-5-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-5-1-tab">
+<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ArchTest</span>(returns_exxon, <span class="at">lags=</span><span class="dv">1</span>, <span class="at">demean=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    ARCH LM-test; Null hypothesis: no ARCH effects
 
+data:  returns_exxon
+Chi-squared = 590.35, df = 1, p-value &lt; 2.2e-16</code></pre>
 </div>
-<div id="tabset-5-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-5-2-tab">
+</div>
+</div>
+<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ArchTest</span>(returns_chevron, <span class="at">lags=</span><span class="dv">1</span>, <span class="at">demean=</span><span class="cn">TRUE</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    ARCH LM-test; Null hypothesis: no ARCH effects
 
+data:  returns_chevron
+Chi-squared = 260.57, df = 1, p-value &lt; 2.2e-16</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -539,13 +674,237 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data.</p>
 <p>Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-6-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-1" role="tab" aria-controls="tabset-6-1" aria-selected="true">Exxon Mobil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-6-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-6-2" role="tab" aria-controls="tabset-6-2" aria-selected="false">Chevron Corporation</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">Exxon Mobil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">Chevron Corporation</a></li></ul>
 <div class="tab-content">
-<div id="tabset-6-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-6-1-tab">
-
+<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>ARIMA.c<span class="ot">=</span><span class="cf">function</span>(p1,p2,q1,q2,data){</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>temp<span class="ot">=</span><span class="fu">c</span>()</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>d<span class="ot">=</span><span class="dv">1</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>i<span class="ot">=</span><span class="dv">1</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>temp<span class="ot">=</span> <span class="fu">data.frame</span>()</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>ls<span class="ot">=</span><span class="fu">matrix</span>(<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">6</span><span class="sc">*</span><span class="dv">18</span>),<span class="at">nrow=</span><span class="dv">18</span>)</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> p1<span class="sc">:</span>p2)</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(q <span class="cf">in</span> q1<span class="sc">:</span>q2)</span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(d <span class="cf">in</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>)</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span>(p<span class="sc">+</span>d<span class="sc">+</span>q<span class="sc">&lt;=</span><span class="dv">6</span>)</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>      {</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>        model<span class="ot">&lt;-</span> <span class="fu">Arima</span>(data,<span class="at">order=</span><span class="fu">c</span>(p,d,q))</span>
+<span id="cb17-20"><a href="#cb17-20" aria-hidden="true" tabindex="-1"></a>        ls[i,]<span class="ot">=</span> <span class="fu">c</span>(p,d,q,model<span class="sc">$</span>aic,model<span class="sc">$</span>bic,model<span class="sc">$</span>aicc)</span>
+<span id="cb17-21"><a href="#cb17-21" aria-hidden="true" tabindex="-1"></a>        i<span class="ot">=</span>i<span class="sc">+</span><span class="dv">1</span></span>
+<span id="cb17-22"><a href="#cb17-22" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb17-23"><a href="#cb17-23" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb17-24"><a href="#cb17-24" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb17-25"><a href="#cb17-25" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb17-26"><a href="#cb17-26" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb17-27"><a href="#cb17-27" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb17-28"><a href="#cb17-28" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb17-29"><a href="#cb17-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-30"><a href="#cb17-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-31"><a href="#cb17-31" aria-hidden="true" tabindex="-1"></a>temp<span class="ot">=</span> <span class="fu">as.data.frame</span>(ls)</span>
+<span id="cb17-32"><a href="#cb17-32" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(temp)<span class="ot">=</span> <span class="fu">c</span>(<span class="st">"p"</span>,<span class="st">"d"</span>,<span class="st">"q"</span>,<span class="st">"AIC"</span>,<span class="st">"BIC"</span>,<span class="st">"AICc"</span>)</span>
+<span id="cb17-33"><a href="#cb17-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-34"><a href="#cb17-34" aria-hidden="true" tabindex="-1"></a>temp</span>
+<span id="cb17-35"><a href="#cb17-35" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb17-36"><a href="#cb17-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-37"><a href="#cb17-37" aria-hidden="true" tabindex="-1"></a>output <span class="ot">&lt;-</span> <span class="fu">ARIMA.c</span>(<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">0</span>,<span class="dv">2</span>,<span class="at">data=</span>returns_exxon) </span>
+<span id="cb17-38"><a href="#cb17-38" aria-hidden="true" tabindex="-1"></a>output</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>   p d q       AIC       BIC      AICc
+1  0 0 0 -47296.18 -47282.05 -47296.18
+2  0 1 0 -40683.02 -40675.95 -40683.02
+3  0 0 1 -47347.76 -47326.56 -47347.75
+4  0 1 1 -47280.64 -47266.51 -47280.64
+5  0 0 2 -47370.17 -47341.91 -47370.16
+6  0 1 2 -47332.04 -47310.85 -47332.04
+7  1 0 0 -47341.95 -47320.76 -47341.95
+8  1 1 0 -43299.59 -43285.46 -43299.59
+9  1 0 1 -47373.03 -47344.77 -47373.03
+10 1 1 1 -47326.26 -47305.07 -47326.26
+11 1 0 2 -47371.46 -47336.14 -47371.45
+12 1 1 2 -47356.94 -47328.68 -47356.93
+13 2 0 0 -47366.91 -47338.65 -47366.90
+14 2 1 0 -44522.54 -44501.35 -44522.54
+15 2 0 1 -47371.37 -47336.05 -47371.37
+16 2 1 1 -47351.11 -47322.85 -47351.11
+17 2 0 2 -47370.15 -47327.76 -47370.14
+18 2 1 2 -47355.32 -47320.00 -47355.32</code></pre>
 </div>
-<div id="tabset-6-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-6-2-tab">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>output[<span class="fu">which.min</span>(output<span class="sc">$</span>AIC),] </span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  p d q       AIC       BIC      AICc
+9 1 0 1 -47373.03 -47344.77 -47373.03</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>output[<span class="fu">which.min</span>(output<span class="sc">$</span>BIC),] </span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  p d q       AIC       BIC      AICc
+9 1 0 1 -47373.03 -47344.77 -47373.03</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>output[<span class="fu">which.min</span>(output<span class="sc">$</span>AICc),] </span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  p d q       AIC       BIC      AICc
+9 1 0 1 -47373.03 -47344.77 -47373.03</code></pre>
+</div>
+</div>
+<p>The best ARIMA model according to the lowest AIC is ARIMA(1,0,1)</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>fit_exxon <span class="ot">&lt;-</span> <span class="fu">Arima</span>(returns_exxon,<span class="at">order=</span><span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>))</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_exxon)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: returns_exxon 
+ARIMA(1,0,1) with non-zero mean 
 
+Coefficients:
+         ar1      ma1   mean
+      0.5315  -0.6136  4e-04
+s.e.  0.0723   0.0673  1e-04
+
+sigma^2 = 0.000244:  log likelihood = 23690.52
+AIC=-47373.03   AICc=-47373.03   BIC=-47344.77
+
+Training set error measures:
+                        ME       RMSE        MAE MPE MAPE     MASE        ACF1
+Training set -2.384149e-06 0.01561831 0.01100162 NaN  Inf 0.670063 0.001893335</code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>ARIMA.c<span class="ot">=</span><span class="cf">function</span>(p1,p2,q1,q2,data){</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>temp<span class="ot">=</span><span class="fu">c</span>()</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>d<span class="ot">=</span><span class="dv">1</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>i<span class="ot">=</span><span class="dv">1</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>temp<span class="ot">=</span> <span class="fu">data.frame</span>()</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>ls<span class="ot">=</span><span class="fu">matrix</span>(<span class="fu">rep</span>(<span class="cn">NA</span>,<span class="dv">6</span><span class="sc">*</span><span class="dv">18</span>),<span class="at">nrow=</span><span class="dv">18</span>)</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> p1<span class="sc">:</span>p2)</span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>{</span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span>(q <span class="cf">in</span> q1<span class="sc">:</span>q2)</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>  {</span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span>(d <span class="cf">in</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>)</span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>    {</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>      <span class="cf">if</span>(p<span class="sc">+</span>d<span class="sc">+</span>q<span class="sc">&lt;=</span><span class="dv">6</span>)</span>
+<span id="cb27-17"><a href="#cb27-17" aria-hidden="true" tabindex="-1"></a>      {</span>
+<span id="cb27-18"><a href="#cb27-18" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb27-19"><a href="#cb27-19" aria-hidden="true" tabindex="-1"></a>        model<span class="ot">&lt;-</span> <span class="fu">Arima</span>(data,<span class="at">order=</span><span class="fu">c</span>(p,d,q))</span>
+<span id="cb27-20"><a href="#cb27-20" aria-hidden="true" tabindex="-1"></a>        ls[i,]<span class="ot">=</span> <span class="fu">c</span>(p,d,q,model<span class="sc">$</span>aic,model<span class="sc">$</span>bic,model<span class="sc">$</span>aicc)</span>
+<span id="cb27-21"><a href="#cb27-21" aria-hidden="true" tabindex="-1"></a>        i<span class="ot">=</span>i<span class="sc">+</span><span class="dv">1</span></span>
+<span id="cb27-22"><a href="#cb27-22" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb27-23"><a href="#cb27-23" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb27-24"><a href="#cb27-24" aria-hidden="true" tabindex="-1"></a>      }</span>
+<span id="cb27-25"><a href="#cb27-25" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a>  }</span>
+<span id="cb27-28"><a href="#cb27-28" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb27-29"><a href="#cb27-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-30"><a href="#cb27-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-31"><a href="#cb27-31" aria-hidden="true" tabindex="-1"></a>temp<span class="ot">=</span> <span class="fu">as.data.frame</span>(ls)</span>
+<span id="cb27-32"><a href="#cb27-32" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(temp)<span class="ot">=</span> <span class="fu">c</span>(<span class="st">"p"</span>,<span class="st">"d"</span>,<span class="st">"q"</span>,<span class="st">"AIC"</span>,<span class="st">"BIC"</span>,<span class="st">"AICc"</span>)</span>
+<span id="cb27-33"><a href="#cb27-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-34"><a href="#cb27-34" aria-hidden="true" tabindex="-1"></a>temp</span>
+<span id="cb27-35"><a href="#cb27-35" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb27-36"><a href="#cb27-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-37"><a href="#cb27-37" aria-hidden="true" tabindex="-1"></a>output <span class="ot">&lt;-</span> <span class="fu">ARIMA.c</span>(<span class="dv">0</span>,<span class="dv">2</span>,<span class="dv">0</span>,<span class="dv">2</span>,<span class="at">data=</span>returns_chevron) </span>
+<span id="cb27-38"><a href="#cb27-38" aria-hidden="true" tabindex="-1"></a>output</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>   p d q       AIC       BIC      AICc
+1  0 0 0 -46406.58 -46392.45 -46406.58
+2  0 1 0 -39788.46 -39781.40 -39788.46
+3  0 0 1 -46454.38 -46433.19 -46454.38
+4  0 1 1 -46391.15 -46377.02 -46391.15
+5  0 0 2 -46453.60 -46425.35 -46453.60
+6  0 1 2 -46438.72 -46417.52 -46438.71
+7  1 0 0 -46452.95 -46431.76 -46452.95
+8  1 1 0 -42629.59 -42615.46 -42629.59
+9  1 0 1 -46453.74 -46425.48 -46453.74
+10 1 1 1 -46437.37 -46416.18 -46437.37
+11 1 0 2 -46451.60 -46416.27 -46451.59
+12 1 1 2 -46438.13 -46409.88 -46438.13
+13 2 0 0 -46453.49 -46425.23 -46453.48
+14 2 1 0 -43806.10 -43784.91 -43806.10
+15 2 0 1 -46451.50 -46416.18 -46451.49
+16 2 1 1 -46437.87 -46409.61 -46437.87
+17 2 0 2 -46449.84 -46407.45 -46449.83
+18 2 1 2 -46436.17 -46400.85 -46436.17</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>output[<span class="fu">which.min</span>(output<span class="sc">$</span>AIC),] </span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  p d q       AIC       BIC      AICc
+3 0 0 1 -46454.38 -46433.19 -46454.38</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>output[<span class="fu">which.min</span>(output<span class="sc">$</span>BIC),] </span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  p d q       AIC       BIC      AICc
+3 0 0 1 -46454.38 -46433.19 -46454.38</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>output[<span class="fu">which.min</span>(output<span class="sc">$</span>AICc),] </span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>  p d q       AIC       BIC      AICc
+3 0 0 1 -46454.38 -46433.19 -46454.38</code></pre>
+</div>
+</div>
+<p>The best ARIMA model according to the lowest AIC is ARIMA(0,0,1)</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>fit_chevron <span class="ot">&lt;-</span> <span class="fu">Arima</span>(returns_chevron,<span class="at">order=</span><span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>))</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(fit_chevron)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>Series: returns_chevron 
+ARIMA(0,0,1) with non-zero mean 
+
+Coefficients:
+          ma1   mean
+      -0.0769  4e-04
+s.e.   0.0109  2e-04
+
+sigma^2 = 0.0002714:  log likelihood = 23230.19
+AIC=-46454.38   AICc=-46454.38   BIC=-46433.19
+
+Training set error measures:
+                        ME       RMSE        MAE MPE MAPE      MASE
+Training set -3.755635e-08 0.01647249 0.01143943 NaN  Inf 0.6712268
+                     ACF1
+Training set 0.0008956373</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -555,13 +914,185 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data.</p>
 <p>Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-7-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-1" role="tab" aria-controls="tabset-7-1" aria-selected="true">Exxon Mobil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-7-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-7-2" role="tab" aria-controls="tabset-7-2" aria-selected="false">Chevron Corporation</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">Exxon Mobil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">Chevron Corporation</a></li></ul>
 <div class="tab-content">
-<div id="tabset-7-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-7-1-tab">
+<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sarima</span>(returns_exxon,<span class="dv">1</span>,<span class="dv">0</span>,<span class="dv">1</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>initial  value -4.154602 
+iter   2 value -4.155235
+iter   3 value -4.157538
+iter   4 value -4.157547
+iter   5 value -4.158307
+iter   6 value -4.159247
+iter   7 value -4.159273
+iter   8 value -4.159303
+iter   9 value -4.159307
+iter  10 value -4.159307
+iter  11 value -4.159307
+iter  12 value -4.159309
+iter  13 value -4.159310
+iter  14 value -4.159311
+iter  15 value -4.159311
+iter  15 value -4.159311
+final  value -4.159311 
+converged
+initial  value -4.159311 
+iter   1 value -4.159311
+final  value -4.159311 
+converged
+&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;
+ 
+Coefficients: 
+      Estimate     SE t.value p.value
+ar1     0.5315 0.0723  7.3550  0.0000
+ma1    -0.6136 0.0673 -9.1150  0.0000
+xmean   0.0004 0.0001  2.8431  0.0045
 
+sigma^2 estimated as 0.0002439315 on 8642 degrees of freedom 
+ 
+AIC = -5.479819  AICc = -5.479818  BIC = -5.47655 
+ </code></pre>
 </div>
-<div id="tabset-7-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-7-2-tab">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>exxon.res<span class="ot">&lt;-</span>fit_exxon<span class="sc">$</span>residuals</span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>plot1 <span class="ot">&lt;-</span> <span class="fu">ggAcf</span>(exxon.res, <span class="dv">40</span>) <span class="sc">+</span></span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>plot2<span class="ot">&lt;-</span> <span class="fu">ggPacf</span>(exxon.res, <span class="dv">40</span>) <span class="sc">+</span></span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb39-10"><a href="#cb39-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-11"><a href="#cb39-11" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(plot1, plot2,<span class="at">nrow=</span><span class="dv">2</span>)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>plot3 <span class="ot">&lt;-</span> <span class="fu">ggAcf</span>(exxon.res<span class="sc">^</span><span class="dv">2</span>, <span class="dv">40</span>) <span class="sc">+</span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>plot4<span class="ot">&lt;-</span> <span class="fu">ggPacf</span>(exxon.res<span class="sc">^</span><span class="dv">2</span>, <span class="dv">40</span>) <span class="sc">+</span></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(plot3, plot4,<span class="at">nrow=</span><span class="dv">2</span>)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sarima</span>(returns_chevron,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">1</span>)</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>initial  value -4.103183 
+iter   2 value -4.106061
+iter   3 value -4.106063
+iter   3 value -4.106063
+iter   3 value -4.106063
+final  value -4.106063 
+converged
+initial  value -4.106063 
+iter   1 value -4.106063
+final  value -4.106063 
+converged
+&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;&lt;&gt;
+ 
+Coefficients: 
+      Estimate     SE t.value p.value
+ma1    -0.0769 0.0109 -7.0862  0.0000
+xmean   0.0004 0.0002  2.4946  0.0126
 
+sigma^2 estimated as 0.000271343 on 8643 degrees of freedom 
+ 
+AIC = -5.373555  AICc = -5.373555  BIC = -5.371103 
+ </code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>chevron.res<span class="ot">&lt;-</span>fit_chevron<span class="sc">$</span>residuals</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>plot5 <span class="ot">&lt;-</span> <span class="fu">ggAcf</span>(chevron.res, <span class="dv">40</span>) <span class="sc">+</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>plot6 <span class="ot">&lt;-</span> <span class="fu">ggPacf</span>(chevron.res, <span class="dv">40</span>) <span class="sc">+</span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(plot5, plot6,<span class="at">nrow=</span><span class="dv">2</span>)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-26-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>plot7 <span class="ot">&lt;-</span> <span class="fu">ggAcf</span>(chevron.res<span class="sc">^</span><span class="dv">2</span>, <span class="dv">40</span>) <span class="sc">+</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>plot8 <span class="ot">&lt;-</span> <span class="fu">ggPacf</span>(chevron.res<span class="sc">^</span><span class="dv">2</span>, <span class="dv">40</span>) <span class="sc">+</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">hjust =</span> <span class="fl">0.5</span>, <span class="at">face =</span> <span class="st">"bold"</span>))</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a><span class="fu">grid.arrange</span>(plot7,plot8,<span class="at">nrow=</span><span class="dv">2</span>)</span></code></pre></div>
+</details>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="financial-ts-models_files/figure-html/unnamed-chunk-27-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -571,13 +1102,339 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data.</p>
 <p>Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-8-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-1" role="tab" aria-controls="tabset-8-1" aria-selected="true">Exxon Mobil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-8-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-8-2" role="tab" aria-controls="tabset-8-2" aria-selected="false">Chevron Corporation</a></li></ul>
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">Exxon Mobil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">Chevron Corporation</a></li></ul>
 <div class="tab-content">
-<div id="tabset-8-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-8-1-tab">
+<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">list</span>() <span class="do">## set counter</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>) {</span>
+<span id="cb45-4"><a href="#cb45-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (q <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>) {</span>
+<span id="cb45-5"><a href="#cb45-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb45-6"><a href="#cb45-6" aria-hidden="true" tabindex="-1"></a>model[[cc]] <span class="ot">&lt;-</span> <span class="fu">garch</span>(exxon.res,<span class="at">order=</span><span class="fu">c</span>(q,p),<span class="at">trace=</span>F)</span>
+<span id="cb45-7"><a href="#cb45-7" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> cc <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb45-8"><a href="#cb45-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb45-9"><a href="#cb45-9" aria-hidden="true" tabindex="-1"></a>} </span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
 
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information</code></pre>
 </div>
-<div id="tabset-8-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-8-2-tab">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="do">## get AIC values for model evaluation</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>GARCH_AIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>(model, AIC) <span class="do">## model with lowest AIC is the best</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>model[[<span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))]]</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+garch(x = exxon.res, order = c(q, p), trace = F)
 
+Coefficient(s):
+       a0         a1         b1  
+2.446e-06  7.078e-02  9.190e-01  </code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>,<span class="dv">1</span>), exxon.res,<span class="at">trace =</span> F))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Title:
+ GARCH Modelling 
+
+Call:
+ garchFit(formula = ~garch(1, 1), data = exxon.res, trace = F) 
+
+Mean and Variance Equation:
+ data ~ garch(1, 1)
+&lt;environment: 0x13d382240&gt;
+ [data = exxon.res]
+
+Conditional Distribution:
+ norm 
+
+Coefficient(s):
+        mu       omega      alpha1       beta1  
+2.3841e-05  2.4480e-06  7.0832e-02  9.1892e-01  
+
+Std. Errors:
+ based on Hessian 
+
+Error Analysis:
+        Estimate  Std. Error  t value Pr(&gt;|t|)    
+mu     2.384e-05   1.289e-04    0.185    0.853    
+omega  2.448e-06   3.988e-07    6.138 8.36e-10 ***
+alpha1 7.083e-02   5.377e-03   13.173  &lt; 2e-16 ***
+beta1  9.189e-01   6.110e-03  150.406  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Log Likelihood:
+ 24997.65    normalized:  2.891574 
+
+Description:
+ Sat Apr 27 20:59:34 2024 by user:  
+
+
+Standardised Residuals Tests:
+                                Statistic p-Value   
+ Jarque-Bera Test   R    Chi^2  664.263   0         
+ Shapiro-Wilk Test  R    W      NA        NA        
+ Ljung-Box Test     R    Q(10)  20.21947  0.02724392
+ Ljung-Box Test     R    Q(15)  22.61791  0.09259626
+ Ljung-Box Test     R    Q(20)  32.17206  0.04149903
+ Ljung-Box Test     R^2  Q(10)  20.80423  0.0225008 
+ Ljung-Box Test     R^2  Q(15)  28.27114  0.01993212
+ Ljung-Box Test     R^2  Q(20)  30.62485  0.06034193
+ LM Arch Test       R    TR^2   24.05785  0.01997561
+
+Information Criterion Statistics:
+      AIC       BIC       SIC      HQIC 
+-5.782222 -5.778953 -5.782223 -5.781108 </code></pre>
+</div>
+</div>
+</div>
+<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">list</span>() <span class="do">## set counter</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>) {</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (q <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>) {</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>model[[cc]] <span class="ot">&lt;-</span> <span class="fu">garch</span>(chevron.res,<span class="at">order=</span><span class="fu">c</span>(q,p),<span class="at">trace=</span>F)</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> cc <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>} </span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(chevron.res, order = c(q, p), trace = F): singular information</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="do">## get AIC values for model evaluation</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>GARCH_AIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>(model, AIC) <span class="do">## model with lowest AIC is the best</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>model[[<span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))]]</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+garch(x = chevron.res, order = c(q, p), trace = F)
+
+Coefficient(s):
+       a0         a1         b1  
+3.951e-06  7.041e-02  9.132e-01  </code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>,<span class="dv">1</span>), chevron.res,<span class="at">trace =</span> F))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Title:
+ GARCH Modelling 
+
+Call:
+ garchFit(formula = ~garch(1, 1), data = chevron.res, trace = F) 
+
+Mean and Variance Equation:
+ data ~ garch(1, 1)
+&lt;environment: 0x10b81e000&gt;
+ [data = chevron.res]
+
+Conditional Distribution:
+ norm 
+
+Coefficient(s):
+         mu        omega       alpha1        beta1  
+-3.7449e-08   3.9501e-06   7.0414e-02   9.1319e-01  
+
+Std. Errors:
+ based on Hessian 
+
+Error Analysis:
+         Estimate  Std. Error  t value Pr(&gt;|t|)    
+mu     -3.745e-08   1.393e-04    0.000        1    
+omega   3.950e-06   5.740e-07    6.881 5.94e-12 ***
+alpha1  7.041e-02   5.254e-03   13.402  &lt; 2e-16 ***
+beta1   9.132e-01   6.489e-03  140.720  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Log Likelihood:
+ 24533.25    normalized:  2.837854 
+
+Description:
+ Sat Apr 27 20:59:35 2024 by user:  
+
+
+Standardised Residuals Tests:
+                                Statistic p-Value     
+ Jarque-Bera Test   R    Chi^2  979.4779  0           
+ Shapiro-Wilk Test  R    W      NA        NA          
+ Ljung-Box Test     R    Q(10)  35.03341  0.0001232366
+ Ljung-Box Test     R    Q(15)  39.0405   0.0006319848
+ Ljung-Box Test     R    Q(20)  50.24924  0.0002039903
+ Ljung-Box Test     R^2  Q(10)  18.43997  0.04798024  
+ Ljung-Box Test     R^2  Q(15)  19.64716  0.1858898   
+ Ljung-Box Test     R^2  Q(20)  26.45834  0.1512023   
+ LM Arch Test       R    TR^2   18.51581  0.1009028   
+
+Information Criterion Statistics:
+      AIC       BIC       SIC      HQIC 
+-5.674783 -5.671514 -5.674783 -5.673668 </code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -587,26 +1444,184 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data.</p>
 <p>Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
-<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-9-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-1" role="tab" aria-controls="tabset-9-1" aria-selected="true">Exxon Mobil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-9-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-9-2" role="tab" aria-controls="tabset-9-2" aria-selected="false">Chevron Corporation</a></li></ul>
-<div class="tab-content">
-<div id="tabset-9-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-9-1-tab">
-
-</div>
-<div id="tabset-9-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-9-2-tab">
-
-</div>
-</div>
-</div>
-</section>
-<section id="model-diagnostics" class="level1">
-<h1>10. Model Diagnostics</h1>
-<p>To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data.</p>
-<p>Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data</p>
-<div class="tabset-margin-container"></div><div class="panel-tabset">
 <ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-10-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-1" role="tab" aria-controls="tabset-10-1" aria-selected="true">Exxon Mobil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-10-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-10-2" role="tab" aria-controls="tabset-10-2" aria-selected="false">Chevron Corporation</a></li></ul>
 <div class="tab-content">
 <div id="tabset-10-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-10-1-tab">
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a>model <span class="ot">&lt;-</span> <span class="fu">list</span>() <span class="do">## set counter</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> <span class="dv">1</span></span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (p <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>) {</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  <span class="cf">for</span> (q <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">7</span>) {</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>model[[cc]] <span class="ot">&lt;-</span> <span class="fu">garch</span>(exxon.res,<span class="at">order=</span><span class="fu">c</span>(q,p),<span class="at">trace=</span>F)</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>cc <span class="ot">&lt;-</span> cc <span class="sc">+</span> <span class="dv">1</span></span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>} </span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
 
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information
+
+Warning in garch(exxon.res, order = c(q, p), trace = F): singular information</code></pre>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="do">## get AIC values for model evaluation</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a>GARCH_AIC <span class="ot">&lt;-</span> <span class="fu">sapply</span>(model, AIC) <span class="do">## model with lowest AIC is the best</span></span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a><span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1</code></pre>
+</div>
+</div>
+<p>The best model according to AIC is:</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a>model[[<span class="fu">which</span>(GARCH_AIC <span class="sc">==</span> <span class="fu">min</span>(GARCH_AIC))]]</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+garch(x = exxon.res, order = c(q, p), trace = F)
+
+Coefficient(s):
+       a0         a1         b1  
+2.446e-06  7.078e-02  9.190e-01  </code></pre>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">garchFit</span>(<span class="sc">~</span><span class="fu">garch</span>(<span class="dv">1</span>,<span class="dv">1</span>), exxon.res,<span class="at">trace =</span> F))</span></code></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Title:
+ GARCH Modelling 
+
+Call:
+ garchFit(formula = ~garch(1, 1), data = exxon.res, trace = F) 
+
+Mean and Variance Equation:
+ data ~ garch(1, 1)
+&lt;environment: 0x13dda4eb8&gt;
+ [data = exxon.res]
+
+Conditional Distribution:
+ norm 
+
+Coefficient(s):
+        mu       omega      alpha1       beta1  
+2.3841e-05  2.4480e-06  7.0832e-02  9.1892e-01  
+
+Std. Errors:
+ based on Hessian 
+
+Error Analysis:
+        Estimate  Std. Error  t value Pr(&gt;|t|)    
+mu     2.384e-05   1.289e-04    0.185    0.853    
+omega  2.448e-06   3.988e-07    6.138 8.36e-10 ***
+alpha1 7.083e-02   5.377e-03   13.173  &lt; 2e-16 ***
+beta1  9.189e-01   6.110e-03  150.406  &lt; 2e-16 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Log Likelihood:
+ 24997.65    normalized:  2.891574 
+
+Description:
+ Sat Apr 27 20:59:36 2024 by user:  
+
+
+Standardised Residuals Tests:
+                                Statistic p-Value   
+ Jarque-Bera Test   R    Chi^2  664.263   0         
+ Shapiro-Wilk Test  R    W      NA        NA        
+ Ljung-Box Test     R    Q(10)  20.21947  0.02724392
+ Ljung-Box Test     R    Q(15)  22.61791  0.09259626
+ Ljung-Box Test     R    Q(20)  32.17206  0.04149903
+ Ljung-Box Test     R^2  Q(10)  20.80423  0.0225008 
+ Ljung-Box Test     R^2  Q(15)  28.27114  0.01993212
+ Ljung-Box Test     R^2  Q(20)  30.62485  0.06034193
+ LM Arch Test       R    TR^2   24.05785  0.01997561
+
+Information Criterion Statistics:
+      AIC       BIC       SIC      HQIC 
+-5.782222 -5.778953 -5.782223 -5.781108 </code></pre>
+</div>
+</div>
 </div>
 <div id="tabset-10-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-10-2-tab">
 
@@ -614,8 +1629,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="cross-validation" class="level1">
-<h1>11. Cross-Validation</h1>
+<section id="model-diagnostics" class="level1">
+<h1>10. Model Diagnostics</h1>
 <p>To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data.</p>
 <p>Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -630,8 +1645,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="final-model" class="level1">
-<h1>12. Final Model</h1>
+<section id="cross-validation" class="level1">
+<h1>11. Cross-Validation</h1>
 <p>To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data.</p>
 <p>Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -646,8 +1661,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="final-model-selection-forecasting" class="level1">
-<h1>13. Final Model Selection &amp; Forecasting</h1>
+<section id="final-model" class="level1">
+<h1>12. Final Model</h1>
 <p>To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data.</p>
 <p>Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -662,8 +1677,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="volatality-plot" class="level1">
-<h1>14. Volatality Plot</h1>
+<section id="final-model-selection-forecasting" class="level1">
+<h1>13. Final Model Selection &amp; Forecasting</h1>
 <p>To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data.</p>
 <p>Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -678,8 +1693,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </section>
-<section id="model-equations" class="level1">
-<h1>15. Model Equations</h1>
+<section id="volatality-plot" class="level1">
+<h1>14. Volatality Plot</h1>
 <p>To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data.</p>
 <p>Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data</p>
 <div class="tabset-margin-container"></div><div class="panel-tabset">
@@ -689,6 +1704,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </div>
 <div id="tabset-15-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-15-2-tab">
+
+</div>
+</div>
+</div>
+</section>
+<section id="model-equations" class="level1">
+<h1>15. Model Equations</h1>
+<p>To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data.</p>
+<p>Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data</p>
+<div class="tabset-margin-container"></div><div class="panel-tabset">
+<ul class="nav nav-tabs" role="tablist"><li class="nav-item" role="presentation"><a class="nav-link active" id="tabset-16-1-tab" data-bs-toggle="tab" data-bs-target="#tabset-16-1" role="tab" aria-controls="tabset-16-1" aria-selected="true">Exxon Mobil</a></li><li class="nav-item" role="presentation"><a class="nav-link" id="tabset-16-2-tab" data-bs-toggle="tab" data-bs-target="#tabset-16-2" role="tab" aria-controls="tabset-16-2" aria-selected="false">Chevron Corporation</a></li></ul>
+<div class="tab-content">
+<div id="tabset-16-1" class="tab-pane active" role="tabpanel" aria-labelledby="tabset-16-1-tab">
+
+</div>
+<div id="tabset-16-2" class="tab-pane" role="tabpanel" aria-labelledby="tabset-16-2-tab">
 
 </div>
 </div>

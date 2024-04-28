@@ -25,77 +25,11 @@ library(plotly)
 library(vars)
 library(dplyr)
 library(quantmod)
-```
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Read data'
-#| warning: false
-#| output: false
-
-composite_crude_oil_prices <- read.csv("data/composite_crude_oil_prices.csv")
-citygate_gas_prices <- read.csv("data/citygate_gas_prices.csv")
-total_electricity_prices <- read.csv("data/total_electricity_prices.csv")
-gdp_data <- read.csv("data/gdp_data.csv")
-cpi_data <- read.csv("data/cpi_data.csv")
-
+library(FinTS)
+library(gogarch)
 ```
 
 
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'convert to ts'
-#| warning: false
-#| output: false
-
-
-# For Crude Oil
-composite_crude_oil_prices$Date <- as.Date(composite_crude_oil_prices$Date)
-start_year <- as.numeric(format(min(composite_crude_oil_prices$Date), "%Y"))
-start_month <- as.numeric(format(min(composite_crude_oil_prices$Date), "%m"))
-composite_crude_oil_ts <- ts(composite_crude_oil_prices$Value, start=c(start_year, start_month), frequency=12)
-# Log-transform Value
-composite_crude_oil_prices$LOG_Value <- log(composite_crude_oil_prices$Value)
-oil_log_ts <- ts(composite_crude_oil_prices$LOG_Value, start=c(start_year, start_month), frequency=12)
-
-# For Natural Gas
-citygate_gas_prices$Date <- as.Date(citygate_gas_prices$Date)
-start_year_gas <- as.numeric(format(min(citygate_gas_prices$Date), "%Y"))
-start_month_gas <- as.numeric(format(min(citygate_gas_prices$Date), "%m"))
-citygate_gas_ts <- ts(citygate_gas_prices$Value, start=c(start_year_gas, start_month_gas), frequency=12)
-# Log-transform Value
-citygate_gas_prices$LOG_Value <- log(citygate_gas_prices$Value)
-gas_log_ts <- ts(citygate_gas_prices$LOG_Value, start=c(start_year_gas, start_month_gas), frequency=12)
-
-# For Electricity
-total_electricity_prices$Date <- as.Date(total_electricity_prices$Date, format = "%Y-%m-%d")
-start_year_elec <- as.numeric(format(min(total_electricity_prices$Date), "%Y"))
-start_month_elec <- as.numeric(format(min(total_electricity_prices$Date), "%m"))
-total_electricity_ts <- ts(total_electricity_prices$Value, start = c(start_year_elec, start_month_elec), frequency = 12)
-# Log-transform Value
-total_electricity_prices$LOG_Value <- log(total_electricity_prices$Value)
-electricity_log_ts <- ts(total_electricity_prices$LOG_Value, start=c(start_year_elec, start_month_elec), frequency=12)
-
-
-# For GDP (it's quarterly)
-gdp_data$DATE <- as.Date(gdp_data$DATE, format = "%Y-%m-%d")
-start_year_gdp <- as.numeric(format(min(gdp_data$DATE), "%Y"))
-start_quarter_gdp <- quarter(min(gdp_data$DATE))
-# Log-transform GDP
-gdp_data$LOG_GDP <- log(gdp_data$GDP)
-gdp_log_ts <- ts(gdp_data$LOG_GDP, start=c(start_year_gdp, start_quarter_gdp), frequency=4)
-
-
-# For CPI (it's monthly)
-cpi_data$DATE <- as.Date(cpi_data$DATE, format = "%Y-%m-%d")
-start_year_cpi <- as.numeric(format(min(cpi_data$DATE), "%Y"))
-start_month_cpi <- as.numeric(format(min(cpi_data$DATE), "%m"))
-# Log-transform CPI
-cpi_data$LOG_CPI <- log(cpi_data$CPIAUCSL)
-cpi_log_ts <- ts(cpi_data$LOG_CPI, start = c(start_year_cpi, start_month_cpi), frequency = 12)
-
-```
 
 
 
@@ -231,8 +165,8 @@ Now, we will move forward to fit an ARCH/GARCH model to the stock price data. Th
 Exxon_ts <- ts(Exxon_stockprice$XOM.Adjusted, start=decimal_date(as.Date("1990-01-01")), frequency = 365.25)
 
 # Calculate log returns
-returns_xom <- log(Exxon_ts)%>% diff()
-knitr::kable(summary(returns_xom))
+returns_exxon <- log(Exxon_ts)%>% diff()
+knitr::kable(summary(returns_exxon))
 
 ```
 
@@ -249,7 +183,7 @@ From the summary statistics, we can clearly see that the mean return is close to
 
 
 # Plot the returns
-autoplot(returns_xom, color="dodgerblue3") + 
+autoplot(returns_exxon, color="dodgerblue3") + 
   theme_minimal() +
   ggtitle("Exxon Mobil Stock Price Returns") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -274,8 +208,8 @@ The plot shows the daily returns on Exxon Mobil's stock from 1990 to 2024. The r
 Chevron_ts <- ts(Chevron_stockprice$CVX.Adjusted, start=decimal_date(as.Date("1990-01-01")), frequency = 365.25)
 
 # Calculate log returns
-returns_cvx <- log(Chevron_ts)%>% diff()
-knitr::kable(summary(returns_cvx))
+returns_chevron <- log(Chevron_ts)%>% diff()
+knitr::kable(summary(returns_chevron))
 
 ```
 
@@ -291,7 +225,7 @@ The summary statistics for Chevron's returns highlight a median value slightly a
 #| output: true
 
 # Plot the returns
-autoplot(returns_cvx, color="dodgerblue3") + 
+autoplot(returns_chevron, color="dodgerblue3") + 
   theme_minimal() +
   ggtitle("Chevron Stock Price Returns") +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -330,13 +264,13 @@ Autocorrelation Function (ACF) and Partial Autocorrelation Function (PACF) plots
 #| output: true
 
 #ACF Plot for Exxon Mobil Stock
-Exxon_acf <- ggAcf(returns_xom,40) + 
+Exxon_acf <- ggAcf(returns_exxon,40) + 
   ggtitle("ACF Plot for Exxon Mobil Returns ") +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #PACF Plot for Exxon Mobil Stock
-Exxon_pacf <- ggPacf(returns_xom,40) + 
+Exxon_pacf <- ggPacf(returns_exxon,40) + 
   ggtitle("PACF Plot for Exxon Mobil Returns") + 
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -361,13 +295,13 @@ Upon examining the ACF and PACF plots we can see values quickly drop off and mos
 
 
 #ACF Plot for Chevron Stock
-Chevron_acf <- ggAcf(returns_cvx,40) + 
-  ggtitle("ACF Plot for Chevron Stock Returns ") +
+Chevron_acf <- ggAcf(returns_chevron,40) + 
+  ggtitle("ACF Plot for Chevron Stock Returns") +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 #PACF Plot for Chevron Stock
-Chevron_pacf <- ggPacf(returns_cvx,40) + 
+Chevron_pacf <- ggPacf(returns_chevron,40) + 
   ggtitle("PACF Plot for Chevron Stock Returns") + 
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
@@ -392,14 +326,52 @@ Upon examining the ACF and PACF plots we can see values quickly drop off and mos
 ## Exxon Mobil
 
 
-```{r}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+#ACF Plot for Exxon Mobil Stock
+Exxon_acf_abs <- ggAcf(abs(returns_exxon),40) + 
+  ggtitle("ACF Plot for Exxon Mobil Absolute Returns") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+#PACF Plot for Exxon Mobil Stock
+Exxon_pacf_abs <- ggPacf(abs(returns_exxon),40) + 
+  ggtitle("PACF Plot for Exxon Mobil Absolute Returns") + 
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+grid.arrange(Exxon_acf_abs, Exxon_pacf_abs, nrow = 2)
+
 
 ```
 
 
 ## Chevron Corporation
 
-```{r}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+#ACF Plot for Chevron Stock
+Chevron_acf_abs <- ggAcf(abs(returns_chevron),40) + 
+  ggtitle("ACF Plot for Chevron Stock Absolute Returns") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+#PACF Plot for Chevron Stock
+Chevron_pacf_abs <- ggPacf(abs(returns_chevron),40) + 
+  ggtitle("PACF Plot for Chevron Stock Absolute Returns") + 
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+grid.arrange(Chevron_acf_abs, Chevron_pacf_abs, nrow = 2)
+
 
 ```
 
@@ -408,6 +380,65 @@ Upon examining the ACF and PACF plots we can see values quickly drop off and mos
 ::: 
 
 
+
+## 4.3 Squared Returns
+
+::: panel-tabset
+
+
+## Exxon Mobil
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+#ACF Plot for Exxon Mobil Stock
+Exxon_acf_se <- ggAcf(returns_exxon^2,40) + 
+  ggtitle("ACF Plot for Exxon Mobil Squared Returns ") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+#PACF Plot for Exxon Mobil Stock
+Exxon_pacf_se <- ggPacf(returns_exxon^2,40) + 
+  ggtitle("PACF Plot for Exxon Mobil Squared Returns") + 
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+grid.arrange(Exxon_acf_se, Exxon_pacf_se, nrow = 2)
+
+```
+
+
+
+## Chevron Corporation
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+#ACF Plot for Chevron Stock
+Chevron_acf_se <- ggAcf(returns_chevron^2,40) + 
+  ggtitle("ACF Plot for Chevron Stock Squared Returns") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+#PACF Plot for Chevron Stock
+Chevron_pacf_se <- ggPacf(returns_chevron^2,40) + 
+  ggtitle("PACF Plot for Chevron Stock Squared Returns") + 
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+grid.arrange(Chevron_acf_se, Chevron_pacf_se, nrow = 2)
+
+```
+
+
+
+::: 
 
 
 
@@ -426,14 +457,14 @@ Graphical representations provide intuitive insights into the financial performa
 ## Exxon Mobil
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
 
 
-
+ArchTest(returns_exxon, lags=1, demean=TRUE)
 
 
 ```
@@ -441,14 +472,14 @@ Graphical representations provide intuitive insights into the financial performa
 
 ## Chevron Corporation
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
 
 
-
+ArchTest(returns_chevron, lags=1, demean=TRUE)
 
 
 ```
@@ -470,32 +501,154 @@ Graphical representations provide intuitive insights into the financial performa
 ## Exxon Mobil
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
 
 
+ARIMA.c=function(p1,p2,q1,q2,data){
+temp=c()
+d=1
+i=1
+temp= data.frame()
+ls=matrix(rep(NA,6*18),nrow=18)
 
+
+for (p in p1:p2)
+{
+  for(q in q1:q2)
+  {
+    for(d in 0:1)
+    {
+      
+      if(p+d+q<=6)
+      {
+        
+        model<- Arima(data,order=c(p,d,q))
+        ls[i,]= c(p,d,q,model$aic,model$bic,model$aicc)
+        i=i+1
+  
+        
+      }
+      
+    }
+  }
+}
+
+
+temp= as.data.frame(ls)
+names(temp)= c("p","d","q","AIC","BIC","AICc")
+
+temp
+}
+
+output <- ARIMA.c(0,2,0,2,data=returns_exxon) 
+output
+
+output[which.min(output$AIC),] 
+output[which.min(output$BIC),] 
+output[which.min(output$AICc),] 
 
 
 ```
+
+The best ARIMA model according to the lowest AIC is ARIMA(1,0,1)
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+fit_exxon <- Arima(returns_exxon,order=c(1,0,1))
+summary(fit_exxon)
+
+```
+
+
+
+
 
 
 ## Chevron Corporation
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
 
 
+
+ARIMA.c=function(p1,p2,q1,q2,data){
+temp=c()
+d=1
+i=1
+temp= data.frame()
+ls=matrix(rep(NA,6*18),nrow=18)
+
+
+for (p in p1:p2)
+{
+  for(q in q1:q2)
+  {
+    for(d in 0:1)
+    {
+      
+      if(p+d+q<=6)
+      {
+        
+        model<- Arima(data,order=c(p,d,q))
+        ls[i,]= c(p,d,q,model$aic,model$bic,model$aicc)
+        i=i+1
+  
+        
+      }
+      
+    }
+  }
+}
+
+
+temp= as.data.frame(ls)
+names(temp)= c("p","d","q","AIC","BIC","AICc")
+
+temp
+}
+
+output <- ARIMA.c(0,2,0,2,data=returns_chevron) 
+output
+
+output[which.min(output$AIC),] 
+output[which.min(output$BIC),] 
+output[which.min(output$AICc),] 
 
 
 
 ```
+
+
+
+The best ARIMA model according to the lowest AIC is ARIMA(0,0,1)
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+fit_chevron <- Arima(returns_chevron,order=c(0,0,1))
+summary(fit_chevron)
+```
+
+
 
 
 :::
@@ -515,29 +668,122 @@ Graphical representations provide intuitive insights into the financial performa
 ## Exxon Mobil
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
 
 
+sarima(returns_exxon,1,0,1)
 
 
 
 ```
 
 
-## Chevron Corporation
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
+
+
+exxon.res<-fit_exxon$residuals
+
+plot1 <- ggAcf(exxon.res, 40) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+  
+plot2<- ggPacf(exxon.res, 40) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+grid.arrange(plot1, plot2,nrow=2)
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+plot3 <- ggAcf(exxon.res^2, 40) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+  
+plot4<- ggPacf(exxon.res^2, 40) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+grid.arrange(plot3, plot4,nrow=2)
+
+
+```
 
 
 
+
+
+
+
+## Chevron Corporation
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+
+sarima(returns_chevron,0,0,1)
+
+
+
+```
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+chevron.res<-fit_chevron$residuals
+
+plot5 <- ggAcf(chevron.res, 40) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+  
+plot6 <- ggPacf(chevron.res, 40) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+grid.arrange(plot5, plot6,nrow=2)
+```
+
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+plot7 <- ggAcf(chevron.res^2, 40) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+  
+plot8 <- ggPacf(chevron.res^2, 40) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
+
+grid.arrange(plot7,plot8,nrow=2)
 
 
 ```
@@ -560,28 +806,59 @@ Graphical representations provide intuitive insights into the financial performa
 ## Exxon Mobil
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
 
 
+model <- list() ## set counter
+cc <- 1
+for (p in 1:7) {
+  for (q in 1:7) {
+  
+model[[cc]] <- garch(exxon.res,order=c(q,p),trace=F)
+cc <- cc + 1
+}
+} 
 
+## get AIC values for model evaluation
+GARCH_AIC <- sapply(model, AIC) ## model with lowest AIC is the best
+which(GARCH_AIC == min(GARCH_AIC))
 
+model[[which(GARCH_AIC == min(GARCH_AIC))]]
+
+summary(garchFit(~garch(1,1), exxon.res,trace = F))
 
 ```
 
 
 ## Chevron Corporation
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
 
+model <- list() ## set counter
+cc <- 1
+for (p in 1:7) {
+  for (q in 1:7) {
+  
+model[[cc]] <- garch(chevron.res,order=c(q,p),trace=F)
+cc <- cc + 1
+}
+} 
 
+## get AIC values for model evaluation
+GARCH_AIC <- sapply(model, AIC) ## model with lowest AIC is the best
+which(GARCH_AIC == min(GARCH_AIC))
+
+model[[which(GARCH_AIC == min(GARCH_AIC))]]
+
+summary(garchFit(~garch(1,1), chevron.res,trace = F))
 
 
 
@@ -604,26 +881,69 @@ Graphical representations provide intuitive insights into the financial performa
 ## Exxon Mobil
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
 
 
+model <- list() ## set counter
+cc <- 1
+for (p in 1:7) {
+  for (q in 1:7) {
+  
+model[[cc]] <- garch(exxon.res,order=c(q,p),trace=F)
+cc <- cc + 1
+}
+} 
 
+## get AIC values for model evaluation
+GARCH_AIC <- sapply(model, AIC) ## model with lowest AIC is the best
+which(GARCH_AIC == min(GARCH_AIC))
+
+
+```
+
+The best model according to AIC is:
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+model[[which(GARCH_AIC == min(GARCH_AIC))]]
+
+
+```
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+summary(garchFit(~garch(1,1), exxon.res,trace = F))
 
 
 ```
 
 
+
+
+
+
+
+
 ## Chevron Corporation
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
 
 
 
@@ -649,11 +969,11 @@ Graphical representations provide intuitive insights into the financial performa
 ## Exxon Mobil
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
 
 
 
@@ -664,11 +984,11 @@ Graphical representations provide intuitive insights into the financial performa
 
 ## Chevron Corporation
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
 
 
 
@@ -693,11 +1013,11 @@ Graphical representations provide intuitive insights into the financial performa
 ## Exxon Mobil
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
 
 
 
@@ -708,11 +1028,11 @@ Graphical representations provide intuitive insights into the financial performa
 
 ## Chevron Corporation
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
 
 
 
@@ -738,11 +1058,11 @@ Graphical representations provide intuitive insights into the financial performa
 ## Exxon Mobil
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
 
 
 
@@ -753,11 +1073,11 @@ Graphical representations provide intuitive insights into the financial performa
 
 ## Chevron Corporation
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
 
 
 
@@ -783,12 +1103,11 @@ Graphical representations provide intuitive insights into the financial performa
 ## Exxon Mobil
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
-
+#| output: true
 
 
 
@@ -798,11 +1117,11 @@ Graphical representations provide intuitive insights into the financial performa
 
 ## Chevron Corporation
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
 
 
 
@@ -828,11 +1147,11 @@ Graphical representations provide intuitive insights into the financial performa
 ## Exxon Mobil
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
 
 
 
@@ -843,11 +1162,11 @@ Graphical representations provide intuitive insights into the financial performa
 
 ## Chevron Corporation
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
 
 
 
@@ -873,11 +1192,11 @@ Graphical representations provide intuitive insights into the financial performa
 ## Exxon Mobil
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
 
 
 
@@ -888,11 +1207,11 @@ Graphical representations provide intuitive insights into the financial performa
 
 ## Chevron Corporation
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
+#| output: true
 
 
 
