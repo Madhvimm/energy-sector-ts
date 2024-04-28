@@ -1052,3 +1052,16 @@ forecast(var2) %>%
 
 
 :::
+
+
+
+
+<a href="univariate-ts-models.qmd" class="previous-page-link" style="float: left;">&larr; Previous Page: Univariate</a>
+
+
+
+<a href="financial-ts-models.qmd" class="next-page-link" style="float: right;">Next Page: FinancialTS &rarr;</a>
+
+
+
+

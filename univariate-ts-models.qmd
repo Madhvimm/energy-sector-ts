@@ -3413,4 +3413,8 @@ Auto Arima appears to consistently have a higher MAE compared to the Manual Mode
 
 
 
+<a href="multivariate-ts-models.qmd" class="next-page-link" style="float: right;">Next Page: Multivariate &rarr;</a>
+
+
+
 
