@@ -1149,6 +1149,7 @@ Cross-validation is an essential technique in model validation, which helps to e
 ## Exxon Mobil
 
 
+
 ```{r, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
@@ -1157,11 +1158,51 @@ Cross-validation is an essential technique in model validation, which helps to e
 
 k <- 900
 n <- length(returns_exxon)
-n-k 
 
+err1 <- c()
+err2 <- c()
 
+for(i in 1:(n-k)) {
+  xtrain <- returns_exxon[1:(k-1)+i]
+  xtest <- returns_exxon[k+i]
+  
+  # ARIMA(1,0,1) + GARCH(1,1)
+  arima.fit <- Arima(xtrain, order = c(1, 0, 1), include.drift = TRUE)
+  arima.res <- residuals(arima.fit)
+  fit1 <- garchFit(~garch(1, 1), data = arima.res, trace = FALSE)
+  fcast1 <- predict(fit1, n.ahead = 1)
+  
+  # GARCH(1,1)
+  returns_diff <- diff(xtrain)  
+  fit2 <- garchFit(~garch(1, 1), data = xtrain, trace = FALSE)
+  fcast2 <- predict(fit2, n.ahead = 1)
+  
+  err1 <- c(err1, (fcast1$meanForecast - xtest)^2)
+  err2 <- c(err2, (fcast2$meanForecast - xtest)^2)
+}
+
+RMSE1 <- sqrt(mean(err1))
+RMSE2 <- sqrt(mean(err2))
 
 ```
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+cat("The RMSE for model 1 -", RMSE1, "\n")
+cat("The RMSE for model 2 -", RMSE2, "\n")
+
+```
+
+
+
+After performing cross-validation, we can see that Model 1 had slighlty lowest RMSE. Therefore, the best model according to diagnostics is Model 1: ARIMA(1,0,1) + GARCH(1,1)
+
 
 
 ## Chevron Corporation
@@ -1185,9 +1226,7 @@ n-k
 
 # 12. Final Model
 
-To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data. 
-
-Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data
+Now I will fit the model with best performance 
 
 
 ::: panel-tabset
@@ -1203,10 +1242,28 @@ Graphical representations provide intuitive insights into the financial performa
 #| output: true
 
 
+#Fit the ARIMA model
+arima_exxon_final <- Arima(returns_exxon, order = c(1, 0, 1))
 
+#Extract the residuals
+residuals_exxon_final <- residuals(arima_exxon_final)
+
+# Fit the GARCH model on the residuals
+garch_exxon_final <- garchFit(~garch(1,1), data = residuals_exxon_final, trace = FALSE)
+
+
+summary(garch_exxon_final)
 
 
 ```
+
+
+- All the coefficients are significant
+- The log likelihood of the model is 24997.66, suggesting a very good fit to the data.
+- The information criteria values (AIC, BIC, SIC, HQIC) are extremely low.
+- Ljung-Box Tests on Residuals and Squared Residuals: These indicate some autocorrelation in residuals
+
+The ARIMA(1,0,1) + GARCH(1,1) effectively captures the volatility dynamics in Exxon Mobil’s stock returns.
 
 
 ## Chevron Corporation
@@ -1228,11 +1285,10 @@ Graphical representations provide intuitive insights into the financial performa
 
 
 
-# 13. Final Model Selection & Forecasting
+# 13. Forecasting with the Final Model
 
-To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data. 
+Now I would use the final model to forecast the future trends
 
-Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data
 
 
 ::: panel-tabset
@@ -1248,9 +1304,13 @@ Graphical representations provide intuitive insights into the financial performa
 #| output: true
 
 
-
+predict(garch_exxon_final, n.ahead = 100, plot = TRUE)
 
 ```
+
+Future will be similar but with higher uncertainty because of the bigger confidence intervals.
+
+
 
 
 ## Chevron Corporation
@@ -1272,11 +1332,9 @@ Graphical representations provide intuitive insights into the financial performa
 
 
 
-# 14. Volatality Plot
+# 14. Volatility Plot
 
-To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data. 
-
-Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data
+In this section, we will look at the volatility dynamics of stock price as captured by our final model
 
 
 ::: panel-tabset
@@ -1292,10 +1350,24 @@ Graphical representations provide intuitive insights into the financial performa
 #| output: true
 
 
+ht <- garch_exxon_final@h.t 
+exxon_stockprice_df = data.frame(Exxon_stockprice)
+exxon_stockprice_df <- head(exxon_stockprice_df, -1)
+exxon_stockprice_df <- data.frame(exxon_stockprice_df,rownames(exxon_stockprice_df))
+colnames(exxon_stockprice_df)[7] = "date"
+exxon_stockprice_df$date<-as.Date(exxon_stockprice_df$date,"%Y-%m-%d")
+data_spot = data.frame(ht,exxon_stockprice_df$date)
 
 
+ggplot(data_spot, aes(y = ht, x = exxon_stockprice_df.date)) + geom_line() + ylab('Conditional Variance') + xlab('Date') +
+  theme_minimal() +
+  ggtitle("Volatility plot for Exxon Mobil Stock Price") +
+  theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 ```
+
+
+In the graph, we observe periods with peaks indicating heightened volatility, esp around 2008-2009 and then after 2020.
 
 
 ## Chevron Corporation
@@ -1319,9 +1391,7 @@ Graphical representations provide intuitive insights into the financial performa
 
 # 15. Model Equations
 
-To visually analyze the stock price trends of Exxon Mobil and Chevron Corporation, we will employ the quantmod package to fetch and plot the data. 
-
-Graphical representations provide intuitive insights into the financial performance over time, highlighting trends, volatilities, and anomalies that might not be immediately apparent from raw data
+Finally the model equation based on the best model
 
 
 ::: panel-tabset
@@ -1329,18 +1399,31 @@ Graphical representations provide intuitive insights into the financial performa
 
 ## Exxon Mobil
 
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
+The best performing model was ARIMA(1,0,1) + GARCH(1,1). The model equation is as follows:
 
 
+**ARIMA(1,0,1)** equation:
+
+$$
+(1 - \phi_{B})Y_{t} = (1 + \phi_{B})\epsilon_{t}
+$$
 
 
 
-```
+
+**GARCH(1,1)** equation:
+
+
+$$
+\sigma_{t}^{2} = \alpha_{0} + \alpha_{1}\epsilon^{2}_{t-1}+\beta_{1}\sigma^{2}_{t-1}
+$$
+
+
+
+
+
+
+
 
 
 ## Chevron Corporation
