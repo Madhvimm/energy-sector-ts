@@ -1,0 +1,1806 @@
+---
+title: "Deep Learning for TS"
+output: distill::distill_article
+jupyter: python3
+---
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: false
+library(ggplot2)
+library(readr)
+library(tidyverse)
+library(lubridate)
+library(forecast)
+library(tseries)
+library(plotly)
+library(gridExtra)
+library(zoo)
+library(astsa)
+library(ggplot2)
+library(zoo)
+library(plotly)
+library(vars)
+library(dplyr)
+library(quantmod)
+library(FinTS)
+library(gogarch)
+library(scales)
+library(reticulate)
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Importing Libraries'
+#| warning: false
+#| output: false
+
+library(reticulate)
+use_python("/Users/madhvimalhotra/myenv/bin/python", required = TRUE)
+
+```
+
+
+
+
+```{python, warning=FALSE, message=FALSE, echo=FALSE}
+
+
+#!pip install scikit-learn 
+#!pip install tensorflow
+#!pip install plotly
+#!pip install statsmodels 
+#!pip install IPython 
+#!pip install matplotlib 
+#!pip install seaborn 
+#!pip install jupyter 
+import numpy as np 
+import matplotlib.pyplot as plt 
+import seaborn as sns 
+import pandas as pd 
+import plotly.express as px 
+import statsmodels.api as sm 
+from IPython.display import IFrame
+from sklearn.metrics import mean_squared_error, mean_absolute_error, mean_absolute_percentage_error 
+from tensorflow import keras 
+from tensorflow.keras import layers 
+from tensorflow.keras import initializers 
+from tensorflow.keras import regularizers 
+from keras.layers import Dense, SimpleRNN, LSTM, GRU, Dropout
+# Import L1 and L2 regularizers from Python
+import tensorflow.keras.regularizers
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras import Input
+from keras.optimizers import RMSprop
+
+from keras.callbacks import EarlyStopping
+from keras.layers import LSTM, Dropout
+```
+
+
+
+
+
+
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Read data'
+#| warning: false
+#| output: false
+
+composite_crude_oil_prices <- read.csv("data/composite_crude_oil_prices.csv")
+citygate_gas_prices <- read.csv("data/citygate_gas_prices.csv")
+total_electricity_prices <- read.csv("data/total_electricity_prices.csv")
+gdp_data <- read.csv("data/gdp_data.csv")
+cpi_data <- read.csv("data/cpi_data.csv")
+
+```
+
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'convert to ts'
+#| warning: false
+#| output: false
+
+
+# For Crude Oil
+composite_crude_oil_prices$Date <- as.Date(composite_crude_oil_prices$Date)
+start_year <- as.numeric(format(min(composite_crude_oil_prices$Date), "%Y"))
+start_month <- as.numeric(format(min(composite_crude_oil_prices$Date), "%m"))
+composite_crude_oil_ts <- ts(composite_crude_oil_prices$Value, start=c(start_year, start_month), frequency=12)
+# Log-transform Value
+composite_crude_oil_prices$LOG_Value <- log(composite_crude_oil_prices$Value)
+oil_log_ts <- ts(composite_crude_oil_prices$LOG_Value, start=c(start_year, start_month), frequency=12)
+
+# For Natural Gas
+citygate_gas_prices$Date <- as.Date(citygate_gas_prices$Date)
+start_year_gas <- as.numeric(format(min(citygate_gas_prices$Date), "%Y"))
+start_month_gas <- as.numeric(format(min(citygate_gas_prices$Date), "%m"))
+citygate_gas_ts <- ts(citygate_gas_prices$Value, start=c(start_year_gas, start_month_gas), frequency=12)
+# Log-transform Value
+citygate_gas_prices$LOG_Value <- log(citygate_gas_prices$Value)
+gas_log_ts <- ts(citygate_gas_prices$LOG_Value, start=c(start_year_gas, start_month_gas), frequency=12)
+
+# For Electricity
+total_electricity_prices$Date <- as.Date(total_electricity_prices$Date, format = "%Y-%m-%d")
+start_year_elec <- as.numeric(format(min(total_electricity_prices$Date), "%Y"))
+start_month_elec <- as.numeric(format(min(total_electricity_prices$Date), "%m"))
+total_electricity_ts <- ts(total_electricity_prices$Value, start = c(start_year_elec, start_month_elec), frequency = 12)
+# Log-transform Value
+total_electricity_prices$LOG_Value <- log(total_electricity_prices$Value)
+electricity_log_ts <- ts(total_electricity_prices$LOG_Value, start=c(start_year_elec, start_month_elec), frequency=12)
+
+
+# For GDP (it's quarterly)
+gdp_data$DATE <- as.Date(gdp_data$DATE, format = "%Y-%m-%d")
+start_year_gdp <- as.numeric(format(min(gdp_data$DATE), "%Y"))
+start_quarter_gdp <- quarter(min(gdp_data$DATE))
+# Log-transform GDP
+gdp_data$LOG_GDP <- log(gdp_data$GDP)
+gdp_log_ts <- ts(gdp_data$LOG_GDP, start=c(start_year_gdp, start_quarter_gdp), frequency=4)
+
+
+# For CPI (it's monthly)
+cpi_data$DATE <- as.Date(cpi_data$DATE, format = "%Y-%m-%d")
+start_year_cpi <- as.numeric(format(min(cpi_data$DATE), "%Y"))
+start_month_cpi <- as.numeric(format(min(cpi_data$DATE), "%m"))
+# Log-transform CPI
+cpi_data$LOG_CPI <- log(cpi_data$CPIAUCSL)
+cpi_log_ts <- ts(cpi_data$LOG_CPI, start = c(start_year_cpi, start_month_cpi), frequency = 12)
+
+```
+
+
+
+
+
+
+# 1. Introduction
+
+
+Time series forecasting plays a pivotal role in various domains, including economics, finance, and business operations. Accurately predicting future trends based on historical data can provide valuable insights for decision-making and strategic planning. Traditionally, statistical methods such as Autoregressive Integrated Moving Average (ARIMA) models have been widely employed for time series analysis. However, these conventional approaches often struggle to capture intricate patterns, non-linear relationships, and long-term dependencies present in complex time series data.
+
+In recent years, deep learning techniques have emerged as powerful alternatives, offering new avenues for time series forecasting. Neural networks, with their ability to learn from data and uncover intricate patterns, have shown remarkable potential in handling sequential data and capturing temporal dependencies. This exploration focuses on three prominent deep learning architectures: Recurrent Neural Networks (RNNs), Long Short-Term Memory Networks (LSTMs), and Gated Recurrent Units (GRUs), each designed to tackle the unique challenges of time series data.
+
+The objective of this study is to evaluate the performance of these deep learning models in forecasting [specify the time series data or domain, e.g., energy prices, stock market trends, or sales data]. By leveraging their capability to handle complex non-linear relationships and long-term dependencies, we aim to enhance our forecasting accuracy and extend the predictive horizon compared to traditional methods.
+
+Furthermore, this exploration will provide insights into the relative strengths and weaknesses of each neural network architecture, informing future decisions on selecting the most suitable approach for specific time series forecasting tasks. We will thoroughly analyze and compare the accuracy, predictive power, and generalization capabilities of RNNs, LSTMs, and GRUs, offering a comprehensive understanding of their applicability in the realm of time series analysis.
+
+By embracing deep learning techniques, we strive to push the boundaries of time series forecasting, enabling more informed decision-making and strategic planning across various industries and domains. This study will contribute to the growing body of knowledge in the field, advancing our understanding of the potential and limitations of deep learning for time series analysis.
+
+
+
+# 2. Data Visualization
+
+To better understand the patterns in our data, we will first visualize it to examine any trends, seasonality, or anomalies. The visualization helps provide insights into how this time series behaves over time.
+
+
+::: panel-tabset
+
+## Crude Oil
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: false
+
+oil_plot <- ggplot(composite_crude_oil_prices, aes(x = Date, y = Value)) +
+  geom_line(color = "#99494d") +
+  theme_minimal() + 
+  labs(title = "Crude Oil Prices Over Time", x = "Date", y = "Crude Oil Prices")+
+  theme(plot.title = element_text(hjust = 0.5))   
+
+ggplotly(oil_plot)
+
+
+```
+
+
+## Natural Gas
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Plot Natural Gas Prices'
+#| warning: false
+#| output: true
+
+#Plotting
+ng_plot <- ggplot(citygate_gas_prices, aes(x = Date, y = Value)) +
+  geom_line(color = "#99494d") + 
+  theme_minimal() + 
+  labs(title = "Natural Gas Price Over Time", 
+       x = "Date",
+       y = "Price (USD)") +
+  theme(plot.title = element_text(hjust = 0.5))  
+
+ggplotly(ng_plot)
+
+
+```
+
+
+
+## Electricity
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Plot Electricity Prices'
+#| warning: false
+#| output: true
+
+#Plotting with ggplot2
+electricity_plot <- ggplot(total_electricity_prices, aes(x = Date, y = Value)) +
+  geom_line(color = "#99494d") + 
+  theme_minimal() + 
+  labs(title = "Average Price of Electricity to Ultimate Customers",  
+       x = "Date",
+       y = "Price (Cents per Kilowatthour)") +
+  theme(plot.title = element_text(hjust = 0.5))  
+
+ggplotly(electricity_plot)
+
+
+```
+
+
+
+## GDP
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Plot GDP'
+#| warning: false
+#| output: true
+
+#Plotting with ggplot2
+gdp_plot <- ggplot(gdp_data, aes(x = DATE, y = GDP)) +
+  geom_line(color = "#99494d") + 
+  theme_minimal() +
+  labs(title = "Gross Domestic Product Over Time",  
+       x = "Date",
+       y = "GDP (Billion USD)") +
+  theme(plot.title = element_text(hjust = 0.5))  
+
+ggplotly(gdp_plot)
+
+
+```
+
+
+## CPI
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Plot CPI'
+#| warning: false
+#| output: true
+
+#Plotting with ggplot2
+cpi_plot <- ggplot(cpi_data, aes(x = DATE, y = CPIAUCSL)) +
+  geom_line(color = "#99494d") +  
+  theme_minimal() +
+  labs(title = "Consumer Price Index Over Time",  
+       x = "Date",
+       y = "CPI") +
+  theme(plot.title = element_text(hjust = 0.5)) 
+
+ggplotly(cpi_plot)
+
+```
+
+
+
+
+:::
+
+
+
+
+
+# 3. Normalize & Split the Data 
+
+To improve the accuracy of our models, we will normalize the time series data and split it into training and testing sets. Normalizing helps align the data distributions and prepares the data for training. We'll use a common split ratio of 80% training and 20% testing.
+
+
+::: panel-tabset
+
+## Crude Oil
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+#Normalize the crude oil data
+oil_normalized <- scale(composite_crude_oil_prices$Value)
+
+#Split data into training and testing
+split_index <- floor(0.8 * length(oil_normalized))
+oil_train <- oil_normalized[1:split_index]
+oil_test <- oil_normalized[(split_index + 1):length(oil_normalized)]
+
+# Print the shapes
+cat("Shape of the Crude Oil Data:", length(oil_normalized), "\n")
+cat("Shape of the Crude Oil Train Data:", length(oil_train), "\n")
+cat("Shape of the Crude Oil Test Data:", length(oil_test), "\n")
+
+
+#Plot the training and testing sets
+train_dates <- composite_crude_oil_prices$Date[1:split_index]
+test_dates <- composite_crude_oil_prices$Date[(split_index + 1):length(oil_normalized)]
+
+oil_data <- data.frame(
+  Date = c(train_dates, test_dates),
+  Value = c(oil_train, oil_test),
+  Set = c(rep("Training", length(oil_train)), rep("Testing", length(oil_test)))
+)
+
+oil_plot1 <- ggplot(oil_data, aes(x = Date, y = Value, fill = Set)) +
+  geom_area(position = "stack") +
+  theme_minimal() +
+  labs(title = "Crude Oil Training and Testing Sets",
+       x = "Date",
+       y = "Normalized Crude Oil Prices") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+ggplotly(oil_plot1)
+
+```
+
+
+
+## Natural Gas
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+# Normalize the natural gas data
+gas_normalized <- scale(citygate_gas_prices$Value)
+
+# Split data into training and testing
+split_index <- floor(0.8 * length(gas_normalized))
+gas_train <- gas_normalized[1:split_index]
+gas_test <- gas_normalized[(split_index + 1):length(gas_normalized)]
+
+
+# Print the shapes
+cat("Shape of the Natural Gas Data:", length(gas_normalized), "\n")
+cat("Shape of the Natural Gas Train Data:", length(gas_train), "\n")
+cat("Shape of the Natural Gas Test Data:", length(gas_test), "\n")
+
+
+# Plot the training and testing sets
+train_dates_gas <- citygate_gas_prices$Date[1:split_index]
+test_dates_gas <- citygate_gas_prices$Date[(split_index + 1):length(gas_normalized)]
+
+# Create a data frame for plotting
+gas_data <- data.frame(
+  Date = c(train_dates_gas, test_dates_gas),
+  Value = c(gas_train, gas_test),
+  Set = c(rep("Training", length(gas_train)), rep("Testing", length(gas_test)))
+)
+
+# Create the stacked area plot using ggplot2
+gas_plot <- ggplot(gas_data, aes(x = Date, y = Value, fill = Set)) +
+  geom_area(position = "stack") +
+  theme_minimal() +
+  labs(title = "Natural Gas Training and Testing Sets",
+       x = "Date",
+       y = "Normalized Natural Gas Prices") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Convert the plot to an interactive plotly plot
+ggplotly(gas_plot)
+
+
+
+```
+
+
+
+
+## Electricity
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+#Normalize the electricity data
+electricity_normalized <- scale(total_electricity_prices$Value)
+
+#Split data into training and testing
+split_index <- floor(0.8 * length(electricity_normalized))
+electricity_train <- electricity_normalized[1:split_index]
+electricity_test <- electricity_normalized[(split_index + 1):length(electricity_normalized)]
+
+# Print the shapes
+cat("Shape of the Electricity Prices Data:", length(electricity_normalized), "\n")
+cat("Shape of the Electricity Prices Train Data:", length(electricity_train), "\n")
+cat("Shape of the Electricity Prices Test Data:", length(electricity_test), "\n")
+
+
+# Plot the training and testing sets
+train_dates_elec <- total_electricity_prices$Date[1:split_index]
+test_dates_elec <- total_electricity_prices$Date[(split_index + 1):length(electricity_normalized)]
+
+# Create a data frame for plotting
+elec_data <- data.frame(
+  Date = c(train_dates_elec, test_dates_elec),
+  Value = c(electricity_train, electricity_test),
+  Set = c(rep("Training", length(electricity_train)), rep("Testing", length(electricity_test)))
+)
+
+# Create the stacked area plot using ggplot2
+elec_plot <- ggplot(elec_data, aes(x = Date, y = Value, fill = Set)) +
+  geom_area(position = "stack") +
+  theme_minimal() +
+  labs(title = "Electricity Training and Testing Sets",
+       x = "Date",
+       y = "Normalized Electricity Prices") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Convert the plot to an interactive plotly plot
+ggplotly(elec_plot)
+
+
+
+
+```
+
+
+
+## GDP
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+# Normalize the GDP data
+gdp_normalized <- scale(gdp_data$GDP)
+
+# Split data into training and testing
+split_index <- floor(0.8 * length(gdp_normalized))
+gdp_train <- gdp_normalized[1:split_index]
+gdp_test <- gdp_normalized[(split_index + 1):length(gdp_normalized)]
+
+
+# Print the shapes
+cat("Shape of the GDP Data:", length(gdp_normalized), "\n")
+cat("Shape of the GDP Train Data:", length(gdp_train), "\n")
+cat("Shape of the GDP Test Data:", length(gdp_test), "\n")
+
+
+# Plot the training and testing sets
+train_dates_gdp <- gdp_data$DATE[1:split_index]
+test_dates_gdp <- gdp_data$DATE[(split_index + 1):length(gdp_normalized)]
+
+# Create a data frame for plotting
+gdp_data_plot <- data.frame(
+  Date = c(train_dates_gdp, test_dates_gdp),
+  Value = c(gdp_train, gdp_test),
+  Set = c(rep("Training", length(gdp_train)), rep("Testing", length(gdp_test)))
+)
+
+# Create the stacked area plot using ggplot2
+gdp_plot1 <- ggplot(gdp_data_plot, aes(x = Date, y = Value, fill = Set)) +
+  geom_area(position = "stack") +
+  theme_minimal() +
+  labs(title = "GDP Training and Testing Sets",
+       x = "Date",
+       y = "Normalized GDP") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Convert the plot to an interactive plotly plot
+ggplotly(gdp_plot1)
+
+
+```
+
+
+
+## CPI
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+# Normalize the CPI data
+cpi_normalized <- scale(cpi_data$CPIAUCSL)
+
+# Split data into training and testing
+split_index <- floor(0.8 * length(cpi_normalized))
+cpi_train <- cpi_normalized[1:split_index]
+cpi_test <- cpi_normalized[(split_index + 1):length(cpi_normalized)]
+
+
+# Print the shapes
+cat("Shape of the CPI Data:", length(cpi_normalized), "\n")
+cat("Shape of the CPI Train Data:", length(cpi_train), "\n")
+cat("Shape of the CPI Test Data:", length(cpi_test), "\n")
+
+
+# Plot the training and testing sets
+train_dates_cpi <- cpi_data$DATE[1:split_index]
+test_dates_cpi <- cpi_data$DATE[(split_index + 1):length(cpi_normalized)]
+
+# Create a data frame for plotting
+cpi_data_plot <- data.frame(
+  Date = c(train_dates_cpi, test_dates_cpi),
+  Value = c(cpi_train, cpi_test),
+  Set = c(rep("Training", length(cpi_train)), rep("Testing", length(cpi_test)))
+)
+
+# Create the stacked area plot using ggplot2
+cpi_plot1 <- ggplot(cpi_data_plot, aes(x = Date, y = Value, fill = Set)) +
+  geom_area(position = "stack") +
+  theme_minimal() +
+  labs(title = "CPI Training and Testing Sets",
+       x = "Date",
+       y = "Normalized CPI") +
+  theme(plot.title = element_text(hjust = 0.5))
+
+# Convert the plot to an interactive plotly plot
+ggplotly(cpi_plot1)
+
+
+
+```
+
+
+
+
+
+# 4. Mini Batching
+
+
+Mini-batching is a technique used in deep learning to efficiently train models on large datasets. Instead of processing the entire dataset at once, mini-batching involves creating small, sequential subsets of the data called "mini-batches." This approach offers several benefits, including memory efficiency, faster convergence, and the ability to use stochastic gradient descent (SGD) optimization. By processing a portion of the data at a time, mini-batching reduces the memory requirements compared to processing the entire dataset simultaneously, making it feasible to train models on large datasets.
+
+To implement mini-batching, the dataset is typically shuffled and divided into smaller batches of a fixed size. The model is then trained iteratively, processing one mini-batch at a time. The gradients are computed for each mini-batch, and the model's parameters are updated accordingly. This process is repeated until the model has seen the entire dataset, which constitutes one epoch of training. The choice of mini-batch size is an important hyperparameter that determines the number of samples processed in each iteration, and it can impact the convergence speed and stability of the training process.
+
+
+::: panel-tabset
+
+## Crude Oil
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+# Function to create mini-batches
+form_arrays <- function(x, lookback = 3, delay = 1, step = 1, feature_columns = 1, target_columns = 1, unique = FALSE, verbose = FALSE) {
+  count <- 0
+  x_out <- list()
+  y_out <- list()
+  i_start <- 1
+  
+  while (i_start + lookback + delay <= nrow(x)) {
+    i_stop <- i_start + lookback - 1
+    i_pred <- i_stop + delay
+    indices_to_keep <- seq(i_stop, i_start, -step)
+    xtmp <- x[indices_to_keep, feature_columns, drop = FALSE]
+    ytmp <- x[i_pred, target_columns, drop = FALSE]
+    x_out <- append(x_out, list(xtmp))
+    y_out <- append(y_out, list(ytmp))
+    
+    if (verbose && count < 2) {
+      plot(seq_len(nrow(x)), x[, feature_columns], type = "b", col = "blue", xlab = "Index", ylab = "Value")
+      points(indices_to_keep, xtmp, col = "green", pch = 19)
+      points(i_pred, ytmp, col = "red", pch = 19)
+    }
+    
+    #Update start point
+    if (unique) {
+      i_start <- i_start + lookback
+    } else {
+      i_start <- i_start + 1
+    }
+    count <- count + 1
+  }
+  
+  return(list(x = array(unlist(x_out), dim = c(length(x_out), lookback, length(feature_columns))), 
+              y = array(unlist(y_out), dim = c(length(y_out), length(target_columns)))))
+}
+
+
+
+lookback <- 5
+
+oil_train <- as.matrix(oil_train)
+oil_test <- as.matrix(oil_test)
+oil_train_batches <- form_arrays(oil_train, lookback = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)
+oil_test_batches <- form_arrays(oil_test, lookback = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)
+
+train_shape <- dim(oil_train_batches$x)
+test_shape <- dim(oil_test_batches$x)
+
+cat(sprintf("Train shape: (%d, %d, %d) , (%d, %d)\n",
+            train_shape[1], train_shape[2], train_shape[3], dim(oil_train_batches$y)[1], dim(oil_train_batches$y)[2]))
+cat(sprintf("Test shape: (%d, %d, %d) , (%d, %d)\n",
+            test_shape[1], test_shape[2], test_shape[3], dim(oil_test_batches$y)[1], dim(oil_test_batches$y)[2]))
+
+```
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+np <- import("numpy")
+
+# Save the mini-batches to .npy files
+np$save("oil_train_batches_x.npy", oil_train_batches$x)
+np$save("oil_train_batches_y.npy", oil_train_batches$y)
+np$save("oil_test_batches_x.npy", oil_test_batches$x)
+np$save("oil_test_batches_y.npy", oil_test_batches$y)
+```
+
+
+
+
+## Natural Gas
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+gas_train <- as.matrix(gas_train)
+gas_test <- as.matrix(gas_test)
+gas_train_batches <- form_arrays(gas_train, lookback  = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)
+gas_test_batches <- form_arrays(gas_test, lookback  = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)
+
+# Display the shape
+train_shape_gas <- dim(gas_train_batches$x)
+test_shape_gas <- dim(gas_test_batches$x)
+
+cat(sprintf("Natural Gas Train shape: (%d, %d, %d) , (%d, %d)\n",
+            train_shape_gas[1], train_shape_gas[2], train_shape_gas[3], dim(gas_train_batches$y)[1], dim(gas_train_batches$y)[2]))
+cat(sprintf("Natural Gas Test shape: (%d, %d, %d) , (%d, %d)\n",
+            test_shape_gas[1], test_shape_gas[2], test_shape_gas[3], dim(gas_test_batches$y)[1], dim(gas_test_batches$y)[2]))
+
+```
+
+
+
+
+## Electricity
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+electricity_train <- as.matrix(electricity_train)
+electricity_test <- as.matrix(electricity_test)
+electricity_train_batches <- form_arrays(electricity_train, lookback  = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)
+electricity_test_batches <- form_arrays(electricity_test, lookback  = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)
+
+# Display the shape
+train_shape_elec <- dim(electricity_train_batches$x)
+test_shape_elec <- dim(electricity_test_batches$x)
+
+cat(sprintf("Electricity Train shape: (%d, %d, %d) , (%d, %d)\n",
+            train_shape_elec[1], train_shape_elec[2], train_shape_elec[3], dim(electricity_train_batches$y)[1], dim(electricity_train_batches$y)[2]))
+cat(sprintf("Electricity Test shape: (%d, %d, %d) , (%d, %d)\n",
+            test_shape_elec[1], test_shape_elec[2], test_shape_elec[3], dim(electricity_test_batches$y)[1], dim(electricity_test_batches$y)[2]))
+
+```
+
+
+
+## GDP
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+gdp_train <- as.matrix(gdp_train)
+gdp_test <- as.matrix(gdp_test)
+gdp_train_batches <- form_arrays(gdp_train, lookback  = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)
+gdp_test_batches <- form_arrays(gdp_test, lookback  = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)
+
+
+# Display the shape
+train_shape_gdp <- dim(gdp_train_batches$x)
+test_shape_gdp <- dim(gdp_test_batches$x)
+
+cat(sprintf("GDP Train shape: (%d, %d, %d) , (%d, %d)\n",
+            train_shape_gdp[1], train_shape_gdp[2], train_shape_gdp[3], dim(gdp_train_batches$y)[1], dim(gdp_train_batches$y)[2]))
+cat(sprintf("GDP Test shape: (%d, %d, %d) , (%d, %d)\n",
+            test_shape_gdp[1], test_shape_gdp[2], test_shape_gdp[3], dim(gdp_test_batches$y)[1], dim(gdp_test_batches$y)[2]))
+
+
+```
+
+
+
+## CPI
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+cpi_train <- as.matrix(cpi_train)
+cpi_test <- as.matrix(cpi_test)
+cpi_train_batches <- form_arrays(cpi_train, lookback  = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)
+cpi_test_batches <- form_arrays(cpi_test, lookback  = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)
+
+# Display the shape
+train_shape_cpi <- dim(cpi_train_batches$x)
+test_shape_cpi <- dim(cpi_test_batches$x)
+
+cat(sprintf("CPI Train shape: (%d, %d, %d) , (%d, %d)\n",
+            train_shape_cpi[1], train_shape_cpi[2], train_shape_cpi[3], dim(cpi_train_batches$y)[1], dim(cpi_train_batches$y)[2]))
+cat(sprintf("CPI Test shape: (%d, %d, %d) , (%d, %d)\n",
+            test_shape_cpi[1], test_shape_cpi[2], test_shape_cpi[3], dim(cpi_test_batches$y)[1], dim(cpi_test_batches$y)[2]))
+
+```
+
+
+
+
+
+
+# 5. Recurrent Neural Networks (RNNs)
+
+Recurrent Neural Networks (RNNs) are designed to process sequential data, making them ideal for time series forecasting. Unlike traditional neural networks, RNNs have a memory component that allows them to consider previous time steps, making them particularly adept at handling temporal dependencies. In this section, we will implement an RNN to forecast future trends in our data.
+
+
+::: panel-tabset
+
+## Crude Oil
+
+
+```{python, warning=FALSE, message=FALSE, echo=FALSE}
+
+# Load the mini-batches from .npy files
+trainX = np.load("oil_train_batches_x.npy")
+trainY = np.load("oil_train_batches_y.npy")
+testX = np.load("oil_test_batches_x.npy")
+testY = np.load("oil_test_batches_y.npy")
+
+Xt1_oil = trainX.reshape(trainX.shape[0], trainX.shape[1] * trainX.shape[2])
+optimizer = "rmsprop"
+loss_function = "MeanSquaredError"
+learning_rate = 0.001
+number_of_epochs = 200
+L2 = 0.01  # Regularization strength
+input_shape = (trainX.shape[1], trainX.shape[2])
+
+
+# ------ Choose the batch size ------
+#batch_size=1                       # stocastic training
+#batch_size=int(len(Xt1_oil)/2.)    # mini-batch training
+batch_size=len(Xt1_oil)              # batch training
+
+# BUILD MODEL
+recurrent_hidden_units = 30
+
+# CREATE MODEL
+model_no_reg = keras.Sequential()
+
+# ADD RECURRENT LAYER
+
+# #COMMENT/UNCOMMENT TO USE RNN, LSTM,GRU
+#model.add(LSTM(
+#model.add(GRU(
+model_no_reg.add(SimpleRNN(
+units=recurrent_hidden_units,
+return_sequences=False,
+input_shape=input_shape, 
+# recurrent_dropout=0.8,
+#recurrent_regularizer=regularizers.L2(L2),
+activation='relu')
+          ) 
+
+#CREATE MODEL WITH REGULARIZATION
+model_reg = keras.Sequential()
+model_reg.add(SimpleRNN(
+units=recurrent_hidden_units,
+return_sequences=False,
+input_shape=input_shape,
+recurrent_regularizer=regularizers.L2(L2),
+activation='relu'
+))
+     
+# NEED TO TAKE THE OUTPUT RNN AND CONVERT TO SCALAR 
+model_no_reg.add(Dense(units=1, activation='linear'))
+model_reg.add(Dense(units=1, activation='linear'))
+
+```
+
+
+
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
+# MODEL SUMMARY
+print("Model without regularization:")
+print(model_no_reg.summary())
+
+print("Model with regularization:")
+print(model_reg.summary())
+
+```
+
+
+
+
+```{python, warning=FALSE, message=FALSE, echo=FALSE}
+
+# # print("initial parameters:", model.get_weights())
+
+# COMPILING THE MODELS
+model_no_reg.compile(optimizer=RMSprop(learning_rate=learning_rate), loss=loss_function)
+model_reg.compile(optimizer=RMSprop(learning_rate=learning_rate), loss=loss_function)
+
+early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+
+# TRAINING THE MODELS
+history_oil_no_reg = model_no_reg.fit(trainX,
+                                      trainY,
+                                      epochs=number_of_epochs,
+                                      batch_size=batch_size,
+                                      verbose=False,
+                                      validation_data=(testX, testY),
+                                      callbacks=[early_stopping])
+
+history_oil_reg = model_reg.fit(trainX,
+                                trainY,
+                                epochs=number_of_epochs,
+                                batch_size=batch_size,
+                                verbose=False,
+                                validation_data=(testX, testY),
+                                callbacks=[early_stopping])
+
+def history_plot(history_no_reg, history_reg):
+    FS = 18  # fontsize
+    
+    # Get the history dictionaries
+    history_dict_no_reg = history_no_reg.history
+    history_dict_reg = history_reg.history
+    
+    # Get the loss values and epochs for both models
+    loss_values_no_reg = history_dict_no_reg['loss']
+    val_loss_values_no_reg = history_dict_no_reg['val_loss']
+    loss_values_reg = history_dict_reg['loss']
+    val_loss_values_reg = history_dict_reg['val_loss']
+    epochs = range(1, len(loss_values_no_reg) + 1)
+    
+    # Create a new figure
+    plt.figure(figsize=(12, 6))
+    
+    # Plot the training and validation loss for the non-regularized model
+    plt.plot(epochs, loss_values_no_reg, 'bo', label='Training Loss (No Reg)')
+    plt.plot(epochs, val_loss_values_no_reg, 'b', label='Validation Loss (No Reg)')
+    
+    # Plot the training and validation loss for the regularized model
+    plt.plot(epochs, loss_values_reg, 'ro', label='Training Loss (Reg)')
+    plt.plot(epochs, val_loss_values_reg, 'r', label='Validation Loss (Reg)')
+    
+    # Add labels and legend
+    plt.title('Training and Validation Loss')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    
+    # Show the plot
+    plt.show()
+
+# History plot
+history_plot(history_oil_no_reg, history_oil_reg)
+
+```
+
+
+
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
+
+# PREDICTIONS
+Ytp_oil_no_reg = model_no_reg.predict(trainX)
+Yvp_oil_no_reg = model_no_reg.predict(testX)
+
+Ytp_oil_reg = model_reg.predict(trainX)
+Yvp_oil_reg = model_reg.predict(testX)
+
+```
+
+
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
+
+def regression_report(yt, ytp, yv, yvp, model_name):
+    print(f"--------- Regression Report ({model_name}) ---------")
+    print("TRAINING:")
+    train_mse = np.mean((yt - ytp) ** 2)
+    train_mae = np.mean(np.abs(yt - ytp))
+    print("MSE", train_mse)
+    print("MAE", train_mae)
+    
+    # PARITY PLOT
+    fig, ax = plt.subplots()
+    ax.plot(yt, ytp, 'ro')
+    ax.plot(yt, yt, 'b-')
+    ax.set(xlabel='Actual Crude Oil Prices', ylabel='Predicted Crude Oil Prices',
+           title=f'Training Data Parity Plot ({model_name})')
+    plt.show()
+    
+    # PLOT PART OF THE PREDICTED TIME-SERIES
+    frac_plot = 1.0
+    upper = int(frac_plot * yt.shape[0])
+    fig, ax = plt.subplots()
+    ax.plot(yt[0:upper], 'b-')
+    ax.plot(ytp[0:upper], 'r-', alpha=0.5)
+    ax.plot(ytp[0:upper], 'ro', alpha=0.25)
+    ax.set(xlabel='Time', ylabel='Crude Oil Prices (Blue=Actual & Red=Prediction)',
+           title=f'Training: Time-Series Prediction ({model_name})')
+    plt.show()
+    
+    print("VALIDATION:")
+    val_mse = np.mean((yv - yvp) ** 2)
+    val_mae = np.mean(np.abs(yv - yvp))
+    print("MSE", val_mse)
+    print("MAE", val_mae)
+    
+    # PARITY PLOT
+    fig, ax = plt.subplots()
+    ax.plot(yv, yvp, 'ro')
+    ax.plot(yv, yv, 'b-')
+    ax.set(xlabel='Actual Crude Oil Prices', ylabel='Predicted Crude Oil Prices',
+           title=f'Validation Data Parity Plot ({model_name})')
+    plt.show()
+    
+    # PLOT PART OF THE PREDICTED TIME-SERIES
+    upper = int(frac_plot * yv.shape[0])
+    fig, ax = plt.subplots()
+    ax.plot(yv[0:upper], 'b-')
+    ax.plot(yvp[0:upper], 'r-', alpha=0.5)
+    ax.plot(yvp[0:upper], 'ro', alpha=0.25)
+    ax.set(xlabel='Time', ylabel='Crude Oil Prices (Blue=Actual & Red=Prediction)',
+           title=f'Validation: Time-Series Prediction ({model_name})')
+    plt.show()
+    
+    return train_mse, train_mae, val_mse, val_mae
+
+# Regression report for the non-regularized model
+train_mse_no_reg, train_mae_no_reg, val_mse_no_reg, val_mae_no_reg = regression_report(trainY, Ytp_oil_no_reg, testY, Yvp_oil_no_reg, "Non-Regularized Model")
+
+# Regression report for the regularized model
+train_mse_reg, train_mae_reg, val_mse_reg, val_mae_reg = regression_report(trainY, Ytp_oil_reg, testY, Yvp_oil_reg, "Regularized Model")
+
+```
+
+
+
+
+
+
+## Natural Gas
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+## Electricity
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+## GDP
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+## CPI
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+
+
+# 6. LSTM
+
+Now, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.
+
+
+::: panel-tabset
+
+## Crude Oil
+
+
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+optimizer = "rmsprop"
+loss_function = "MeanSquaredError"
+learning_rate = 0.001
+numbers_epochs = 200
+L2_reg = 0.01
+L2_no_reg = 0
+
+input_shape = (trainX.shape[1], trainX.shape[2])
+
+
+# ------ Choose the batch size ------
+batch_size = 1  # stocastic training
+# batch_size = int(len(trainX) / 2.)  # mini-batch training
+# batch_size = len(trainX)  # batch training
+
+# BUILD MODEL
+recurrent_hidden_units = 32
+
+# CREATE MODEL WITHOUT REGULARIZATION
+model_no_reg = keras.Sequential()
+model_no_reg.add(LSTM(
+    units=recurrent_hidden_units,
+    return_sequences=False,
+    input_shape=input_shape,
+    recurrent_regularizer=regularizers.L2(L2_no_reg),
+    activation='relu'
+))
+model_no_reg.add(Dense(units=1, activation='linear'))
+
+# CREATE MODEL WITH REGULARIZATION
+model_reg = keras.Sequential()
+model_reg.add(LSTM(
+    units=recurrent_hidden_units,
+    return_sequences=False,
+    input_shape=input_shape,
+    recurrent_regularizer=regularizers.L2(L2_reg),
+    activation='relu'
+))
+model_reg.add(Dense(units=1, activation='linear'))
+
+```
+
+
+
+
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+# MODEL SUMMARY
+print("LSTM Model without regularization:")
+print(model_no_reg.summary())
+print("LSTM Model with regularization:")
+print(model_reg.summary())
+```
+
+
+
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+# COMPILING THE MODELS
+opt_no_reg = keras.optimizers.RMSprop(learning_rate=learning_rate)
+opt_reg = keras.optimizers.RMSprop(learning_rate=learning_rate)
+model_no_reg.compile(optimizer=opt_no_reg, loss=loss_function)
+model_reg.compile(optimizer=opt_reg, loss=loss_function)
+
+# TRAINING THE MODELS
+history_oil_no_reg = model_no_reg.fit(
+    trainX,
+    trainY,
+    epochs=numbers_epochs,
+    batch_size=batch_size,
+    verbose=False,
+    validation_data=(testX, testY)
+)
+
+history_oil_reg = model_reg.fit(
+    trainX,
+    trainY,
+    epochs=numbers_epochs,
+    batch_size=batch_size,
+    verbose=False,
+    validation_data=(testX, testY)
+)
+
+# History plot
+history_plot(history_oil_no_reg, history_oil_reg)
+
+```
+
+
+
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+
+# MODEL SUMMARY
+print("LSTM Model without regularization:")
+print(model_no_reg.summary())
+print("LSTM Model with regularization:")
+print(model_reg.summary())
+```
+
+
+
+
+## Natural Gas
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+## Electricity
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+## GDP
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+## CPI
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+
+
+
+
+# 7. GRU
+
+Now, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.
+
+
+::: panel-tabset
+
+## Crude Oil
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+## Natural Gas
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+## Electricity
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+## GDP
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+## CPI
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+
+
+
+# 8. Discussion
+
+Now, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.
+
+
+::: panel-tabset
+
+## Crude Oil
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+## Natural Gas
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+## Electricity
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+## GDP
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+## CPI
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+
+
+## 8.1 How do the results from the 3 different ANN models compare with each other in terms of accuracy and predictive power?
+
+Now, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.
+
+
+::: panel-tabset
+
+## Crude Oil
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+## Natural Gas
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+## Electricity
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+## GDP
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+## CPI
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+
+
+## 8.2 What effect does including regularization have on your results?
+
+Now, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.
+
+
+::: panel-tabset
+
+## Crude Oil
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+## Natural Gas
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+## Electricity
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+## GDP
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+## CPI
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+
+
+
+
+
+## 8.3 How far into the future can the deep learning model accurately predict the future?
+
+Now, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.
+
+
+::: panel-tabset
+
+## Crude Oil
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+## Natural Gas
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+## Electricity
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+## GDP
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+## CPI
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+
+
+
+
+## 8.4. How does your deep learning modeling compare to the traditional single-variable time-series ARMA/ARIMA models from HW-3?
+
+Now, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.
+
+
+::: panel-tabset
+
+## Crude Oil
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+## Natural Gas
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+## Electricity
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+## GDP
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+## CPI
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+
+
+# 9. Write a discussion paragraph Comparing your models (use RMSE) and forecasts from these sections with your Deep Learning Models.
+
+Now, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.
+
+
+::: panel-tabset
+
+## Crude Oil
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+## Natural Gas
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+
+## Electricity
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+## GDP
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
+
+
+## CPI
+
+
+```{r, warning=FALSE, message=FALSE, echo=TRUE}
+#| code-fold: true
+#| code-summary: 'Code'
+#| warning: false
+#| output: true
+
+```
+
