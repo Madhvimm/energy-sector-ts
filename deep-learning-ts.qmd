@@ -2092,42 +2092,16 @@ print(result_df)
 
 ## 8.1 How do the results from the 3 different ANN models compare with each other in terms of accuracy and predictive power?
 
-Based on the results , we can compare the performance of the three different ANN models (RNN, LSTM, and GRU) with and without regularization for crude oil data:
+Based on the validation RMSE (Root Mean Squared Error) values, the performance of the three ANN models can be ranked as follows:
 
-1. LSTM with Regularization:
-   - The LSTM model with regularization achieves the lowest validation RMSE of 0.731646 among all the models.
-   - It also has a relatively low train RMSE of 1.123175, indicating good performance on both the training and validation sets.
-   - This suggests that the LSTM model with regularization has the highest accuracy and predictive power for the crude oil data.
+LSTM (Regularized): 0.731646
+GRU (Regularized): 0.777009
+RNN (No Regularization): 0.840821
+LSTM (No Regularization): 0.843815
+GRU (No Regularization): 0.848463
 
-2. GRU with Regularization:
-   - The GRU model with regularization has the second-lowest validation RMSE of 0.777009.
-   - Its train RMSE is 1.054538, which is slightly lower than the LSTM model with regularization.
-   - The GRU model with regularization performs well but slightly less accurately than the LSTM model with regularization.
-
-3. RNN without Regularization:
-   - The RNN model without regularization has a validation RMSE of 0.840821, which is higher than the LSTM and GRU models with regularization.
-   - Its train RMSE is 1.448784, indicating a larger difference between the training and validation performance compared to the regularized models.
-   - The RNN model without regularization has lower accuracy and predictive power compared to the regularized LSTM and GRU models.
-
-4. LSTM without Regularization:
-   - The LSTM model without regularization has a validation RMSE of 0.843815, similar to the RNN model without regularization.
-   - Its train RMSE is 1.441180, also close to the RNN model without regularization.
-   - The LSTM model without regularization performs similarly to the RNN model without regularization, with slightly lower accuracy compared to the regularized models.
-
-5. GRU without Regularization:
-   - The GRU model without regularization has a validation RMSE of 0.848463, which is slightly higher than the LSTM and RNN models without regularization.
-   - Its train RMSE is 1.441131, similar to the other non-regularized models.
-   - The GRU model without regularization has the lowest accuracy among the non-regularized models.
-
-6. RNN with Regularization:
-   - The RNN model with regularization has the highest validation RMSE of 1.171465 among all the models.
-   - Its train RMSE is 1.443878, indicating a significant difference between the training and validation performance.
-   - The RNN model with regularization performs the worst in terms of accuracy and predictive power for the crude oil data.
-
-In summary, the LSTM model with regularization demonstrates the highest accuracy and predictive power, followed by the GRU model with regularization. The non-regularized models (RNN, LSTM, and GRU) have lower accuracy compared to their regularized counterparts. The RNN model with regularization performs the worst among all the models.
-
-These results suggest that incorporating regularization techniques can improve the performance of ANN models for crude oil price prediction, with LSTM and GRU models benefiting more from regularization compared to the simple RNN model.
-
+The LSTM model with regularization demonstrates the highest accuracy and predictive power, followed closely by the GRU model with regularization. The RNN model without regularization performs slightly better than the LSTM and GRU models without regularization.
+Overall, the LSTM and GRU models outperform the simple RNN model in terms of accuracy and predictive power for crude oil price prediction.
 
 
 
@@ -2136,6 +2110,30 @@ These results suggest that incorporating regularization techniques can improve t
 
 
 
+Comparing the performance of models with and without regularization, we can observe the following:
+
+LSTM:
+
+With regularization: 0.731646
+Without regularization: 0.843815
+
+
+GRU:
+
+With regularization: 0.777009
+Without regularization: 0.848463
+
+
+RNN:
+
+With regularization: 1.171465
+Without regularization: 0.840821
+
+
+
+For both LSTM and GRU models, incorporating regularization significantly improves the validation RMSE. The regularized LSTM and GRU models achieve lower RMSE values compared to their non-regularized counterparts, indicating better accuracy and predictive power.
+However, for the RNN model, regularization seems to have a negative impact on performance. The regularized RNN model has a higher validation RMSE (1.171465) compared to the non-regularized RNN model (0.840821).
+These results suggest that regularization techniques are effective in improving the performance of LSTM and GRU models for crude oil price prediction. However, the simple RNN model does not benefit from regularization in this case.
 
 
 
@@ -2145,7 +2143,8 @@ These results suggest that incorporating regularization techniques can improve t
 ## 8.3 How far into the future can the deep learning model accurately predict the future?
 
 
-
+The ability of the deep learning models to accurately predict future crude oil prices depends on various factors, such as the quality and quantity of historical data, the complexity of the underlying patterns, and the stability of the market dynamics.
+Based on the results, we can see that the models achieve relatively low validation RMSE values, indicating good predictive performance. However, it's important to note that the results shown are for a specific validation set, which likely covers a limited time period.
 
 
 
