@@ -23,7 +23,7 @@ website:
         text: Multivariate TS Models
       - href: financial-ts-models.qmd
         text: Financial TS Models
-      - href: deep-learning-ts.ipynb
+      - href: deep-learning-ts.qmd
         text: Deep Learning for TS
       - href: conclusions.qmd
         text: Conclusions
