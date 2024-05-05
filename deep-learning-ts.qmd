@@ -1,36 +1,10 @@
 ---
 title: "Deep Learning for TS"
-output: distill::distill_article
-jupyter: python3
+output: html
+
 ---
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
-#| code-fold: true
-#| code-summary: 'Importing Libraries'
-#| warning: false
-#| output: false
-library(ggplot2)
-library(readr)
-library(tidyverse)
-library(lubridate)
-library(forecast)
-library(tseries)
-library(plotly)
-library(gridExtra)
-library(zoo)
-library(astsa)
-library(ggplot2)
-library(zoo)
-library(plotly)
-library(vars)
-library(dplyr)
-library(quantmod)
-library(FinTS)
-library(gogarch)
-library(scales)
-library(reticulate)
-```
 
 
 ```{r, warning=FALSE, message=FALSE, echo=FALSE}
@@ -47,6 +21,7 @@ use_python("/Users/madhvimalhotra/myenv/bin/python", required = TRUE)
 
 
 
+
 ```{python, warning=FALSE, message=FALSE, echo=FALSE}
 
 
@@ -58,6 +33,8 @@ use_python("/Users/madhvimalhotra/myenv/bin/python", required = TRUE)
 #!pip install matplotlib 
 #!pip install seaborn 
 #!pip install jupyter 
+#!pip install scikeras
+
 import numpy as np 
 import matplotlib.pyplot as plt 
 import seaborn as sns 
@@ -81,6 +58,11 @@ from keras.optimizers import RMSprop
 
 from keras.callbacks import EarlyStopping
 from keras.layers import LSTM, Dropout
+from scikeras.wrappers import KerasRegressor
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense
+from sklearn.model_selection import RandomizedSearchCV
+
 ```
 
 
@@ -91,23 +73,28 @@ from keras.layers import LSTM, Dropout
 
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{python, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
 #| code-summary: 'Read data'
 #| warning: false
 #| output: false
 
-composite_crude_oil_prices <- read.csv("data/composite_crude_oil_prices.csv")
-citygate_gas_prices <- read.csv("data/citygate_gas_prices.csv")
-total_electricity_prices <- read.csv("data/total_electricity_prices.csv")
-gdp_data <- read.csv("data/gdp_data.csv")
-cpi_data <- read.csv("data/cpi_data.csv")
+
+composite_crude_oil_prices = pd.read_csv("data/composite_crude_oil_prices.csv")
+
+citygate_gas_prices = pd.read_csv("data/citygate_gas_prices.csv")
+
+total_electricity_prices = pd.read_csv("data/total_electricity_prices.csv")
+
+gdp_data = pd.read_csv("data/gdp_data.csv")
+
+cpi_data = pd.read_csv("data/cpi_data.csv")
 
 ```
 
 
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{python, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
 #| code-summary: 'convert to ts'
 #| warning: false
@@ -115,49 +102,48 @@ cpi_data <- read.csv("data/cpi_data.csv")
 
 
 # For Crude Oil
-composite_crude_oil_prices$Date <- as.Date(composite_crude_oil_prices$Date)
-start_year <- as.numeric(format(min(composite_crude_oil_prices$Date), "%Y"))
-start_month <- as.numeric(format(min(composite_crude_oil_prices$Date), "%m"))
-composite_crude_oil_ts <- ts(composite_crude_oil_prices$Value, start=c(start_year, start_month), frequency=12)
+composite_crude_oil_prices['Date'] = pd.to_datetime(composite_crude_oil_prices['Date'])
+start_year = min(composite_crude_oil_prices['Date']).year
+start_month = min(composite_crude_oil_prices['Date']).month
+composite_crude_oil_ts = pd.Series(composite_crude_oil_prices['Value'].values, index=pd.date_range(start=f'{start_year}-{start_month}', periods=len(composite_crude_oil_prices), freq='ME'))
 # Log-transform Value
-composite_crude_oil_prices$LOG_Value <- log(composite_crude_oil_prices$Value)
-oil_log_ts <- ts(composite_crude_oil_prices$LOG_Value, start=c(start_year, start_month), frequency=12)
+composite_crude_oil_prices['LOG_Value'] = np.log(composite_crude_oil_prices['Value'])
+oil_log_ts = pd.Series(composite_crude_oil_prices['LOG_Value'].values, index=pd.date_range(start=f'{start_year}-{start_month}', periods=len(composite_crude_oil_prices), freq='ME'))
 
 # For Natural Gas
-citygate_gas_prices$Date <- as.Date(citygate_gas_prices$Date)
-start_year_gas <- as.numeric(format(min(citygate_gas_prices$Date), "%Y"))
-start_month_gas <- as.numeric(format(min(citygate_gas_prices$Date), "%m"))
-citygate_gas_ts <- ts(citygate_gas_prices$Value, start=c(start_year_gas, start_month_gas), frequency=12)
+citygate_gas_prices['Date'] = pd.to_datetime(citygate_gas_prices['Date'])
+start_year_gas = min(citygate_gas_prices['Date']).year
+start_month_gas = min(citygate_gas_prices['Date']).month
+citygate_gas_ts = pd.Series(citygate_gas_prices['Value'].values, index=pd.date_range(start=f'{start_year_gas}-{start_month_gas}', periods=len(citygate_gas_prices), freq='ME'))
 # Log-transform Value
-citygate_gas_prices$LOG_Value <- log(citygate_gas_prices$Value)
-gas_log_ts <- ts(citygate_gas_prices$LOG_Value, start=c(start_year_gas, start_month_gas), frequency=12)
+citygate_gas_prices['LOG_Value'] = np.log(citygate_gas_prices['Value'])
+gas_log_ts = pd.Series(citygate_gas_prices['LOG_Value'].values, index=pd.date_range(start=f'{start_year_gas}-{start_month_gas}', periods=len(citygate_gas_prices), freq='ME'))
 
 # For Electricity
-total_electricity_prices$Date <- as.Date(total_electricity_prices$Date, format = "%Y-%m-%d")
-start_year_elec <- as.numeric(format(min(total_electricity_prices$Date), "%Y"))
-start_month_elec <- as.numeric(format(min(total_electricity_prices$Date), "%m"))
-total_electricity_ts <- ts(total_electricity_prices$Value, start = c(start_year_elec, start_month_elec), frequency = 12)
+total_electricity_prices['Date'] = pd.to_datetime(total_electricity_prices['Date'])
+start_year_elec = min(total_electricity_prices['Date']).year
+start_month_elec = min(total_electricity_prices['Date']).month
+total_electricity_ts = pd.Series(total_electricity_prices['Value'].values, index=pd.date_range(start=f'{start_year_elec}-{start_month_elec}', periods=len(total_electricity_prices), freq='ME'))
 # Log-transform Value
-total_electricity_prices$LOG_Value <- log(total_electricity_prices$Value)
-electricity_log_ts <- ts(total_electricity_prices$LOG_Value, start=c(start_year_elec, start_month_elec), frequency=12)
-
+total_electricity_prices['LOG_Value'] = np.log(total_electricity_prices['Value'])
+electricity_log_ts = pd.Series(total_electricity_prices['LOG_Value'].values, index=pd.date_range(start=f'{start_year_elec}-{start_month_elec}', periods=len(total_electricity_prices), freq='ME'))
 
 # For GDP (it's quarterly)
-gdp_data$DATE <- as.Date(gdp_data$DATE, format = "%Y-%m-%d")
-start_year_gdp <- as.numeric(format(min(gdp_data$DATE), "%Y"))
-start_quarter_gdp <- quarter(min(gdp_data$DATE))
+gdp_data['DATE'] = pd.to_datetime(gdp_data['DATE'])
+start_year_gdp = min(gdp_data['DATE']).year
+start_quarter_gdp = min(gdp_data['DATE']).quarter
 # Log-transform GDP
-gdp_data$LOG_GDP <- log(gdp_data$GDP)
-gdp_log_ts <- ts(gdp_data$LOG_GDP, start=c(start_year_gdp, start_quarter_gdp), frequency=4)
-
+gdp_data['LOG_GDP'] = np.log(gdp_data['GDP'])
+gdp_log_ts = pd.Series(gdp_data['LOG_GDP'].values, index=pd.date_range(start=f'{start_year_gdp}-Q{start_quarter_gdp}', periods=len(gdp_data), freq='QE'))
 
 # For CPI (it's monthly)
-cpi_data$DATE <- as.Date(cpi_data$DATE, format = "%Y-%m-%d")
-start_year_cpi <- as.numeric(format(min(cpi_data$DATE), "%Y"))
-start_month_cpi <- as.numeric(format(min(cpi_data$DATE), "%m"))
+cpi_data['DATE'] = pd.to_datetime(cpi_data['DATE'])
+start_year_cpi = min(cpi_data['DATE']).year
+start_month_cpi = min(cpi_data['DATE']).month
 # Log-transform CPI
-cpi_data$LOG_CPI <- log(cpi_data$CPIAUCSL)
-cpi_log_ts <- ts(cpi_data$LOG_CPI, start = c(start_year_cpi, start_month_cpi), frequency = 12)
+cpi_data['LOG_CPI'] = np.log(cpi_data['CPIAUCSL'])
+cpi_log_ts = pd.Series(cpi_data['LOG_CPI'].values, index=pd.date_range(start=f'{start_year_cpi}-{start_month_cpi}', periods=len(cpi_data), freq='ME'))
+
 
 ```
 
@@ -190,43 +176,42 @@ To better understand the patterns in our data, we will first visualize it to exa
 
 ## Crude Oil
 
-```{r, warning=FALSE, message=FALSE, echo=FALSE}
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
-#| output: false
-
-oil_plot <- ggplot(composite_crude_oil_prices, aes(x = Date, y = Value)) +
-  geom_line(color = "#99494d") +
-  theme_minimal() + 
-  labs(title = "Crude Oil Prices Over Time", x = "Date", y = "Crude Oil Prices")+
-  theme(plot.title = element_text(hjust = 0.5))   
-
-ggplotly(oil_plot)
+#| output: true
 
 
+
+oil_plot = px.line(composite_crude_oil_prices, x='Date', y='Value',
+                   title='Crude Oil Prices Over Time',
+                   labels={'Date': 'Date', 'Value': 'Crude Oil Prices'},
+                   template='plotly_white', 
+                   color_discrete_sequence=['#99494d'])
+
+oil_plot
 ```
+
 
 
 ## Natural Gas
 
 
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
-#| code-summary: 'Plot Natural Gas Prices'
+#| code-summary: 'Code'
 #| warning: false
 #| output: true
 
-#Plotting
-ng_plot <- ggplot(citygate_gas_prices, aes(x = Date, y = Value)) +
-  geom_line(color = "#99494d") + 
-  theme_minimal() + 
-  labs(title = "Natural Gas Price Over Time", 
-       x = "Date",
-       y = "Price (USD)") +
-  theme(plot.title = element_text(hjust = 0.5))  
+ng_plot = px.line(citygate_gas_prices, x='Date', y='Value',
+                  title='Natural Gas Price Over Time',
+                  labels={'Date': 'Date', 'Value': 'Price (USD)'},
+                  template='plotly_white',  
+                  color_discrete_sequence=['#99494d'])
 
-ggplotly(ng_plot)
+# Display the plot
+ng_plot
 
 
 ```
@@ -236,22 +221,20 @@ ggplotly(ng_plot)
 ## Electricity
 
 
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Plot Electricity Prices'
 #| warning: false
 #| output: true
 
-#Plotting with ggplot2
-electricity_plot <- ggplot(total_electricity_prices, aes(x = Date, y = Value)) +
-  geom_line(color = "#99494d") + 
-  theme_minimal() + 
-  labs(title = "Average Price of Electricity to Ultimate Customers",  
-       x = "Date",
-       y = "Price (Cents per Kilowatthour)") +
-  theme(plot.title = element_text(hjust = 0.5))  
+electricity_plot = px.line(total_electricity_prices, x='Date', y='Value',
+                           title='Average Price of Electricity to Ultimate Customers',
+                           labels={'Date': 'Date', 'Value': 'Price (Cents per Kilowatthour)'},
+                           template='plotly_white',  
+                           color_discrete_sequence=['#99494d'])
 
-ggplotly(electricity_plot)
+# Display the plot
+electricity_plot.show()
 
 
 ```
@@ -261,22 +244,21 @@ ggplotly(electricity_plot)
 ## GDP
 
 
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Plot GDP'
 #| warning: false
 #| output: true
 
-#Plotting with ggplot2
-gdp_plot <- ggplot(gdp_data, aes(x = DATE, y = GDP)) +
-  geom_line(color = "#99494d") + 
-  theme_minimal() +
-  labs(title = "Gross Domestic Product Over Time",  
-       x = "Date",
-       y = "GDP (Billion USD)") +
-  theme(plot.title = element_text(hjust = 0.5))  
+gdp_plot = px.line(gdp_data, x='DATE', y='GDP',
+                   title='Gross Domestic Product Over Time',
+                   labels={'DATE': 'Date', 'GDP': 'GDP (Billion USD)'},
+                   template='plotly_white', 
+                   color_discrete_sequence=['#99494d'])
 
-ggplotly(gdp_plot)
+# Display the plot
+gdp_plot.show()
+
 
 
 ```
@@ -285,22 +267,20 @@ ggplotly(gdp_plot)
 ## CPI
 
 
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Plot CPI'
 #| warning: false
 #| output: true
 
-#Plotting with ggplot2
-cpi_plot <- ggplot(cpi_data, aes(x = DATE, y = CPIAUCSL)) +
-  geom_line(color = "#99494d") +  
-  theme_minimal() +
-  labs(title = "Consumer Price Index Over Time",  
-       x = "Date",
-       y = "CPI") +
-  theme(plot.title = element_text(hjust = 0.5)) 
+cpi_plot = px.line(cpi_data, x='DATE', y='CPIAUCSL',
+                   title='Consumer Price Index Over Time',
+                   labels={'DATE': 'Date', 'CPIAUCSL': 'CPI'},
+                   template='plotly_white',  # Using the 'plotly_white' as a minimal theme
+                   color_discrete_sequence=['#99494d'])
 
-ggplotly(cpi_plot)
+# Display the plot
+cpi_plot.show()
 
 ```
 
@@ -323,46 +303,40 @@ To improve the accuracy of our models, we will normalize the time series data an
 ## Crude Oil
 
 
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
 #| output: true
 
+# Normalize the crude oil data
+oil_normalized = (composite_crude_oil_prices['Value'] - composite_crude_oil_prices['Value'].mean()) / composite_crude_oil_prices['Value'].std()
 
-#Normalize the crude oil data
-oil_normalized <- scale(composite_crude_oil_prices$Value)
-
-#Split data into training and testing
-split_index <- floor(0.8 * length(oil_normalized))
-oil_train <- oil_normalized[1:split_index]
-oil_test <- oil_normalized[(split_index + 1):length(oil_normalized)]
+# Split data into training and testing
+split_index = int(0.8 * len(oil_normalized))
+oil_train = oil_normalized[:split_index]
+oil_test = oil_normalized[split_index:]
 
 # Print the shapes
-cat("Shape of the Crude Oil Data:", length(oil_normalized), "\n")
-cat("Shape of the Crude Oil Train Data:", length(oil_train), "\n")
-cat("Shape of the Crude Oil Test Data:", length(oil_test), "\n")
+print("Shape of the Crude Oil Data:", len(oil_normalized))
+print("Shape of the Crude Oil Train Data:", len(oil_train))
+print("Shape of the Crude Oil Test Data:", len(oil_test))
 
+# Prepare data for plotting
+train_dates = composite_crude_oil_prices['Date'].iloc[:split_index]
+test_dates = composite_crude_oil_prices['Date'].iloc[split_index:]
 
-#Plot the training and testing sets
-train_dates <- composite_crude_oil_prices$Date[1:split_index]
-test_dates <- composite_crude_oil_prices$Date[(split_index + 1):length(oil_normalized)]
+oil_data = pd.DataFrame({
+    'Date': pd.concat([train_dates, test_dates]),
+    'Value': pd.concat([oil_train, oil_test]),
+    'Set': ['Training'] * len(oil_train) + ['Testing'] * len(oil_test)
+})
 
-oil_data <- data.frame(
-  Date = c(train_dates, test_dates),
-  Value = c(oil_train, oil_test),
-  Set = c(rep("Training", length(oil_train)), rep("Testing", length(oil_test)))
-)
+# Plot the training and testing sets
+oil_plot1 = px.area(oil_data, x='Date', y='Value', color='Set', title='Crude Oil Training and Testing Sets',
+                    labels={'Value': 'Normalized Crude Oil Prices'}, template='plotly_white')
+oil_plot1.update_layout(title_x=0.5)
 
-oil_plot1 <- ggplot(oil_data, aes(x = Date, y = Value, fill = Set)) +
-  geom_area(position = "stack") +
-  theme_minimal() +
-  labs(title = "Crude Oil Training and Testing Sets",
-       x = "Date",
-       y = "Normalized Crude Oil Prices") +
-  theme(plot.title = element_text(hjust = 0.5))
-
-ggplotly(oil_plot1)
 
 ```
 
@@ -370,7 +344,7 @@ ggplotly(oil_plot1)
 
 ## Natural Gas
 
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
@@ -378,42 +352,33 @@ ggplotly(oil_plot1)
 
 
 # Normalize the natural gas data
-gas_normalized <- scale(citygate_gas_prices$Value)
+gas_normalized = (citygate_gas_prices['Value'] - citygate_gas_prices['Value'].mean()) / citygate_gas_prices['Value'].std()
 
 # Split data into training and testing
-split_index <- floor(0.8 * length(gas_normalized))
-gas_train <- gas_normalized[1:split_index]
-gas_test <- gas_normalized[(split_index + 1):length(gas_normalized)]
-
+split_index = int(0.8 * len(gas_normalized))
+gas_train = gas_normalized[:split_index]
+gas_test = gas_normalized[split_index:]
 
 # Print the shapes
-cat("Shape of the Natural Gas Data:", length(gas_normalized), "\n")
-cat("Shape of the Natural Gas Train Data:", length(gas_train), "\n")
-cat("Shape of the Natural Gas Test Data:", length(gas_test), "\n")
+print("Shape of the Natural Gas Data:", len(gas_normalized))
+print("Shape of the Natural Gas Train Data:", len(gas_train))
+print("Shape of the Natural Gas Test Data:", len(gas_test))
 
+# Prepare data for plotting
+train_dates_gas = citygate_gas_prices['Date'].iloc[:split_index]
+test_dates_gas = citygate_gas_prices['Date'].iloc[split_index:]
+
+gas_data = pd.DataFrame({
+    'Date': pd.concat([train_dates_gas, test_dates_gas]),
+    'Value': pd.concat([gas_train, gas_test]),
+    'Set': ['Training'] * len(gas_train) + ['Testing'] * len(gas_test)
+})
 
 # Plot the training and testing sets
-train_dates_gas <- citygate_gas_prices$Date[1:split_index]
-test_dates_gas <- citygate_gas_prices$Date[(split_index + 1):length(gas_normalized)]
+gas_plot = px.area(gas_data, x='Date', y='Value', color='Set', title='Natural Gas Training and Testing Sets',
+                   labels={'Value': 'Normalized Natural Gas Prices'}, template='plotly_white')
+gas_plot.update_layout(title_x=0.5)
 
-# Create a data frame for plotting
-gas_data <- data.frame(
-  Date = c(train_dates_gas, test_dates_gas),
-  Value = c(gas_train, gas_test),
-  Set = c(rep("Training", length(gas_train)), rep("Testing", length(gas_test)))
-)
-
-# Create the stacked area plot using ggplot2
-gas_plot <- ggplot(gas_data, aes(x = Date, y = Value, fill = Set)) +
-  geom_area(position = "stack") +
-  theme_minimal() +
-  labs(title = "Natural Gas Training and Testing Sets",
-       x = "Date",
-       y = "Normalized Natural Gas Prices") +
-  theme(plot.title = element_text(hjust = 0.5))
-
-# Convert the plot to an interactive plotly plot
-ggplotly(gas_plot)
 
 
 
@@ -425,50 +390,40 @@ ggplotly(gas_plot)
 ## Electricity
 
 
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
 #| output: true
 
 
-#Normalize the electricity data
-electricity_normalized <- scale(total_electricity_prices$Value)
+# Normalize the electricity data
+electricity_normalized = (total_electricity_prices['Value'] - total_electricity_prices['Value'].mean()) / total_electricity_prices['Value'].std()
 
-#Split data into training and testing
-split_index <- floor(0.8 * length(electricity_normalized))
-electricity_train <- electricity_normalized[1:split_index]
-electricity_test <- electricity_normalized[(split_index + 1):length(electricity_normalized)]
+# Split data into training and testing
+split_index = int(0.8 * len(electricity_normalized))
+electricity_train = electricity_normalized[:split_index]
+electricity_test = electricity_normalized[split_index:]
 
 # Print the shapes
-cat("Shape of the Electricity Prices Data:", length(electricity_normalized), "\n")
-cat("Shape of the Electricity Prices Train Data:", length(electricity_train), "\n")
-cat("Shape of the Electricity Prices Test Data:", length(electricity_test), "\n")
+print("Shape of the Electricity Prices Data:", len(electricity_normalized))
+print("Shape of the Electricity Prices Train Data:", len(electricity_train))
+print("Shape of the Electricity Prices Test Data:", len(electricity_test))
 
+# Prepare data for plotting
+train_dates_elec = total_electricity_prices['Date'].iloc[:split_index]
+test_dates_elec = total_electricity_prices['Date'].iloc[split_index:]
+
+elec_data = pd.DataFrame({
+    'Date': pd.concat([train_dates_elec, test_dates_elec]),
+    'Value': pd.concat([electricity_train, electricity_test]),
+    'Set': ['Training'] * len(electricity_train) + ['Testing'] * len(electricity_test)
+})
 
 # Plot the training and testing sets
-train_dates_elec <- total_electricity_prices$Date[1:split_index]
-test_dates_elec <- total_electricity_prices$Date[(split_index + 1):length(electricity_normalized)]
-
-# Create a data frame for plotting
-elec_data <- data.frame(
-  Date = c(train_dates_elec, test_dates_elec),
-  Value = c(electricity_train, electricity_test),
-  Set = c(rep("Training", length(electricity_train)), rep("Testing", length(electricity_test)))
-)
-
-# Create the stacked area plot using ggplot2
-elec_plot <- ggplot(elec_data, aes(x = Date, y = Value, fill = Set)) +
-  geom_area(position = "stack") +
-  theme_minimal() +
-  labs(title = "Electricity Training and Testing Sets",
-       x = "Date",
-       y = "Normalized Electricity Prices") +
-  theme(plot.title = element_text(hjust = 0.5))
-
-# Convert the plot to an interactive plotly plot
-ggplotly(elec_plot)
-
+elec_plot = px.area(elec_data, x='Date', y='Value', color='Set', title='Electricity Training and Testing Sets',
+                    labels={'Value': 'Normalized Electricity Prices'}, template='plotly_white')
+elec_plot.update_layout(title_x=0.5)
 
 
 
@@ -479,50 +434,44 @@ ggplotly(elec_plot)
 ## GDP
 
 
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
 #| output: true
 
 
+
 # Normalize the GDP data
-gdp_normalized <- scale(gdp_data$GDP)
+gdp_normalized = (gdp_data['GDP'] - gdp_data['GDP'].mean()) / gdp_data['GDP'].std()
 
 # Split data into training and testing
-split_index <- floor(0.8 * length(gdp_normalized))
-gdp_train <- gdp_normalized[1:split_index]
-gdp_test <- gdp_normalized[(split_index + 1):length(gdp_normalized)]
-
+split_index = int(0.8 * len(gdp_normalized))
+gdp_train = gdp_normalized[:split_index]
+gdp_test = gdp_normalized[split_index:]
 
 # Print the shapes
-cat("Shape of the GDP Data:", length(gdp_normalized), "\n")
-cat("Shape of the GDP Train Data:", length(gdp_train), "\n")
-cat("Shape of the GDP Test Data:", length(gdp_test), "\n")
+print("Shape of the GDP Data:", len(gdp_normalized))
+print("Shape of the GDP Train Data:", len(gdp_train))
+print("Shape of the GDP Test Data:", len(gdp_test))
 
+# Prepare data for plotting
+train_dates_gdp = gdp_data['DATE'].iloc[:split_index]
+test_dates_gdp = gdp_data['DATE'].iloc[split_index:]
+
+gdp_data_plot = pd.DataFrame({
+    'Date': pd.concat([train_dates_gdp, test_dates_gdp]),
+    'Value': pd.concat([gdp_train, gdp_test]),
+    'Set': ['Training'] * len(gdp_train) + ['Testing'] * len(gdp_test)
+})
 
 # Plot the training and testing sets
-train_dates_gdp <- gdp_data$DATE[1:split_index]
-test_dates_gdp <- gdp_data$DATE[(split_index + 1):length(gdp_normalized)]
+gdp_plot1 = px.area(gdp_data_plot, x='Date', y='Value', color='Set', title='GDP Training and Testing Sets',
+                    labels={'Value': 'Normalized GDP'}, template='plotly_white')
+gdp_plot1.update_layout(title_x=0.5)
 
-# Create a data frame for plotting
-gdp_data_plot <- data.frame(
-  Date = c(train_dates_gdp, test_dates_gdp),
-  Value = c(gdp_train, gdp_test),
-  Set = c(rep("Training", length(gdp_train)), rep("Testing", length(gdp_test)))
-)
 
-# Create the stacked area plot using ggplot2
-gdp_plot1 <- ggplot(gdp_data_plot, aes(x = Date, y = Value, fill = Set)) +
-  geom_area(position = "stack") +
-  theme_minimal() +
-  labs(title = "GDP Training and Testing Sets",
-       x = "Date",
-       y = "Normalized GDP") +
-  theme(plot.title = element_text(hjust = 0.5))
 
-# Convert the plot to an interactive plotly plot
-ggplotly(gdp_plot1)
 
 
 ```
@@ -532,7 +481,7 @@ ggplotly(gdp_plot1)
 ## CPI
 
 
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
@@ -540,49 +489,40 @@ ggplotly(gdp_plot1)
 
 
 # Normalize the CPI data
-cpi_normalized <- scale(cpi_data$CPIAUCSL)
+cpi_normalized = (cpi_data['CPIAUCSL'] - cpi_data['CPIAUCSL'].mean()) / cpi_data['CPIAUCSL'].std()
 
 # Split data into training and testing
-split_index <- floor(0.8 * length(cpi_normalized))
-cpi_train <- cpi_normalized[1:split_index]
-cpi_test <- cpi_normalized[(split_index + 1):length(cpi_normalized)]
-
+split_index = int(0.8 * len(cpi_normalized))
+cpi_train = cpi_normalized[:split_index]
+cpi_test = cpi_normalized[split_index:]
 
 # Print the shapes
-cat("Shape of the CPI Data:", length(cpi_normalized), "\n")
-cat("Shape of the CPI Train Data:", length(cpi_train), "\n")
-cat("Shape of the CPI Test Data:", length(cpi_test), "\n")
+print("Shape of the CPI Data:", len(cpi_normalized))
+print("Shape of the CPI Train Data:", len(cpi_train))
+print("Shape of the CPI Test Data:", len(cpi_test))
 
+# Prepare data for plotting
+train_dates_cpi = cpi_data['DATE'].iloc[:split_index]
+test_dates_cpi = cpi_data['DATE'].iloc[split_index:]
+
+cpi_data_plot = pd.DataFrame({
+    'Date': pd.concat([train_dates_cpi, test_dates_cpi]),
+    'Value': pd.concat([cpi_train, cpi_test]),
+    'Set': ['Training'] * len(cpi_train) + ['Testing'] * len(cpi_test)
+})
 
 # Plot the training and testing sets
-train_dates_cpi <- cpi_data$DATE[1:split_index]
-test_dates_cpi <- cpi_data$DATE[(split_index + 1):length(cpi_normalized)]
+cpi_plot1 = px.area(cpi_data_plot, x='Date', y='Value', color='Set', title='CPI Training and Testing Sets',
+                    labels={'Value': 'Normalized CPI'}, template='plotly_white')
+cpi_plot1.update_layout(title_x=0.5)
 
-# Create a data frame for plotting
-cpi_data_plot <- data.frame(
-  Date = c(train_dates_cpi, test_dates_cpi),
-  Value = c(cpi_train, cpi_test),
-  Set = c(rep("Training", length(cpi_train)), rep("Testing", length(cpi_test)))
-)
-
-# Create the stacked area plot using ggplot2
-cpi_plot1 <- ggplot(cpi_data_plot, aes(x = Date, y = Value, fill = Set)) +
-  geom_area(position = "stack") +
-  theme_minimal() +
-  labs(title = "CPI Training and Testing Sets",
-       x = "Date",
-       y = "Normalized CPI") +
-  theme(plot.title = element_text(hjust = 0.5))
-
-# Convert the plot to an interactive plotly plot
-ggplotly(cpi_plot1)
 
 
 
 ```
 
 
-
+:::
 
 
 # 4. Mini Batching
@@ -598,81 +538,105 @@ To implement mini-batching, the dataset is typically shuffled and divided into s
 ## Crude Oil
 
 
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
 #| output: true
 
 
-# Function to create mini-batches
-form_arrays <- function(x, lookback = 3, delay = 1, step = 1, feature_columns = 1, target_columns = 1, unique = FALSE, verbose = FALSE) {
-  count <- 0
-  x_out <- list()
-  y_out <- list()
-  i_start <- 1
-  
-  while (i_start + lookback + delay <= nrow(x)) {
-    i_stop <- i_start + lookback - 1
-    i_pred <- i_stop + delay
-    indices_to_keep <- seq(i_stop, i_start, -step)
-    xtmp <- x[indices_to_keep, feature_columns, drop = FALSE]
-    ytmp <- x[i_pred, target_columns, drop = FALSE]
-    x_out <- append(x_out, list(xtmp))
-    y_out <- append(y_out, list(ytmp))
-    
-    if (verbose && count < 2) {
-      plot(seq_len(nrow(x)), x[, feature_columns], type = "b", col = "blue", xlab = "Index", ylab = "Value")
-      points(indices_to_keep, xtmp, col = "green", pch = 19)
-      points(i_pred, ytmp, col = "red", pch = 19)
-    }
-    
-    #Update start point
-    if (unique) {
-      i_start <- i_start + lookback
-    } else {
-      i_start <- i_start + 1
-    }
-    count <- count + 1
-  }
-  
-  return(list(x = array(unlist(x_out), dim = c(length(x_out), lookback, length(feature_columns))), 
-              y = array(unlist(y_out), dim = c(length(y_out), length(target_columns)))))
-}
+def form_arrays(x, lookback=3, delay=1, step=1, verbose=False):
+    count = 0
+    x_out = []
+    y_out = []
+    i_start = 0
 
+    # Adjust the stopping condition for the loop to account for delay
+    while i_start + lookback + delay - 1 < len(x):
+        i_stop = i_start + lookback
+        i_pred = i_stop + delay - 1  # Subtract 1 to stay within bounds
+        indices_to_keep = list(range(i_start, i_stop, step))
+        xtmp = x[indices_to_keep]
+        ytmp = x[i_pred]
+        x_out.append(xtmp)
+        y_out.append(ytmp)
 
+        if verbose and count < 2:
+            plt.plot(np.arange(len(x)), x, 'b-', label='Value')
+            plt.scatter(indices_to_keep, xtmp, color='green', label='Features', marker='o')
+            plt.scatter(i_pred, ytmp, color='red', label='Target', marker='o')
+            plt.xlabel('Index')
+            plt.ylabel('Value')
+            plt.legend()
+            plt.show()
 
-lookback <- 5
+        # Update start point
+        i_start += step
+        count += 1
 
-oil_train <- as.matrix(oil_train)
-oil_test <- as.matrix(oil_test)
-oil_train_batches <- form_arrays(oil_train, lookback = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)
-oil_test_batches <- form_arrays(oil_test, lookback = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)
+    return np.array(x_out), np.array(y_out)
 
-train_shape <- dim(oil_train_batches$x)
-test_shape <- dim(oil_test_batches$x)
+lookback = 5
 
-cat(sprintf("Train shape: (%d, %d, %d) , (%d, %d)\n",
-            train_shape[1], train_shape[2], train_shape[3], dim(oil_train_batches$y)[1], dim(oil_train_batches$y)[2]))
-cat(sprintf("Test shape: (%d, %d, %d) , (%d, %d)\n",
-            test_shape[1], test_shape[2], test_shape[3], dim(oil_test_batches$y)[1], dim(oil_test_batches$y)[2]))
+# Convert to numpy arrays
+oil_train = np.array(oil_train)
+oil_test = np.array(oil_test)
+
+# Create mini-batches
+oil_train_batches_x, oil_train_batches_y = form_arrays(oil_train, lookback=lookback, delay=1, step=1)
+oil_test_batches_x, oil_test_batches_y = form_arrays(oil_test, lookback=lookback, delay=1, step=1)
+
+# Print shapes
+
+print(f"Train shape: {oil_train_batches_x.shape}, {oil_train_batches_y.shape}")
+print(f"Test shape: {oil_test_batches_x.shape}, {oil_test_batches_y.shape}")
 
 ```
 
+### Hyper parameter tuning to get the best parmeters
 
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
 
-np <- import("numpy")
+```{python}
+from scikeras.wrappers import KerasRegressor
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import SimpleRNN, Dense
+from sklearn.model_selection import RandomizedSearchCV
+import numpy as np
 
-# Save the mini-batches to .npy files
-np$save("oil_train_batches_x.npy", oil_train_batches$x)
-np$save("oil_train_batches_y.npy", oil_train_batches$y)
-np$save("oil_test_batches_x.npy", oil_test_batches$x)
-np$save("oil_test_batches_y.npy", oil_test_batches$y)
+# Define the number of features
+#features = 1
+
+# Model definition function
+#def get_model(optimizer="adam", units=50, L2=0.01):
+#    model = Sequential()
+#    model.add(SimpleRNN(units, input_shape=(lookback, features), activation='relu', 
+#                        recurrent_regularizer=regularizers.l2(L2)))
+#    model.add(Dense(1, activation='linear'))
+#    model.compile(loss="mse", optimizer=optimizer)
+#    return model
+
+# Create the SciKeras wrapper and specify training-related parameters
+#model = KerasRegressor(model=get_model, model__optimizer="adam", model__units=50, model__L2=0.01)
+
+# Define the hyperparameter space to search
+#param_dist = {
+#    'model__optimizer': ['adam', 'rmsprop'],
+#    'model__units': [30, 50, 100],
+#    'model__L2': [0.01, 0.001, 0.0001],
+#    'batch_size': [32, 64, 128],
+#    'epochs': [50, 100, 200]
+#}
+
+#X_train = oil_train_batches_x
+#y_train = oil_train_batches_y
+
+# Initialize and fit the RandomizedSearchCV
+#random_search = RandomizedSearchCV(estimator=model, param_distributions=param_dist, n_iter=10, cv=3)
+#random_search.fit(X_train, y_train)
+
+# Print the best score and parameters
+#print("Best score: %f using %s" % (random_search.best_score_, random_search.best_params_))
+
 ```
 
 
@@ -680,55 +644,165 @@ np$save("oil_test_batches_y.npy", oil_test_batches$y)
 
 ## Natural Gas
 
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
 #| output: true
 
 
-gas_train <- as.matrix(gas_train)
-gas_test <- as.matrix(gas_test)
-gas_train_batches <- form_arrays(gas_train, lookback  = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)
-gas_test_batches <- form_arrays(gas_test, lookback  = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)
+def form_arrays(x, lookback=3, delay=1, step=1, verbose=False):
+    count = 0
+    x_out = []
+    y_out = []
+    i_start = 0
 
-# Display the shape
-train_shape_gas <- dim(gas_train_batches$x)
-test_shape_gas <- dim(gas_test_batches$x)
+    # Adjust the stopping condition for the loop to account for delay
+    while i_start + lookback + delay - 1 < len(x):
+        i_stop = i_start + lookback
+        i_pred = i_stop + delay - 1  
+        indices_to_keep = list(range(i_start, i_stop, step))
+        xtmp = x[indices_to_keep]
+        ytmp = x[i_pred]
+        x_out.append(xtmp)
+        y_out.append(ytmp)
 
-cat(sprintf("Natural Gas Train shape: (%d, %d, %d) , (%d, %d)\n",
-            train_shape_gas[1], train_shape_gas[2], train_shape_gas[3], dim(gas_train_batches$y)[1], dim(gas_train_batches$y)[2]))
-cat(sprintf("Natural Gas Test shape: (%d, %d, %d) , (%d, %d)\n",
-            test_shape_gas[1], test_shape_gas[2], test_shape_gas[3], dim(gas_test_batches$y)[1], dim(gas_test_batches$y)[2]))
+        if verbose and count < 2:
+            plt.plot(np.arange(len(x)), x, 'b-', label='Value')
+            plt.scatter(indices_to_keep, xtmp, color='green', label='Features', marker='o')
+            plt.scatter(i_pred, ytmp, color='red', label='Target', marker='o')
+            plt.xlabel('Index')
+            plt.ylabel('Value')
+            plt.legend()
+            plt.show()
+
+        # Update start point
+        i_start += step
+        count += 1
+
+    return np.array(x_out), np.array(y_out)
+
+lookback = 5
+
+# Convert to numpy arrays
+gas_train = np.array(gas_train)
+gas_test = np.array(gas_test)
+
+# Create mini-batches
+gas_train_batches_x, gas_train_batches_y = form_arrays(gas_train, lookback=lookback, delay=1, step=1)
+gas_test_batches_x, gas_test_batches_y = form_arrays(gas_test, lookback=lookback, delay=1, step=1)
+
+# Print shapes
+
+print(f"Train shape: {gas_train_batches_x.shape}, {gas_train_batches_y.shape}")
+print(f"Test shape: {gas_test_batches_x.shape}, {gas_test_batches_y.shape}")
 
 ```
 
+### Hyper parameter tuning to get the best parmeters
+
+
+```{python}
+# from scikeras.wrappers import KerasRegressor
+# from tensorflow.keras.models import Sequential
+# from tensorflow.keras.layers import SimpleRNN, Dense
+# from sklearn.model_selection import RandomizedSearchCV
+# import numpy as np
+# 
+# # Define the number of features
+# features = 1
+# 
+# # Model definition function
+# def get_model(optimizer="adam", units=50, L2=0.01):
+#     model = Sequential()
+#     model.add(SimpleRNN(units, input_shape=(lookback, features), activation='relu',
+#                         recurrent_regularizer=regularizers.l2(L2)))
+#     model.add(Dense(1, activation='linear'))
+#     model.compile(loss="mse", optimizer=optimizer)
+#     return model
+# 
+# # Create the SciKeras wrapper and specify training-related parameters
+# model = KerasRegressor(model=get_model, model__optimizer="adam", model__units=50, model__L2=0.01)
+# 
+# # Define the hyperparameter space to search
+# param_dist = {
+#     'model__optimizer': ['adam', 'rmsprop'],
+#     'model__units': [30, 50, 100],
+#     'model__L2': [0.01, 0.001, 0.0001],
+#     'batch_size': [32, 64, 128],
+#     'epochs': [50, 100, 200]
+# }
+# 
+# X_train = gas_train_batches_x
+# y_train = gas_train_batches_y
+# 
+# # Initialize and fit the RandomizedSearchCV
+# random_search = RandomizedSearchCV(estimator=model, param_distributions=param_dist, n_iter=10, cv=3)
+# random_search.fit(X_train, y_train)
+# 
+# # Print the best score and parameters
+# print("Best score: %f using %s" % (random_search.best_score_, random_search.best_params_))
+
+```
 
 
 
 ## Electricity
 
 
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
 #| output: true
 
 
-electricity_train <- as.matrix(electricity_train)
-electricity_test <- as.matrix(electricity_test)
-electricity_train_batches <- form_arrays(electricity_train, lookback  = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)
-electricity_test_batches <- form_arrays(electricity_test, lookback  = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)
+def form_arrays(x, lookback=3, delay=1, step=1, verbose=False):
+    count = 0
+    x_out = []
+    y_out = []
+    i_start = 0
 
-# Display the shape
-train_shape_elec <- dim(electricity_train_batches$x)
-test_shape_elec <- dim(electricity_test_batches$x)
+    # Adjust the stopping condition for the loop to account for delay
+    while i_start + lookback + delay - 1 < len(x):
+        i_stop = i_start + lookback
+        i_pred = i_stop + delay - 1  
+        indices_to_keep = list(range(i_start, i_stop, step))
+        xtmp = x[indices_to_keep]
+        ytmp = x[i_pred]
+        x_out.append(xtmp)
+        y_out.append(ytmp)
 
-cat(sprintf("Electricity Train shape: (%d, %d, %d) , (%d, %d)\n",
-            train_shape_elec[1], train_shape_elec[2], train_shape_elec[3], dim(electricity_train_batches$y)[1], dim(electricity_train_batches$y)[2]))
-cat(sprintf("Electricity Test shape: (%d, %d, %d) , (%d, %d)\n",
-            test_shape_elec[1], test_shape_elec[2], test_shape_elec[3], dim(electricity_test_batches$y)[1], dim(electricity_test_batches$y)[2]))
+        if verbose and count < 2:
+            plt.plot(np.arange(len(x)), x, 'b-', label='Value')
+            plt.scatter(indices_to_keep, xtmp, color='green', label='Features', marker='o')
+            plt.scatter(i_pred, ytmp, color='red', label='Target', marker='o')
+            plt.xlabel('Index')
+            plt.ylabel('Value')
+            plt.legend()
+            plt.show()
+
+        # Update start point
+        i_start += step
+        count += 1
+
+    return np.array(x_out), np.array(y_out)
+
+lookback = 5
+
+# Convert to numpy arrays
+electricity_train = np.array(electricity_train)
+electricity_test = np.array(electricity_test)
+
+# Create mini-batches
+electricity_train_batches_x, electricity_train_batches_y = form_arrays(electricity_train, lookback=lookback, delay=1, step=1)
+electricity_test_batches_x, electricity_test_batches_y = form_arrays(electricity_test, lookback=lookback, delay=1, step=1)
+
+# Print shapes
+
+print(f"Train shape: {electricity_train_batches_x.shape}, {electricity_train_batches_y.shape}")
+print(f"Test shape: {electricity_test_batches_x.shape}, {electricity_test_batches_y.shape}")
+
 
 ```
 
@@ -737,27 +811,57 @@ cat(sprintf("Electricity Test shape: (%d, %d, %d) , (%d, %d)\n",
 ## GDP
 
 
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
 #| output: true
 
-gdp_train <- as.matrix(gdp_train)
-gdp_test <- as.matrix(gdp_test)
-gdp_train_batches <- form_arrays(gdp_train, lookback  = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)
-gdp_test_batches <- form_arrays(gdp_test, lookback  = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)
+def form_arrays(x, lookback=3, delay=1, step=1, verbose=False):
+    count = 0
+    x_out = []
+    y_out = []
+    i_start = 0
 
+    # Adjust the stopping condition for the loop to account for delay
+    while i_start + lookback + delay - 1 < len(x):
+        i_stop = i_start + lookback
+        i_pred = i_stop + delay - 1  
+        indices_to_keep = list(range(i_start, i_stop, step))
+        xtmp = x[indices_to_keep]
+        ytmp = x[i_pred]
+        x_out.append(xtmp)
+        y_out.append(ytmp)
 
-# Display the shape
-train_shape_gdp <- dim(gdp_train_batches$x)
-test_shape_gdp <- dim(gdp_test_batches$x)
+        if verbose and count < 2:
+            plt.plot(np.arange(len(x)), x, 'b-', label='Value')
+            plt.scatter(indices_to_keep, xtmp, color='green', label='Features', marker='o')
+            plt.scatter(i_pred, ytmp, color='red', label='Target', marker='o')
+            plt.xlabel('Index')
+            plt.ylabel('Value')
+            plt.legend()
+            plt.show()
 
-cat(sprintf("GDP Train shape: (%d, %d, %d) , (%d, %d)\n",
-            train_shape_gdp[1], train_shape_gdp[2], train_shape_gdp[3], dim(gdp_train_batches$y)[1], dim(gdp_train_batches$y)[2]))
-cat(sprintf("GDP Test shape: (%d, %d, %d) , (%d, %d)\n",
-            test_shape_gdp[1], test_shape_gdp[2], test_shape_gdp[3], dim(gdp_test_batches$y)[1], dim(gdp_test_batches$y)[2]))
+        # Update start point
+        i_start += step
+        count += 1
 
+    return np.array(x_out), np.array(y_out)
+
+lookback = 5
+
+# Convert to numpy arrays
+gdp_train = np.array(gdp_train)
+gdp_test = np.array(gdp_test)
+
+# Create mini-batches
+gdp_train_batches_x, gdp_train_batches_y = form_arrays(gdp_train, lookback=lookback, delay=1, step=1)
+gdp_test_batches_x, gdp_test_batches_y = form_arrays(gdp_test, lookback=lookback, delay=1, step=1)
+
+# Print shapes
+
+print(f"Train shape: {gdp_train_batches_x.shape}, {gdp_train_batches_y.shape}")
+print(f"Test shape: {gdp_test_batches_x.shape}, {gdp_test_batches_y.shape}")
 
 ```
 
@@ -766,30 +870,62 @@ cat(sprintf("GDP Test shape: (%d, %d, %d) , (%d, %d)\n",
 ## CPI
 
 
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
 #| warning: false
 #| output: true
 
+def form_arrays(x, lookback=3, delay=1, step=1, verbose=False):
+    count = 0
+    x_out = []
+    y_out = []
+    i_start = 0
 
-cpi_train <- as.matrix(cpi_train)
-cpi_test <- as.matrix(cpi_test)
-cpi_train_batches <- form_arrays(cpi_train, lookback  = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)
-cpi_test_batches <- form_arrays(cpi_test, lookback  = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)
+    # Adjust the stopping condition for the loop to account for delay
+    while i_start + lookback + delay - 1 < len(x):
+        i_stop = i_start + lookback
+        i_pred = i_stop + delay - 1  
+        indices_to_keep = list(range(i_start, i_stop, step))
+        xtmp = x[indices_to_keep]
+        ytmp = x[i_pred]
+        x_out.append(xtmp)
+        y_out.append(ytmp)
 
-# Display the shape
-train_shape_cpi <- dim(cpi_train_batches$x)
-test_shape_cpi <- dim(cpi_test_batches$x)
+        if verbose and count < 2:
+            plt.plot(np.arange(len(x)), x, 'b-', label='Value')
+            plt.scatter(indices_to_keep, xtmp, color='green', label='Features', marker='o')
+            plt.scatter(i_pred, ytmp, color='red', label='Target', marker='o')
+            plt.xlabel('Index')
+            plt.ylabel('Value')
+            plt.legend()
+            plt.show()
 
-cat(sprintf("CPI Train shape: (%d, %d, %d) , (%d, %d)\n",
-            train_shape_cpi[1], train_shape_cpi[2], train_shape_cpi[3], dim(cpi_train_batches$y)[1], dim(cpi_train_batches$y)[2]))
-cat(sprintf("CPI Test shape: (%d, %d, %d) , (%d, %d)\n",
-            test_shape_cpi[1], test_shape_cpi[2], test_shape_cpi[3], dim(cpi_test_batches$y)[1], dim(cpi_test_batches$y)[2]))
+        # Update start point
+        i_start += step
+        count += 1
+
+    return np.array(x_out), np.array(y_out)
+
+lookback = 5
+
+# Convert to numpy arrays
+cpi_train = np.array(cpi_train)
+cpi_test = np.array(cpi_test)
+
+# Create mini-batches
+cpi_train_batches_x, cpi_train_batches_y = form_arrays(cpi_train, lookback=lookback, delay=1, step=1)
+cpi_test_batches_x, cpi_test_batches_y = form_arrays(cpi_test, lookback=lookback, delay=1, step=1)
+
+# Print shapes
+
+print(f"Train shape: {cpi_train_batches_x.shape}, {cpi_train_batches_y.shape}")
+print(f"Test shape: {cpi_test_batches_x.shape}, {cpi_test_batches_y.shape}")
+
 
 ```
 
-
+::: 
 
 
 
@@ -806,28 +942,22 @@ Recurrent Neural Networks (RNNs) are designed to process sequential data, making
 
 ```{python, warning=FALSE, message=FALSE, echo=FALSE}
 
-# Load the mini-batches from .npy files
-trainX = np.load("oil_train_batches_x.npy")
-trainY = np.load("oil_train_batches_y.npy")
-testX = np.load("oil_test_batches_x.npy")
-testY = np.load("oil_test_batches_y.npy")
-
-Xt1_oil = trainX.reshape(trainX.shape[0], trainX.shape[1] * trainX.shape[2])
 optimizer = "rmsprop"
 loss_function = "MeanSquaredError"
 learning_rate = 0.001
-number_of_epochs = 200
-L2 = 0.01  # Regularization strength
-input_shape = (trainX.shape[1], trainX.shape[2])
+number_of_epochs = 100 # Update based on the best hyperparameters
+L2 = 0.0001  # Update based on the best hyperparameters
+input_shape = (oil_train_batches_x.shape[1], 1)  
 
 
 # ------ Choose the batch size ------
 #batch_size=1                       # stocastic training
 #batch_size=int(len(Xt1_oil)/2.)    # mini-batch training
-batch_size=len(Xt1_oil)              # batch training
+batch_size = 64  # Update based on the best hyperparameters
 
 # BUILD MODEL
-recurrent_hidden_units = 30
+recurrent_hidden_units = 100  # Update based on the best hyperparameters
+
 
 # CREATE MODEL
 model_no_reg = keras.Sequential()
@@ -837,29 +967,20 @@ model_no_reg = keras.Sequential()
 # #COMMENT/UNCOMMENT TO USE RNN, LSTM,GRU
 #model.add(LSTM(
 #model.add(GRU(
-model_no_reg.add(SimpleRNN(
-units=recurrent_hidden_units,
-return_sequences=False,
-input_shape=input_shape, 
-# recurrent_dropout=0.8,
-#recurrent_regularizer=regularizers.L2(L2),
-activation='relu')
-          ) 
+model_no_reg = Sequential([
+    Input(shape=input_shape),  # Add Input layer to define input shape
+    SimpleRNN(units=recurrent_hidden_units, return_sequences=False, activation='relu'),
+    Dense(units=1, activation='linear')
+])
 
 #CREATE MODEL WITH REGULARIZATION
-model_reg = keras.Sequential()
-model_reg.add(SimpleRNN(
-units=recurrent_hidden_units,
-return_sequences=False,
-input_shape=input_shape,
-recurrent_regularizer=regularizers.L2(L2),
-activation='relu'
-))
+model_reg = Sequential([
+    Input(shape=input_shape),  # Add Input layer to define input shape
+    SimpleRNN(units=recurrent_hidden_units, return_sequences=False, activation='relu',
+              recurrent_regularizer=regularizers.l2(L2)),
+    Dense(units=1, activation='linear')
+])
      
-# NEED TO TAKE THE OUTPUT RNN AND CONVERT TO SCALAR 
-model_no_reg.add(Dense(units=1, activation='linear'))
-model_reg.add(Dense(units=1, activation='linear'))
-
 ```
 
 
@@ -887,26 +1008,25 @@ model_reg.compile(optimizer=RMSprop(learning_rate=learning_rate), loss=loss_func
 
 early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
 
+
 # TRAINING THE MODELS
-history_oil_no_reg = model_no_reg.fit(trainX,
-                                      trainY,
+history_oil_no_reg = model_no_reg.fit(oil_train_batches_x,
+                                      oil_train_batches_y,
                                       epochs=number_of_epochs,
                                       batch_size=batch_size,
                                       verbose=False,
-                                      validation_data=(testX, testY),
+                                      validation_data=(oil_test_batches_x, oil_test_batches_y),
                                       callbacks=[early_stopping])
 
-history_oil_reg = model_reg.fit(trainX,
-                                trainY,
+history_oil_reg = model_reg.fit(oil_train_batches_x,
+                                oil_train_batches_y,
                                 epochs=number_of_epochs,
                                 batch_size=batch_size,
                                 verbose=False,
-                                validation_data=(testX, testY),
+                                validation_data=(oil_test_batches_x, oil_test_batches_y),
                                 callbacks=[early_stopping])
 
-def history_plot(history_no_reg, history_reg):
-    FS = 18  # fontsize
-    
+def history_plot_separate(history_no_reg, history_reg):
     # Get the history dictionaries
     history_dict_no_reg = history_no_reg.history
     history_dict_reg = history_reg.history
@@ -916,48 +1036,45 @@ def history_plot(history_no_reg, history_reg):
     val_loss_values_no_reg = history_dict_no_reg['val_loss']
     loss_values_reg = history_dict_reg['loss']
     val_loss_values_reg = history_dict_reg['val_loss']
-    epochs = range(1, len(loss_values_no_reg) + 1)
     
-    # Create a new figure
-    plt.figure(figsize=(12, 6))
+    # Determine the number of epochs the training actually ran for
+    epochs_no_reg = range(1, len(loss_values_no_reg) + 1)
+    epochs_reg = range(1, len(loss_values_reg) + 1)
     
-    # Plot the training and validation loss for the non-regularized model
-    plt.plot(epochs, loss_values_no_reg, 'bo', label='Training Loss (No Reg)')
-    plt.plot(epochs, val_loss_values_no_reg, 'b', label='Validation Loss (No Reg)')
-    
-    # Plot the training and validation loss for the regularized model
-    plt.plot(epochs, loss_values_reg, 'ro', label='Training Loss (Reg)')
-    plt.plot(epochs, val_loss_values_reg, 'r', label='Validation Loss (Reg)')
-    
-    # Add labels and legend
-    plt.title('Training and Validation Loss')
+    # Plot for non-regularized model
+    plt.figure()
+    plt.plot(epochs_no_reg, loss_values_no_reg, 'bo-', label='Training Loss (No Reg)')
+    plt.plot(epochs_no_reg, val_loss_values_no_reg, 'b-', label='Validation Loss (No Reg)')
+    plt.title('Training and Validation Loss for Non-Regularized Model')
     plt.xlabel('Epochs')
     plt.ylabel('Loss')
     plt.legend()
-    
-    # Show the plot
     plt.show()
 
-# History plot
-history_plot(history_oil_no_reg, history_oil_reg)
+    # Plot for regularized model
+    plt.figure()
+    plt.plot(epochs_reg, loss_values_reg, 'ro-', label='Training Loss (Reg)')
+    plt.plot(epochs_reg, val_loss_values_reg, 'r-', label='Validation Loss (Reg)')
+    plt.title('Training and Validation Loss for Regularized Model')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.show()
+
+# Call the function to plot the history separately
+history_plot_separate(history_oil_no_reg, history_oil_reg)
 
 ```
 
 
 
-```{python, warning=FALSE, message=FALSE, echo=TRUE}
 
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
 # PREDICTIONS
-Ytp_oil_no_reg = model_no_reg.predict(trainX)
-Yvp_oil_no_reg = model_no_reg.predict(testX)
-
-Ytp_oil_reg = model_reg.predict(trainX)
-Yvp_oil_reg = model_reg.predict(testX)
-
-```
-
-
-```{python, warning=FALSE, message=FALSE, echo=TRUE}
+Ytp_oil_no_reg = model_no_reg.predict(oil_train_batches_x)
+Yvp_oil_no_reg = model_no_reg.predict(oil_test_batches_x)
+Ytp_oil_reg = model_reg.predict(oil_train_batches_x)
+Yvp_oil_reg = model_reg.predict(oil_test_batches_x)
 
 def regression_report(yt, ytp, yv, yvp, model_name):
     print(f"--------- Regression Report ({model_name}) ---------")
@@ -966,7 +1083,7 @@ def regression_report(yt, ytp, yv, yvp, model_name):
     train_mae = np.mean(np.abs(yt - ytp))
     print("MSE", train_mse)
     print("MAE", train_mae)
-    
+
     # PARITY PLOT
     fig, ax = plt.subplots()
     ax.plot(yt, ytp, 'ro')
@@ -974,7 +1091,7 @@ def regression_report(yt, ytp, yv, yvp, model_name):
     ax.set(xlabel='Actual Crude Oil Prices', ylabel='Predicted Crude Oil Prices',
            title=f'Training Data Parity Plot ({model_name})')
     plt.show()
-    
+
     # PLOT PART OF THE PREDICTED TIME-SERIES
     frac_plot = 1.0
     upper = int(frac_plot * yt.shape[0])
@@ -985,13 +1102,13 @@ def regression_report(yt, ytp, yv, yvp, model_name):
     ax.set(xlabel='Time', ylabel='Crude Oil Prices (Blue=Actual & Red=Prediction)',
            title=f'Training: Time-Series Prediction ({model_name})')
     plt.show()
-    
+
     print("VALIDATION:")
     val_mse = np.mean((yv - yvp) ** 2)
     val_mae = np.mean(np.abs(yv - yvp))
     print("MSE", val_mse)
     print("MAE", val_mae)
-    
+
     # PARITY PLOT
     fig, ax = plt.subplots()
     ax.plot(yv, yvp, 'ro')
@@ -999,7 +1116,7 @@ def regression_report(yt, ytp, yv, yvp, model_name):
     ax.set(xlabel='Actual Crude Oil Prices', ylabel='Predicted Crude Oil Prices',
            title=f'Validation Data Parity Plot ({model_name})')
     plt.show()
-    
+
     # PLOT PART OF THE PREDICTED TIME-SERIES
     upper = int(frac_plot * yv.shape[0])
     fig, ax = plt.subplots()
@@ -1009,15 +1126,14 @@ def regression_report(yt, ytp, yv, yvp, model_name):
     ax.set(xlabel='Time', ylabel='Crude Oil Prices (Blue=Actual & Red=Prediction)',
            title=f'Validation: Time-Series Prediction ({model_name})')
     plt.show()
-    
+
     return train_mse, train_mae, val_mse, val_mae
 
 # Regression report for the non-regularized model
-train_mse_no_reg, train_mae_no_reg, val_mse_no_reg, val_mae_no_reg = regression_report(trainY, Ytp_oil_no_reg, testY, Yvp_oil_no_reg, "Non-Regularized Model")
+train_mse_no_reg, train_mae_no_reg, val_mse_no_reg, val_mae_no_reg = regression_report(oil_train_batches_y, Ytp_oil_no_reg, oil_test_batches_y, Yvp_oil_no_reg, "Non-Regularized Model")
 
 # Regression report for the regularized model
-train_mse_reg, train_mae_reg, val_mse_reg, val_mae_reg = regression_report(trainY, Ytp_oil_reg, testY, Yvp_oil_reg, "Regularized Model")
-
+train_mse_reg, train_mae_reg, val_mse_reg, val_mae_reg = regression_report(oil_train_batches_y, Ytp_oil_reg, oil_test_batches_y, Yvp_oil_reg, "Regularized Model")
 ```
 
 
@@ -1027,13 +1143,201 @@ train_mse_reg, train_mae_reg, val_mse_reg, val_mae_reg = regression_report(train
 
 ## Natural Gas
 
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
+```{python, warning=FALSE, message=FALSE, echo=FALSE}
+
+optimizer = "adam"
+loss_function = "MeanSquaredError"
+learning_rate = 0.001
+number_of_epochs = 100 # Update based on the best hyperparameters
+L2 = 0.0001  # Update based on the best hyperparameters
+input_shape = (gas_train_batches_x.shape[1], 1)  
+
+
+# ------ Choose the batch size ------
+#batch_size=1                       # stocastic training
+#batch_size=int(len(Xt1_oil)/2.)    # mini-batch training
+batch_size = 32  # Update based on the best hyperparameters
+
+# BUILD MODEL
+recurrent_hidden_units = 100  # Update based on the best hyperparameters
+
+
+# CREATE MODEL
+model_no_reg = keras.Sequential()
+
+# ADD RECURRENT LAYER
+
+# #COMMENT/UNCOMMENT TO USE RNN, LSTM,GRU
+#model.add(LSTM(
+#model.add(GRU(
+model_no_reg_gas = Sequential([
+    Input(shape=input_shape),  # Add Input layer to define input shape
+    SimpleRNN(units=recurrent_hidden_units, return_sequences=False, activation='relu'),
+    Dense(units=1, activation='linear')
+])
+
+#CREATE MODEL WITH REGULARIZATION
+model_reg_gas = Sequential([
+    Input(shape=input_shape),  # Add Input layer to define input shape
+    SimpleRNN(units=recurrent_hidden_units, return_sequences=False, activation='relu',
+              recurrent_regularizer=regularizers.l2(L2)),
+    Dense(units=1, activation='linear')
+])
 
 ```
+
+
+
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
+
+# MODEL SUMMARY
+print("Model without regularization:")
+print(model_no_reg_gas.summary())
+
+print("Model with regularization:")
+print(model_reg_gas.summary())
+
+```
+
+
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
+
+# COMPILING THE MODELS
+model_no_reg_gas.compile(optimizer=RMSprop(learning_rate=learning_rate), loss=loss_function)
+model_reg_gas.compile(optimizer=RMSprop(learning_rate=learning_rate), loss=loss_function)
+
+early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+
+
+# TRAINING THE MODELS
+history_gas_no_reg = model_no_reg_gas.fit(gas_train_batches_x,
+                                      gas_train_batches_y,
+                                      epochs=number_of_epochs,
+                                      batch_size=batch_size,
+                                      verbose=False,
+                                      validation_data=(gas_test_batches_x, gas_test_batches_y),
+                                      callbacks=[early_stopping])
+
+history_gas_reg = model_reg_gas.fit(gas_train_batches_x,
+                                gas_train_batches_y,
+                                epochs=number_of_epochs,
+                                batch_size=batch_size,
+                                verbose=False,
+                                validation_data=(gas_test_batches_x, gas_test_batches_y),
+                                callbacks=[early_stopping])
+
+def history_plot_separate(history_no_reg, history_reg):
+    # Get the history dictionaries
+    history_dict_no_reg = history_no_reg.history
+    history_dict_reg = history_reg.history
+    
+    # Get the loss values and epochs for both models
+    loss_values_no_reg = history_dict_no_reg['loss']
+    val_loss_values_no_reg = history_dict_no_reg['val_loss']
+    loss_values_reg = history_dict_reg['loss']
+    val_loss_values_reg = history_dict_reg['val_loss']
+    
+    # Determine the number of epochs the training actually ran for
+    epochs_no_reg = range(1, len(loss_values_no_reg) + 1)
+    epochs_reg = range(1, len(loss_values_reg) + 1)
+    
+    # Plot for non-regularized model
+    plt.figure()
+    plt.plot(epochs_no_reg, loss_values_no_reg, 'bo-', label='Training Loss (No Reg)')
+    plt.plot(epochs_no_reg, val_loss_values_no_reg, 'b-', label='Validation Loss (No Reg)')
+    plt.title('Training and Validation Loss for Non-Regularized Model')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.show()
+
+    # Plot for regularized model
+    plt.figure()
+    plt.plot(epochs_reg, loss_values_reg, 'ro-', label='Training Loss (Reg)')
+    plt.plot(epochs_reg, val_loss_values_reg, 'r-', label='Validation Loss (Reg)')
+    plt.title('Training and Validation Loss for Regularized Model')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.show()
+
+# Call the function to plot the history separately
+history_plot_separate(history_gas_no_reg, history_gas_reg)
+
+```
+
+
+
+
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
+# PREDICTIONS
+Ytp_gas_no_reg = model_no_reg_gas.predict(gas_train_batches_x)
+Yvp_gas_no_reg = model_no_reg_gas.predict(gas_test_batches_x)
+Ytp_gas_reg = model_reg_gas.predict(gas_train_batches_x)
+Yvp_gas_reg = model_reg_gas.predict(gas_test_batches_x)
+
+def regression_report(yt, ytp, yv, yvp, model_name):
+    print(f"--------- Regression Report ({model_name}) ---------")
+    print("TRAINING:")
+    train_mse = np.mean((yt - ytp) ** 2)
+    train_mae = np.mean(np.abs(yt - ytp))
+    print("MSE", train_mse)
+    print("MAE", train_mae)
+
+    # PARITY PLOT
+    fig, ax = plt.subplots()
+    ax.plot(yt, ytp, 'ro')
+    ax.plot(yt, yt, 'b-')
+    ax.set(xlabel='Actual Natural Gas Prices', ylabel='Predicted Natural Gas Prices',
+           title=f'Training Data Parity Plot ({model_name})')
+    plt.show()
+
+    # PLOT PART OF THE PREDICTED TIME-SERIES
+    frac_plot = 1.0
+    upper = int(frac_plot * yt.shape[0])
+    fig, ax = plt.subplots()
+    ax.plot(yt[0:upper], 'b-')
+    ax.plot(ytp[0:upper], 'r-', alpha=0.5)
+    ax.plot(ytp[0:upper], 'ro', alpha=0.25)
+    ax.set(xlabel='Time', ylabel='Natural Gas Prices (Blue=Actual & Red=Prediction)',
+           title=f'Training: Time-Series Prediction ({model_name})')
+    plt.show()
+
+    print("VALIDATION:")
+    val_mse = np.mean((yv - yvp) ** 2)
+    val_mae = np.mean(np.abs(yv - yvp))
+    print("MSE", val_mse)
+    print("MAE", val_mae)
+
+    # PARITY PLOT
+    fig, ax = plt.subplots()
+    ax.plot(yv, yvp, 'ro')
+    ax.plot(yv, yv, 'b-')
+    ax.set(xlabel='Actual Natural Gas Prices', ylabel='Predicted Natural Gas Prices',
+           title=f'Validation Data Parity Plot ({model_name})')
+    plt.show()
+
+    # PLOT PART OF THE PREDICTED TIME-SERIES
+    upper = int(frac_plot * yv.shape[0])
+    fig, ax = plt.subplots()
+    ax.plot(yv[0:upper], 'b-')
+    ax.plot(yvp[0:upper], 'r-', alpha=0.5)
+    ax.plot(yvp[0:upper], 'ro', alpha=0.25)
+    ax.set(xlabel='Time', ylabel='Natural Gas Prices (Blue=Actual & Red=Prediction)',
+           title=f'Validation: Time-Series Prediction ({model_name})')
+    plt.show()
+
+    return train_mse, train_mae, val_mse, val_mae
+
+# Regression report for the non-regularized model
+train_mse_no_reg_gas, train_mae_no_reg_gas, val_mse_no_reg_gas, val_mae_no_reg_gas = regression_report(gas_train_batches_y, Ytp_gas_no_reg, gas_test_batches_y, Yvp_gas_no_reg, "Non-Regularized Model")
+
+# Regression report for the regularized model
+train_mse_reg_gas, train_mae_reg_gas, val_mse_reg_gas, val_mae_reg_gas = regression_report(gas_train_batches_y, Ytp_gas_reg, gas_test_batches_y, Yvp_gas_reg, "Regularized Model")
+```
+
+
+
 
 
 
@@ -1076,6 +1380,7 @@ train_mse_reg, train_mae_reg, val_mse_reg, val_mae_reg = regression_report(train
 ```
 
 
+:::
 
 
 
@@ -1089,6 +1394,53 @@ Now, we will move forward to fit an ARCH/GARCH model to the stock price data. Th
 
 ## Crude Oil
 
+### Hyperparameter
+
+```{python}
+from scikeras.wrappers import KerasRegressor
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import LSTM, Dense
+from sklearn.model_selection import RandomizedSearchCV
+import numpy as np
+
+# # Define the number of features
+# #features = 1
+# 
+# # Model definition function
+# def get_model(optimizer="adam", units=50, L2=0.01):
+#     model = Sequential()
+#     model.add(LSTM(units, input_shape=(lookback, features), activation='relu', 
+#                    recurrent_regularizer=regularizers.l2(L2)))
+#     model.add(Dense(1, activation='linear'))
+#     model.compile(loss="mse", optimizer=optimizer)
+#     return model
+# 
+# # Create the SciKeras wrapper and specify training-related parameters
+# model = KerasRegressor(model=get_model, model__optimizer="adam", model__units=50, model__L2=0.01)
+# 
+# # Define the hyperparameter space to search
+# param_dist = {
+#     'model__optimizer': ['adam', 'rmsprop'],
+#     'model__units': [30, 50, 100],
+#     'model__L2': [0.01, 0.001, 0.0001],
+#     'batch_size': [32, 64, 128],
+#     'epochs': [50, 100, 200]
+# }
+# 
+# X_train = oil_train_batches_x
+# y_train = oil_train_batches_y
+# 
+# # Initialize and fit the RandomizedSearchCV
+# random_search = RandomizedSearchCV(estimator=model, param_distributions=param_dist, n_iter=10, cv=3)
+# random_search.fit(X_train, y_train)
+# 
+# # Print the best score and parameters
+# print("Best score: %f using %s" % (random_search.best_score_, random_search.best_params_))
+```
+
+
+
+
 
 ```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
@@ -1101,41 +1453,40 @@ optimizer = "rmsprop"
 loss_function = "MeanSquaredError"
 learning_rate = 0.001
 numbers_epochs = 200
-L2_reg = 0.01
+L2_reg = 0.001
 L2_no_reg = 0
-
-input_shape = (trainX.shape[1], trainX.shape[2])
+input_shape = (oil_train_batches_x.shape[1], 1) 
 
 
 # ------ Choose the batch size ------
-batch_size = 1  # stocastic training
-# batch_size = int(len(trainX) / 2.)  # mini-batch training
-# batch_size = len(trainX)  # batch training
+# batch_size = 1 # stochastic training
+# batch_size = int(len(trainX) / 2.) # mini-batch training
+batch_size = 64 # Update based on the best hyperparameters
 
 # BUILD MODEL
-recurrent_hidden_units = 32
+recurrent_hidden_units = 100 # Update based on the best hyperparameters
 
 # CREATE MODEL WITHOUT REGULARIZATION
-model_no_reg = keras.Sequential()
-model_no_reg.add(LSTM(
+model_no_reg_l = keras.Sequential()
+model_no_reg_l.add(Input(shape=input_shape))
+model_no_reg_l.add(LSTM(
     units=recurrent_hidden_units,
     return_sequences=False,
-    input_shape=input_shape,
     recurrent_regularizer=regularizers.L2(L2_no_reg),
     activation='relu'
 ))
-model_no_reg.add(Dense(units=1, activation='linear'))
+model_no_reg_l.add(Dense(units=1, activation='linear'))
 
 # CREATE MODEL WITH REGULARIZATION
-model_reg = keras.Sequential()
-model_reg.add(LSTM(
+model_reg_l = keras.Sequential()
+model_reg_l.add(Input(shape=input_shape))
+model_reg_l.add(LSTM(
     units=recurrent_hidden_units,
     return_sequences=False,
-    input_shape=input_shape,
     recurrent_regularizer=regularizers.L2(L2_reg),
     activation='relu'
 ))
-model_reg.add(Dense(units=1, activation='linear'))
+model_reg_l.add(Dense(units=1, activation='linear'))
 
 ```
 
@@ -1151,9 +1502,9 @@ model_reg.add(Dense(units=1, activation='linear'))
 
 # MODEL SUMMARY
 print("LSTM Model without regularization:")
-print(model_no_reg.summary())
+print(model_no_reg_l.summary())
 print("LSTM Model with regularization:")
-print(model_reg.summary())
+print(model_reg_l.summary())
 ```
 
 
@@ -1165,33 +1516,7 @@ print(model_reg.summary())
 #| output: true
 
 
-# COMPILING THE MODELS
-opt_no_reg = keras.optimizers.RMSprop(learning_rate=learning_rate)
-opt_reg = keras.optimizers.RMSprop(learning_rate=learning_rate)
-model_no_reg.compile(optimizer=opt_no_reg, loss=loss_function)
-model_reg.compile(optimizer=opt_reg, loss=loss_function)
 
-# TRAINING THE MODELS
-history_oil_no_reg = model_no_reg.fit(
-    trainX,
-    trainY,
-    epochs=numbers_epochs,
-    batch_size=batch_size,
-    verbose=False,
-    validation_data=(testX, testY)
-)
-
-history_oil_reg = model_reg.fit(
-    trainX,
-    trainY,
-    epochs=numbers_epochs,
-    batch_size=batch_size,
-    verbose=False,
-    validation_data=(testX, testY)
-)
-
-# History plot
-history_plot(history_oil_no_reg, history_oil_reg)
 
 ```
 
@@ -1204,11 +1529,7 @@ history_plot(history_oil_no_reg, history_oil_reg)
 #| output: true
 
 
-# MODEL SUMMARY
-print("LSTM Model without regularization:")
-print(model_no_reg.summary())
-print("LSTM Model with regularization:")
-print(model_reg.summary())
+
 ```
 
 
@@ -1267,7 +1588,7 @@ print(model_reg.summary())
 
 
 
-
+:::
 
 
 
@@ -1344,81 +1665,13 @@ Now, we will move forward to fit an ARCH/GARCH model to the stock price data. Th
 
 
 
-
+:::
 
 
 
 # 8. Discussion
 
 Now, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.
-
-
-::: panel-tabset
-
-## Crude Oil
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-
-## Natural Gas
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-
-## Electricity
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-## GDP
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-## CPI
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
 
 
 
@@ -1429,147 +1682,12 @@ Now, we will move forward to fit an ARCH/GARCH model to the stock price data. Th
 Now, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.
 
 
-::: panel-tabset
-
-## Crude Oil
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-
-## Natural Gas
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-
-## Electricity
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-## GDP
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-## CPI
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
 
 
 
 ## 8.2 What effect does including regularization have on your results?
 
 Now, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.
-
-
-::: panel-tabset
-
-## Crude Oil
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-
-## Natural Gas
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-
-## Electricity
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-## GDP
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-## CPI
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
 
 
 
@@ -1584,74 +1702,6 @@ Now, we will move forward to fit an ARCH/GARCH model to the stock price data. Th
 Now, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.
 
 
-::: panel-tabset
-
-## Crude Oil
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-
-## Natural Gas
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-
-## Electricity
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-## GDP
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-## CPI
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
 
 
 
@@ -1662,74 +1712,6 @@ Now, we will move forward to fit an ARCH/GARCH model to the stock price data. Th
 Now, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.
 
 
-::: panel-tabset
-
-## Crude Oil
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-
-## Natural Gas
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-
-## Electricity
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-## GDP
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-## CPI
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
 
 
 
@@ -1737,70 +1719,4 @@ Now, we will move forward to fit an ARCH/GARCH model to the stock price data. Th
 
 Now, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.
 
-
-::: panel-tabset
-
-## Crude Oil
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-
-## Natural Gas
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-
-## Electricity
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-## GDP
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
-
-
-
-## CPI
-
-
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
-
-```
 

@@ -23,7 +23,7 @@ website:
         text: Multivariate TS Models (ARIMAX/SARIMAX/VAR)
       - href: financial-ts-models.qmd
         text: Financial Time Series Models (ARCH/GARCH)
-      - href: deep-learning-ts.qmd
+      - href: deep-learning-ts.ipynb
         text: Deep Learning for TS
       - href: conclusions.qmd
         text: Conclusions

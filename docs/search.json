@@ -60,7 +60,7 @@
     "href": "deep-learning-ts.html",
     "title": "Deep Learning for TS",
     "section": "",
-    "text": "{r, warning=FALSE, message=FALSE, echo=FALSE} #| code-fold: true #| code-summary: 'Importing Libraries' #| warning: false #| output: false library(ggplot2) library(readr) library(tidyverse) library(lubridate) library(forecast) library(tseries) library(plotly) library(gridExtra) library(zoo) library(astsa) library(ggplot2) library(zoo) library(plotly) library(vars) library(dplyr) library(quantmod) library(FinTS) library(gogarch) library(scales) library(reticulate)\n```{r, warning=FALSE, message=FALSE, echo=FALSE} #| code-fold: true #| code-summary: ‘Importing Libraries’ #| warning: false #| output: false\nlibrary(reticulate) use_python(“/Users/madhvimalhotra/myenv/bin/python”, required = TRUE)\n:::\n```{r, warning=FALSE, message=FALSE, echo=FALSE} #| code-fold: true #| code-summary: ‘Read data’ #| warning: false #| output: false\ncomposite_crude_oil_prices &lt;- read.csv(“data/composite_crude_oil_prices.csv”) citygate_gas_prices &lt;- read.csv(“data/citygate_gas_prices.csv”) total_electricity_prices &lt;- read.csv(“data/total_electricity_prices.csv”) gdp_data &lt;- read.csv(“data/gdp_data.csv”) cpi_data &lt;- read.csv(“data/cpi_data.csv”)"
+    "text": "Time series forecasting plays a pivotal role in various domains, including economics, finance, and business operations. Accurately predicting future trends based on historical data can provide valuable insights for decision-making and strategic planning. Traditionally, statistical methods such as Autoregressive Integrated Moving Average (ARIMA) models have been widely employed for time series analysis. However, these conventional approaches often struggle to capture intricate patterns, non-linear relationships, and long-term dependencies present in complex time series data.\nIn recent years, deep learning techniques have emerged as powerful alternatives, offering new avenues for time series forecasting. Neural networks, with their ability to learn from data and uncover intricate patterns, have shown remarkable potential in handling sequential data and capturing temporal dependencies. This exploration focuses on three prominent deep learning architectures: Recurrent Neural Networks (RNNs), Long Short-Term Memory Networks (LSTMs), and Gated Recurrent Units (GRUs), each designed to tackle the unique challenges of time series data.\nThe objective of this study is to evaluate the performance of these deep learning models in forecasting [specify the time series data or domain, e.g., energy prices, stock market trends, or sales data]. By leveraging their capability to handle complex non-linear relationships and long-term dependencies, we aim to enhance our forecasting accuracy and extend the predictive horizon compared to traditional methods.\nFurthermore, this exploration will provide insights into the relative strengths and weaknesses of each neural network architecture, informing future decisions on selecting the most suitable approach for specific time series forecasting tasks. We will thoroughly analyze and compare the accuracy, predictive power, and generalization capabilities of RNNs, LSTMs, and GRUs, offering a comprehensive understanding of their applicability in the realm of time series analysis.\nBy embracing deep learning techniques, we strive to push the boundaries of time series forecasting, enabling more informed decision-making and strategic planning across various industries and domains. This study will contribute to the growing body of knowledge in the field, advancing our understanding of the potential and limitations of deep learning for time series analysis."
   },
   {
     "objectID": "deep-learning-ts.html#crude-oil",
@@ -102,203 +102,203 @@
     "href": "deep-learning-ts.html#crude-oil-1",
     "title": "Deep Learning for TS",
     "section": "Crude Oil",
-    "text": "Crude Oil\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true"
+    "text": "Crude Oil\n\n\nCode\n# Normalize the crude oil data\noil_normalized = (composite_crude_oil_prices['Value'] - composite_crude_oil_prices['Value'].mean()) / composite_crude_oil_prices['Value'].std()\n\n# Split data into training and testing\nsplit_index = int(0.8 * len(oil_normalized))\noil_train = oil_normalized[:split_index]\noil_test = oil_normalized[split_index:]\n\n# Print the shapes\nprint(\"Shape of the Crude Oil Data:\", len(oil_normalized))\n\n\nShape of the Crude Oil Data: 408\n\n\nCode\nprint(\"Shape of the Crude Oil Train Data:\", len(oil_train))\n\n\nShape of the Crude Oil Train Data: 326\n\n\nCode\nprint(\"Shape of the Crude Oil Test Data:\", len(oil_test))\n\n\nShape of the Crude Oil Test Data: 82\n\n\nCode\n# Prepare data for plotting\ntrain_dates = composite_crude_oil_prices['Date'].iloc[:split_index]\ntest_dates = composite_crude_oil_prices['Date'].iloc[split_index:]\n\noil_data = pd.DataFrame({\n    'Date': pd.concat([train_dates, test_dates]),\n    'Value': pd.concat([oil_train, oil_test]),\n    'Set': ['Training'] * len(oil_train) + ['Testing'] * len(oil_test)\n})\n\n# Plot the training and testing sets\noil_plot1 = px.area(oil_data, x='Date', y='Value', color='Set', title='Crude Oil Training and Testing Sets',\n                    labels={'Value': 'Normalized Crude Oil Prices'}, template='plotly_white')\noil_plot1.update_layout(title_x=0.5)"
   },
   {
     "objectID": "deep-learning-ts.html#natural-gas-1",
     "href": "deep-learning-ts.html#natural-gas-1",
     "title": "Deep Learning for TS",
     "section": "Natural Gas",
-    "text": "Natural Gas\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\ngas_train &lt;- as.matrix(gas_train) gas_test &lt;- as.matrix(gas_test) gas_train_batches &lt;- form_arrays(gas_train, lookback = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1) gas_test_batches &lt;- form_arrays(gas_test, lookback = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)"
+    "text": "Natural Gas\n\n\nCode\n# Normalize the natural gas data\ngas_normalized = (citygate_gas_prices['Value'] - citygate_gas_prices['Value'].mean()) / citygate_gas_prices['Value'].std()\n\n# Split data into training and testing\nsplit_index = int(0.8 * len(gas_normalized))\ngas_train = gas_normalized[:split_index]\ngas_test = gas_normalized[split_index:]\n\n# Print the shapes\nprint(\"Shape of the Natural Gas Data:\", len(gas_normalized))\n\n\nShape of the Natural Gas Data: 407\n\n\nCode\nprint(\"Shape of the Natural Gas Train Data:\", len(gas_train))\n\n\nShape of the Natural Gas Train Data: 325\n\n\nCode\nprint(\"Shape of the Natural Gas Test Data:\", len(gas_test))\n\n\nShape of the Natural Gas Test Data: 82\n\n\nCode\n# Prepare data for plotting\ntrain_dates_gas = citygate_gas_prices['Date'].iloc[:split_index]\ntest_dates_gas = citygate_gas_prices['Date'].iloc[split_index:]\n\ngas_data = pd.DataFrame({\n    'Date': pd.concat([train_dates_gas, test_dates_gas]),\n    'Value': pd.concat([gas_train, gas_test]),\n    'Set': ['Training'] * len(gas_train) + ['Testing'] * len(gas_test)\n})\n\n# Plot the training and testing sets\ngas_plot = px.area(gas_data, x='Date', y='Value', color='Set', title='Natural Gas Training and Testing Sets',\n                   labels={'Value': 'Normalized Natural Gas Prices'}, template='plotly_white')\ngas_plot.update_layout(title_x=0.5)"
   },
   {
     "objectID": "deep-learning-ts.html#gdp-1",
     "href": "deep-learning-ts.html#gdp-1",
     "title": "Deep Learning for TS",
     "section": "GDP",
-    "text": "GDP\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\ngdp_train &lt;- as.matrix(gdp_train) gdp_test &lt;- as.matrix(gdp_test) gdp_train_batches &lt;- form_arrays(gdp_train, lookback = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1) gdp_test_batches &lt;- form_arrays(gdp_test, lookback = lookback, delay = 1, step = 1, feature_columns = 1, target_columns = 1)"
+    "text": "GDP\n\n\nCode\n# Normalize the GDP data\ngdp_normalized = (gdp_data['GDP'] - gdp_data['GDP'].mean()) / gdp_data['GDP'].std()\n\n# Split data into training and testing\nsplit_index = int(0.8 * len(gdp_normalized))\ngdp_train = gdp_normalized[:split_index]\ngdp_test = gdp_normalized[split_index:]\n\n# Print the shapes\nprint(\"Shape of the GDP Data:\", len(gdp_normalized))\n\n\nShape of the GDP Data: 136\n\n\nCode\nprint(\"Shape of the GDP Train Data:\", len(gdp_train))\n\n\nShape of the GDP Train Data: 108\n\n\nCode\nprint(\"Shape of the GDP Test Data:\", len(gdp_test))\n\n\nShape of the GDP Test Data: 28\n\n\nCode\n# Prepare data for plotting\ntrain_dates_gdp = gdp_data['DATE'].iloc[:split_index]\ntest_dates_gdp = gdp_data['DATE'].iloc[split_index:]\n\ngdp_data_plot = pd.DataFrame({\n    'Date': pd.concat([train_dates_gdp, test_dates_gdp]),\n    'Value': pd.concat([gdp_train, gdp_test]),\n    'Set': ['Training'] * len(gdp_train) + ['Testing'] * len(gdp_test)\n})\n\n# Plot the training and testing sets\ngdp_plot1 = px.area(gdp_data_plot, x='Date', y='Value', color='Set', title='GDP Training and Testing Sets',\n                    labels={'Value': 'Normalized GDP'}, template='plotly_white')\ngdp_plot1.update_layout(title_x=0.5)"
   },
   {
     "objectID": "deep-learning-ts.html#crude-oil-2",
     "href": "deep-learning-ts.html#crude-oil-2",
     "title": "Deep Learning for TS",
     "section": "Crude Oil",
-    "text": "Crude Oil\n\n\nCode\n# Load the mini-batches from .npy files\ntrainX = np.load(\"oil_train_batches_x.npy\")\ntrainY = np.load(\"oil_train_batches_y.npy\")\ntestX = np.load(\"oil_test_batches_x.npy\")\ntestY = np.load(\"oil_test_batches_y.npy\")\n\nXt1_oil = trainX.reshape(trainX.shape[0], trainX.shape[1] * trainX.shape[2])\noptimizer = \"rmsprop\"\nloss_function = \"MeanSquaredError\"\nlearning_rate = 0.001\nnumber_of_epochs = 200\nL2 = 0.01  # Regularization strength\ninput_shape = (trainX.shape[1], trainX.shape[2])\n\n\n# ------ Choose the batch size ------\n#batch_size=1                       # stocastic training\n#batch_size=int(len(Xt1_oil)/2.)    # mini-batch training\nbatch_size=len(Xt1_oil)              # batch training\n\n# BUILD MODEL\nrecurrent_hidden_units = 30\n\n# CREATE MODEL\nmodel_no_reg = keras.Sequential()\n\n# ADD RECURRENT LAYER\n\n# #COMMENT/UNCOMMENT TO USE RNN, LSTM,GRU\n#model.add(LSTM(\n#model.add(GRU(\nmodel_no_reg.add(SimpleRNN(\nunits=recurrent_hidden_units,\nreturn_sequences=False,\ninput_shape=input_shape, \n# recurrent_dropout=0.8,\n#recurrent_regularizer=regularizers.L2(L2),\nactivation='relu')\n          ) \n\n#CREATE MODEL WITH REGULARIZATION\nmodel_reg = keras.Sequential()\nmodel_reg.add(SimpleRNN(\nunits=recurrent_hidden_units,\nreturn_sequences=False,\ninput_shape=input_shape,\nrecurrent_regularizer=regularizers.L2(L2),\nactivation='relu'\n))\n     \n# NEED TO TAKE THE OUTPUT RNN AND CONVERT TO SCALAR \nmodel_no_reg.add(Dense(units=1, activation='linear'))\nmodel_reg.add(Dense(units=1, activation='linear'))\n\n\n\n\nCode\n# MODEL SUMMARY\nprint(\"Model without regularization:\")\nprint(model_no_reg.summary())\n\nprint(\"Model with regularization:\")\nprint(model_reg.summary())\n\n\nModel without regularization:\nModel: \"sequential\"\n_________________________________________________________________\n Layer (type)                Output Shape              Param #   \n=================================================================\n simple_rnn (SimpleRNN)      (None, 30)                960       \n                                                                 \n dense (Dense)               (None, 1)                 31        \n                                                                 \n=================================================================\nTotal params: 991 (3.87 KB)\nTrainable params: 991 (3.87 KB)\nNon-trainable params: 0 (0.00 Byte)\n_________________________________________________________________\nNone\nModel with regularization:\nModel: \"sequential_1\"\n_________________________________________________________________\n Layer (type)                Output Shape              Param #   \n=================================================================\n simple_rnn_1 (SimpleRNN)    (None, 30)                960       \n                                                                 \n dense_1 (Dense)             (None, 1)                 31        \n                                                                 \n=================================================================\nTotal params: 991 (3.87 KB)\nTrainable params: 991 (3.87 KB)\nNon-trainable params: 0 (0.00 Byte)\n_________________________________________________________________\nNone\n\n\n\n\nCode\n# # print(\"initial parameters:\", model.get_weights())\n\n# COMPILING THE MODELS\nmodel_no_reg.compile(optimizer=RMSprop(learning_rate=learning_rate), loss=loss_function)\nmodel_reg.compile(optimizer=RMSprop(learning_rate=learning_rate), loss=loss_function)\n\nearly_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)\n\n# TRAINING THE MODELS\nhistory_oil_no_reg = model_no_reg.fit(trainX,\n                                      trainY,\n                                      epochs=number_of_epochs,\n                                      batch_size=batch_size,\n                                      verbose=False,\n                                      validation_data=(testX, testY),\n                                      callbacks=[early_stopping])\n\nhistory_oil_reg = model_reg.fit(trainX,\n                                trainY,\n                                epochs=number_of_epochs,\n                                batch_size=batch_size,\n                                verbose=False,\n                                validation_data=(testX, testY),\n                                callbacks=[early_stopping])\n\ndef history_plot(history_no_reg, history_reg):\n    FS = 18  # fontsize\n    \n    # Get the history dictionaries\n    history_dict_no_reg = history_no_reg.history\n    history_dict_reg = history_reg.history\n    \n    # Get the loss values and epochs for both models\n    loss_values_no_reg = history_dict_no_reg['loss']\n    val_loss_values_no_reg = history_dict_no_reg['val_loss']\n    loss_values_reg = history_dict_reg['loss']\n    val_loss_values_reg = history_dict_reg['val_loss']\n    epochs = range(1, len(loss_values_no_reg) + 1)\n    \n    # Create a new figure\n    plt.figure(figsize=(12, 6))\n    \n    # Plot the training and validation loss for the non-regularized model\n    plt.plot(epochs, loss_values_no_reg, 'bo', label='Training Loss (No Reg)')\n    plt.plot(epochs, val_loss_values_no_reg, 'b', label='Validation Loss (No Reg)')\n    \n    # Plot the training and validation loss for the regularized model\n    plt.plot(epochs, loss_values_reg, 'ro', label='Training Loss (Reg)')\n    plt.plot(epochs, val_loss_values_reg, 'r', label='Validation Loss (Reg)')\n    \n    # Add labels and legend\n    plt.title('Training and Validation Loss')\n    plt.xlabel('Epochs')\n    plt.ylabel('Loss')\n    plt.legend()\n    \n    # Show the plot\n    plt.show()\n\n# History plot\nhistory_plot(history_oil_no_reg, history_oil_reg)\n\n\nWARNING:absl:At this time, the v2.11+ optimizer `tf.keras.optimizers.RMSprop` runs slowly on M1/M2 Macs, please use the legacy Keras optimizer instead, located at `tf.keras.optimizers.legacy.RMSprop`.\nWARNING:absl:There is a known slowdown when using v2.11+ Keras optimizers on M1/M2 Macs. Falling back to the legacy Keras optimizer, i.e., `tf.keras.optimizers.legacy.RMSprop`.\nWARNING:absl:At this time, the v2.11+ optimizer `tf.keras.optimizers.RMSprop` runs slowly on M1/M2 Macs, please use the legacy Keras optimizer instead, located at `tf.keras.optimizers.legacy.RMSprop`.\nWARNING:absl:There is a known slowdown when using v2.11+ Keras optimizers on M1/M2 Macs. Falling back to the legacy Keras optimizer, i.e., `tf.keras.optimizers.legacy.RMSprop`.\n\n\n\n\n\n\n\n\n\n\n\nCode\n# PREDICTIONS\nYtp_oil_no_reg = model_no_reg.predict(trainX)\nYvp_oil_no_reg = model_no_reg.predict(testX)\n\nYtp_oil_reg = model_reg.predict(trainX)\nYvp_oil_reg = model_reg.predict(testX)\n\n\n 1/10 [==&gt;...........................] - ETA: 0s\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b10/10 [==============================] - 0s 515us/step\n1/3 [=========&gt;....................] - ETA: 0s\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b3/3 [==============================] - 0s 736us/step\n 1/10 [==&gt;...........................] - ETA: 0s\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b10/10 [==============================] - 0s 426us/step\n1/3 [=========&gt;....................] - ETA: 0s\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b3/3 [==============================] - 0s 564us/step\n\n\n\n\nCode\ndef regression_report(yt, ytp, yv, yvp, model_name):\n    print(f\"--------- Regression Report ({model_name}) ---------\")\n    print(\"TRAINING:\")\n    train_mse = np.mean((yt - ytp) ** 2)\n    train_mae = np.mean(np.abs(yt - ytp))\n    print(\"MSE\", train_mse)\n    print(\"MAE\", train_mae)\n    \n    # PARITY PLOT\n    fig, ax = plt.subplots()\n    ax.plot(yt, ytp, 'ro')\n    ax.plot(yt, yt, 'b-')\n    ax.set(xlabel='Actual Crude Oil Prices', ylabel='Predicted Crude Oil Prices',\n           title=f'Training Data Parity Plot ({model_name})')\n    plt.show()\n    \n    # PLOT PART OF THE PREDICTED TIME-SERIES\n    frac_plot = 1.0\n    upper = int(frac_plot * yt.shape[0])\n    fig, ax = plt.subplots()\n    ax.plot(yt[0:upper], 'b-')\n    ax.plot(ytp[0:upper], 'r-', alpha=0.5)\n    ax.plot(ytp[0:upper], 'ro', alpha=0.25)\n    ax.set(xlabel='Time', ylabel='Crude Oil Prices (Blue=Actual & Red=Prediction)',\n           title=f'Training: Time-Series Prediction ({model_name})')\n    plt.show()\n    \n    print(\"VALIDATION:\")\n    val_mse = np.mean((yv - yvp) ** 2)\n    val_mae = np.mean(np.abs(yv - yvp))\n    print(\"MSE\", val_mse)\n    print(\"MAE\", val_mae)\n    \n    # PARITY PLOT\n    fig, ax = plt.subplots()\n    ax.plot(yv, yvp, 'ro')\n    ax.plot(yv, yv, 'b-')\n    ax.set(xlabel='Actual Crude Oil Prices', ylabel='Predicted Crude Oil Prices',\n           title=f'Validation Data Parity Plot ({model_name})')\n    plt.show()\n    \n    # PLOT PART OF THE PREDICTED TIME-SERIES\n    upper = int(frac_plot * yv.shape[0])\n    fig, ax = plt.subplots()\n    ax.plot(yv[0:upper], 'b-')\n    ax.plot(yvp[0:upper], 'r-', alpha=0.5)\n    ax.plot(yvp[0:upper], 'ro', alpha=0.25)\n    ax.set(xlabel='Time', ylabel='Crude Oil Prices (Blue=Actual & Red=Prediction)',\n           title=f'Validation: Time-Series Prediction ({model_name})')\n    plt.show()\n    \n    return train_mse, train_mae, val_mse, val_mae\n\n# Regression report for the non-regularized model\ntrain_mse_no_reg, train_mae_no_reg, val_mse_no_reg, val_mae_no_reg = regression_report(trainY, Ytp_oil_no_reg, testY, Yvp_oil_no_reg, \"Non-Regularized Model\")\n\n# Regression report for the regularized model\ntrain_mse_reg, train_mae_reg, val_mse_reg, val_mae_reg = regression_report(trainY, Ytp_oil_reg, testY, Yvp_oil_reg, \"Regularized Model\")\n\n\n--------- Regression Report (Non-Regularized Model) ---------\nTRAINING:\nMSE 1.3641526161138178\nMAE 1.0740010830862619\nVALIDATION:\nMSE 0.3926946168942365\nMAE 0.47367857545491193\n--------- Regression Report (Regularized Model) ---------\nTRAINING:\nMSE 1.2809680164599633\nMAE 0.9898398005377544\nVALIDATION:\nMSE 0.5934448110565091\nMAE 0.601928361317063"
+    "text": "Crude Oil\n\n\nCode\ndef form_arrays(x, lookback=3, delay=1, step=1, feature_columns=[0], target_columns=[0], unique=False, verbose=False):\n    count = 0\n    x_out = []\n    y_out = []\n    i_start = 0\n\n    # Adjust the stopping condition for the loop to account for delay\n    while i_start + lookback + delay - 1 &lt; len(x):\n        i_stop = i_start + lookback\n        i_pred = i_stop + delay - 1  # Subtract 1 to stay within bounds\n        indices_to_keep = list(range(i_start, i_stop, step))\n        xtmp = x[indices_to_keep]  # No need for [:, feature_columns]\n        ytmp = x[i_pred]  # No need for [:, target_columns]\n        x_out.append(xtmp)\n        y_out.append(ytmp)\n\n        if verbose and count &lt; 2:\n            plt.plot(np.arange(len(x)), x, 'b-', label='Value')\n            plt.scatter(indices_to_keep, xtmp, color='green', label='Features', marker='o')\n            plt.scatter(i_pred, ytmp, color='red', label='Target', marker='o')\n            plt.xlabel('Index')\n            plt.ylabel('Value')\n            plt.legend()\n            plt.show()\n\n        # Update start point\n        if unique:\n            i_start += lookback\n        else:\n            i_start += step\n        count += 1\n\n    return np.array(x_out), np.array(y_out)\n\n\n\nlookback = 5\n\n# Convert to numpy arrays\noil_train = np.array(oil_train)\noil_test = np.array(oil_test)\n\n# Create mini-batches\noil_train_batches_x, oil_train_batches_y = form_arrays(oil_train, lookback=lookback, delay=1, step=1, feature_columns=[0], target_columns=[0])\noil_test_batches_x, oil_test_batches_y = form_arrays(oil_test, lookback=lookback, delay=1, step=1, feature_columns=[0], target_columns=[0])\n\n# Print shapes\nprint(f\"Train shape: {oil_train_batches_x.shape}, {oil_train_batches_y.shape}\")\n\n\nTrain shape: (321, 5), (321,)\n\n\nCode\nprint(f\"Test shape: {oil_test_batches_x.shape}, {oil_test_batches_y.shape}\")\n\n\nTest shape: (77, 5), (77,)"
   },
   {
     "objectID": "deep-learning-ts.html#natural-gas-2",
     "href": "deep-learning-ts.html#natural-gas-2",
     "title": "Deep Learning for TS",
     "section": "Natural Gas",
-    "text": "Natural Gas\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n\n## Electricity\n\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "Natural Gas\n\n\nCode\n# Convert to numpy arrays\ngas_train = np.array(gas_train)\ngas_test = np.array(gas_test)\n\n# Create mini-batches\ngas_train_batches_x, gas_train_batches_y = form_arrays(gas_train, lookback=lookback, delay=1, step=1, feature_columns=[0], target_columns=[0])\ngas_test_batches_x, gas_test_batches_y = form_arrays(gas_test, lookback=lookback, delay=1, step=1, feature_columns=[0], target_columns=[0])\n\n# Display the shape\nprint(f\"Natural Gas Train shape: {gas_train_batches_x.shape}, {gas_train_batches_y.shape}\")\n\n\nNatural Gas Train shape: (320, 5), (320,)\n\n\nCode\nprint(f\"Natural Gas Test shape: {gas_test_batches_x.shape}, {gas_test_batches_y.shape}\")\n\n\nNatural Gas Test shape: (77, 5), (77,)"
   },
   {
     "objectID": "deep-learning-ts.html#gdp-2",
     "href": "deep-learning-ts.html#gdp-2",
     "title": "Deep Learning for TS",
     "section": "GDP",
-    "text": "GDP\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n## CPI\n\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "GDP\n\n\nCode\n# Convert to numpy arrays\ngdp_train = np.array(gdp_train)\ngdp_test = np.array(gdp_test)\n\n# Create mini-batches\ngdp_train_batches_x, gdp_train_batches_y = form_arrays(gdp_train, lookback=lookback, delay=1, step=1, feature_columns=[0], target_columns=[0])\ngdp_test_batches_x, gdp_test_batches_y = form_arrays(gdp_test, lookback=lookback, delay=1, step=1, feature_columns=[0], target_columns=[0])\n\n# Display the shape\nprint(f\"GDP Train shape: {gdp_train_batches_x.shape}, {gdp_train_batches_y.shape}\")\n\n\nGDP Train shape: (103, 5), (103,)\n\n\nCode\nprint(f\"GDP Test shape: {gdp_test_batches_x.shape}, {gdp_test_batches_y.shape}\")\n\n\nGDP Test shape: (23, 5), (23,)"
   },
   {
     "objectID": "deep-learning-ts.html#crude-oil-3",
     "href": "deep-learning-ts.html#crude-oil-3",
     "title": "Deep Learning for TS",
     "section": "Crude Oil",
-    "text": "Crude Oil"
+    "text": "Crude Oil\n\n\nCode\n# MODEL SUMMARY\nprint(\"Model without regularization:\")\n\n\nModel without regularization:\n\n\nCode\nprint(model_no_reg.summary())\n\n\nModel: \"sequential_1\"\n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓\n┃ Layer (type)                    ┃ Output Shape           ┃       Param # ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩\n│ simple_rnn (SimpleRNN)          │ (None, 30)             │           960 │\n├─────────────────────────────────┼────────────────────────┼───────────────┤\n│ dense (Dense)                   │ (None, 1)              │            31 │\n├─────────────────────────────────┼────────────────────────┼───────────────┤\n│ dense_2 (Dense)                 │ (None, 1)              │             2 │\n└─────────────────────────────────┴────────────────────────┴───────────────┘\n Total params: 993 (3.88 KB)\n Trainable params: 993 (3.88 KB)\n Non-trainable params: 0 (0.00 B)\nNone\n\n\nCode\nprint(\"Model with regularization:\")\n\n\nModel with regularization:\n\n\nCode\nprint(model_reg.summary())\n\n\nModel: \"sequential_2\"\n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓\n┃ Layer (type)                    ┃ Output Shape           ┃       Param # ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩\n│ simple_rnn_1 (SimpleRNN)        │ (None, 30)             │           960 │\n├─────────────────────────────────┼────────────────────────┼───────────────┤\n│ dense_1 (Dense)                 │ (None, 1)              │            31 │\n├─────────────────────────────────┼────────────────────────┼───────────────┤\n│ dense_3 (Dense)                 │ (None, 1)              │             2 │\n└─────────────────────────────────┴────────────────────────┴───────────────┘\n Total params: 993 (3.88 KB)\n Trainable params: 993 (3.88 KB)\n Non-trainable params: 0 (0.00 B)\nNone\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCode\n# PREDICTIONS\nYtp_oil_no_reg = model_no_reg.predict(trainX)\n\n\n\n\u001b[1m 1/10\u001b[0m \u001b[32m━━\u001b[0m\u001b[37m━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[1m0s\u001b[0m 49ms/step\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\n\u001b[1m10/10\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m0s\u001b[0m 462us/step\n\n\nCode\nYvp_oil_no_reg = model_no_reg.predict(testX)\n\n\n\n\u001b[1m1/3\u001b[0m \u001b[32m━━━━━━\u001b[0m\u001b[37m━━━━━━━━━━━━━━\u001b[0m \u001b[1m0s\u001b[0m 8ms/step\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\n\u001b[1m3/3\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m0s\u001b[0m 20ms/step\n\n\nCode\nYtp_oil_reg = model_reg.predict(trainX)\n\n\n\n\u001b[1m 1/10\u001b[0m \u001b[32m━━\u001b[0m\u001b[37m━━━━━━━━━━━━━━━━━━\u001b[0m \u001b[1m0s\u001b[0m 44ms/step\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\n\u001b[1m10/10\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m0s\u001b[0m 391us/step\n\n\nCode\nYvp_oil_reg = model_reg.predict(testX)\n\n\n\n\u001b[1m1/3\u001b[0m \u001b[32m━━━━━━\u001b[0m\u001b[37m━━━━━━━━━━━━━━\u001b[0m \u001b[1m0s\u001b[0m 8ms/step\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b\n\u001b[1m3/3\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m0s\u001b[0m 21ms/step\n\n\n\n\nCode\ndef regression_report(yt, ytp, yv, yvp, model_name):\n    print(f\"--------- Regression Report ({model_name}) ---------\")\n    print(\"TRAINING:\")\n    train_mse = np.mean((yt - ytp) ** 2)\n    train_mae = np.mean(np.abs(yt - ytp))\n    print(\"MSE\", train_mse)\n    print(\"MAE\", train_mae)\n    \n    # PARITY PLOT\n    fig, ax = plt.subplots()\n    ax.plot(yt, ytp, 'ro')\n    ax.plot(yt, yt, 'b-')\n    ax.set(xlabel='Actual Crude Oil Prices', ylabel='Predicted Crude Oil Prices',\n           title=f'Training Data Parity Plot ({model_name})')\n    plt.show()\n    \n    # PLOT PART OF THE PREDICTED TIME-SERIES\n    frac_plot = 1.0\n    upper = int(frac_plot * yt.shape[0])\n    fig, ax = plt.subplots()\n    ax.plot(yt[0:upper], 'b-')\n    ax.plot(ytp[0:upper], 'r-', alpha=0.5)\n    ax.plot(ytp[0:upper], 'ro', alpha=0.25)\n    ax.set(xlabel='Time', ylabel='Crude Oil Prices (Blue=Actual & Red=Prediction)',\n           title=f'Training: Time-Series Prediction ({model_name})')\n    plt.show()\n    \n    print(\"VALIDATION:\")\n    val_mse = np.mean((yv - yvp) ** 2)\n    val_mae = np.mean(np.abs(yv - yvp))\n    print(\"MSE\", val_mse)\n    print(\"MAE\", val_mae)\n    \n    # PARITY PLOT\n    fig, ax = plt.subplots()\n    ax.plot(yv, yvp, 'ro')\n    ax.plot(yv, yv, 'b-')\n    ax.set(xlabel='Actual Crude Oil Prices', ylabel='Predicted Crude Oil Prices',\n           title=f'Validation Data Parity Plot ({model_name})')\n    plt.show()\n    \n    # PLOT PART OF THE PREDICTED TIME-SERIES\n    upper = int(frac_plot * yv.shape[0])\n    fig, ax = plt.subplots()\n    ax.plot(yv[0:upper], 'b-')\n    ax.plot(yvp[0:upper], 'r-', alpha=0.5)\n    ax.plot(yvp[0:upper], 'ro', alpha=0.25)\n    ax.set(xlabel='Time', ylabel='Crude Oil Prices (Blue=Actual & Red=Prediction)',\n           title=f'Validation: Time-Series Prediction ({model_name})')\n    plt.show()\n    \n    return train_mse, train_mae, val_mse, val_mae\n\n# Regression report for the non-regularized model\ntrain_mse_no_reg, train_mae_no_reg, val_mse_no_reg, val_mae_no_reg = regression_report(trainY, Ytp_oil_no_reg, testY, Yvp_oil_no_reg, \"Non-Regularized Model\")\n\n\n--------- Regression Report (Non-Regularized Model) ---------\nTRAINING:\nMSE 1.3466743777226569\nMAE 1.0440620473854747\nVALIDATION:\nMSE 0.5246465209805982\nMAE 0.561782241675014\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCode\n# Regression report for the regularized model\ntrain_mse_reg, train_mae_reg, val_mse_reg, val_mae_reg = regression_report(trainY, Ytp_oil_reg, testY, Yvp_oil_reg, \"Regularized Model\")\n\n\n--------- Regression Report (Regularized Model) ---------\nTRAINING:\nMSE 2.0915643947422984\nMAE 1.3194330983737848\nVALIDATION:\nMSE 0.4999114999278701\nMAE 0.5777259776171773"
   },
   {
     "objectID": "deep-learning-ts.html#natural-gas-3",
     "href": "deep-learning-ts.html#natural-gas-3",
     "title": "Deep Learning for TS",
     "section": "Natural Gas",
-    "text": "Natural Gas\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n\n## Electricity\n\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "Natural Gas"
   },
   {
     "objectID": "deep-learning-ts.html#gdp-3",
     "href": "deep-learning-ts.html#gdp-3",
     "title": "Deep Learning for TS",
     "section": "GDP",
-    "text": "GDP\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n## CPI\n\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "GDP"
   },
   {
     "objectID": "deep-learning-ts.html#crude-oil-4",
     "href": "deep-learning-ts.html#crude-oil-4",
     "title": "Deep Learning for TS",
     "section": "Crude Oil",
-    "text": "Crude Oil\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n\n## Natural Gas\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "Crude Oil\n\n\nCode\noptimizer = \"rmsprop\"\nloss_function = \"MeanSquaredError\"\nlearning_rate = 0.001\nnumbers_epochs = 200\nL2_reg = 0.01\nL2_no_reg = 0\n\ninput_shape = (trainX.shape[1], trainX.shape[2])\n\n\n# ------ Choose the batch size ------\nbatch_size = 1  # stocastic training\n# batch_size = int(len(trainX) / 2.)  # mini-batch training\n# batch_size = len(trainX)  # batch training\n\n# BUILD MODEL\nrecurrent_hidden_units = 32\n\n# CREATE MODEL WITHOUT REGULARIZATION\nmodel_no_reg = keras.Sequential()\nmodel_no_reg.add(LSTM(\n    units=recurrent_hidden_units,\n    return_sequences=False,\n    input_shape=input_shape,\n    recurrent_regularizer=regularizers.L2(L2_no_reg),\n    activation='relu'\n))\n\n\n/Users/madhvimalhotra/myenv/lib/python3.11/site-packages/keras/src/layers/rnn/rnn.py:204: UserWarning:\n\nDo not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.\n\n\nCode\nmodel_no_reg.add(Dense(units=1, activation='linear'))\n\n# CREATE MODEL WITH REGULARIZATION\nmodel_reg = keras.Sequential()\nmodel_reg.add(LSTM(\n    units=recurrent_hidden_units,\n    return_sequences=False,\n    input_shape=input_shape,\n    recurrent_regularizer=regularizers.L2(L2_reg),\n    activation='relu'\n))\nmodel_reg.add(Dense(units=1, activation='linear'))\n\n\n\n\nCode\n# MODEL SUMMARY\nprint(\"LSTM Model without regularization:\")\n\n\nLSTM Model without regularization:\n\n\nCode\nprint(model_no_reg.summary())\n\n\nModel: \"sequential_3\"\n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓\n┃ Layer (type)                    ┃ Output Shape           ┃       Param # ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩\n│ lstm (LSTM)                     │ (None, 32)             │         4,352 │\n├─────────────────────────────────┼────────────────────────┼───────────────┤\n│ dense_4 (Dense)                 │ (None, 1)              │            33 │\n└─────────────────────────────────┴────────────────────────┴───────────────┘\n Total params: 4,385 (17.13 KB)\n Trainable params: 4,385 (17.13 KB)\n Non-trainable params: 0 (0.00 B)\nNone\n\n\nCode\nprint(\"LSTM Model with regularization:\")\n\n\nLSTM Model with regularization:\n\n\nCode\nprint(model_reg.summary())\n\n\nModel: \"sequential_4\"\n┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓\n┃ Layer (type)                    ┃ Output Shape           ┃       Param # ┃\n┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩\n│ lstm_1 (LSTM)                   │ (None, 32)             │         4,352 │\n├─────────────────────────────────┼────────────────────────┼───────────────┤\n│ dense_5 (Dense)                 │ (None, 1)              │            33 │\n└─────────────────────────────────┴────────────────────────┴───────────────┘\n Total params: 4,385 (17.13 KB)\n Trainable params: 4,385 (17.13 KB)\n Non-trainable params: 0 (0.00 B)\nNone"
   },
   {
     "objectID": "deep-learning-ts.html#electricity-1",
     "href": "deep-learning-ts.html#electricity-1",
     "title": "Deep Learning for TS",
     "section": "Electricity",
-    "text": "Electricity\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n## GDP\n\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "Electricity\n\n\nCode\n# Normalize the electricity data\nelectricity_normalized = (total_electricity_prices['Value'] - total_electricity_prices['Value'].mean()) / total_electricity_prices['Value'].std()\n\n# Split data into training and testing\nsplit_index = int(0.8 * len(electricity_normalized))\nelectricity_train = electricity_normalized[:split_index]\nelectricity_test = electricity_normalized[split_index:]\n\n# Print the shapes\nprint(\"Shape of the Electricity Prices Data:\", len(electricity_normalized))\n\n\nShape of the Electricity Prices Data: 407\n\n\nCode\nprint(\"Shape of the Electricity Prices Train Data:\", len(electricity_train))\n\n\nShape of the Electricity Prices Train Data: 325\n\n\nCode\nprint(\"Shape of the Electricity Prices Test Data:\", len(electricity_test))\n\n\nShape of the Electricity Prices Test Data: 82\n\n\nCode\n# Prepare data for plotting\ntrain_dates_elec = total_electricity_prices['Date'].iloc[:split_index]\ntest_dates_elec = total_electricity_prices['Date'].iloc[split_index:]\n\nelec_data = pd.DataFrame({\n    'Date': pd.concat([train_dates_elec, test_dates_elec]),\n    'Value': pd.concat([electricity_train, electricity_test]),\n    'Set': ['Training'] * len(electricity_train) + ['Testing'] * len(electricity_test)\n})\n\n# Plot the training and testing sets\nelec_plot = px.area(elec_data, x='Date', y='Value', color='Set', title='Electricity Training and Testing Sets',\n                    labels={'Value': 'Normalized Electricity Prices'}, template='plotly_white')\nelec_plot.update_layout(title_x=0.5)"
   },
   {
     "objectID": "deep-learning-ts.html#cpi-1",
     "href": "deep-learning-ts.html#cpi-1",
     "title": "Deep Learning for TS",
     "section": "CPI",
-    "text": "CPI\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n\n\n\n\n# 8. Discussion\n\nNow, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.\n\n\n::: panel-tabset\n\n## Crude Oil\n\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "CPI\n\n\nCode\n# Normalize the CPI data\ncpi_normalized = (cpi_data['CPIAUCSL'] - cpi_data['CPIAUCSL'].mean()) / cpi_data['CPIAUCSL'].std()\n\n# Split data into training and testing\nsplit_index = int(0.8 * len(cpi_normalized))\ncpi_train = cpi_normalized[:split_index]\ncpi_test = cpi_normalized[split_index:]\n\n# Print the shapes\nprint(\"Shape of the CPI Data:\", len(cpi_normalized))\n\n\nShape of the CPI Data: 410\n\n\nCode\nprint(\"Shape of the CPI Train Data:\", len(cpi_train))\n\n\nShape of the CPI Train Data: 328\n\n\nCode\nprint(\"Shape of the CPI Test Data:\", len(cpi_test))\n\n\nShape of the CPI Test Data: 82\n\n\nCode\n# Prepare data for plotting\ntrain_dates_cpi = cpi_data['DATE'].iloc[:split_index]\ntest_dates_cpi = cpi_data['DATE'].iloc[split_index:]\n\ncpi_data_plot = pd.DataFrame({\n    'Date': pd.concat([train_dates_cpi, test_dates_cpi]),\n    'Value': pd.concat([cpi_train, cpi_test]),\n    'Set': ['Training'] * len(cpi_train) + ['Testing'] * len(cpi_test)\n})\n\n# Plot the training and testing sets\ncpi_plot1 = px.area(cpi_data_plot, x='Date', y='Value', color='Set', title='CPI Training and Testing Sets',\n                    labels={'Value': 'Normalized CPI'}, template='plotly_white')\ncpi_plot1.update_layout(title_x=0.5)"
   },
   {
     "objectID": "deep-learning-ts.html#natural-gas-4",
     "href": "deep-learning-ts.html#natural-gas-4",
     "title": "Deep Learning for TS",
     "section": "Natural Gas",
-    "text": "Natural Gas\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n\n## Electricity\n\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "Natural Gas"
   },
   {
     "objectID": "deep-learning-ts.html#gdp-4",
     "href": "deep-learning-ts.html#gdp-4",
     "title": "Deep Learning for TS",
     "section": "GDP",
-    "text": "GDP\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n## CPI\n\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "GDP"
   },
   {
     "objectID": "deep-learning-ts.html#how-do-the-results-from-the-3-different-ann-models-compare-with-each-other-in-terms-of-accuracy-and-predictive-power",
     "href": "deep-learning-ts.html#how-do-the-results-from-the-3-different-ann-models-compare-with-each-other-in-terms-of-accuracy-and-predictive-power",
     "title": "Deep Learning for TS",
     "section": "8.1 How do the results from the 3 different ANN models compare with each other in terms of accuracy and predictive power?",
-    "text": "8.1 How do the results from the 3 different ANN models compare with each other in terms of accuracy and predictive power?\nNow, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.\n::: panel-tabset"
+    "text": "8.1 How do the results from the 3 different ANN models compare with each other in terms of accuracy and predictive power?\nNow, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models."
   },
   {
     "objectID": "deep-learning-ts.html#crude-oil-5",
     "href": "deep-learning-ts.html#crude-oil-5",
     "title": "Deep Learning for TS",
     "section": "Crude Oil",
-    "text": "Crude Oil\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n\n## Natural Gas\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "Crude Oil"
   },
   {
     "objectID": "deep-learning-ts.html#electricity-2",
     "href": "deep-learning-ts.html#electricity-2",
     "title": "Deep Learning for TS",
     "section": "Electricity",
-    "text": "Electricity\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n## GDP\n\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "Electricity\n\n\nCode\n# Convert to numpy arrays\nelectricity_train = np.array(electricity_train)\nelectricity_test = np.array(electricity_test)\n\n# Create mini-batches\nelectricity_train_batches_x, electricity_train_batches_y = form_arrays(electricity_train, lookback=lookback, delay=1, step=1, feature_columns=[0], target_columns=[0])\nelectricity_test_batches_x, electricity_test_batches_y = form_arrays(electricity_test, lookback=lookback, delay=1, step=1, feature_columns=[0], target_columns=[0])\n\n# Display the shape\nprint(f\"Electricity Train shape: {electricity_train_batches_x.shape}, {electricity_train_batches_y.shape}\")\n\n\nElectricity Train shape: (320, 5), (320,)\n\n\nCode\nprint(f\"Electricity Test shape: {electricity_test_batches_x.shape}, {electricity_test_batches_y.shape}\")\n\n\nElectricity Test shape: (77, 5), (77,)"
   },
   {
     "objectID": "deep-learning-ts.html#cpi-2",
     "href": "deep-learning-ts.html#cpi-2",
     "title": "Deep Learning for TS",
     "section": "CPI",
-    "text": "CPI\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n\n\n\n## 8.2 What effect does including regularization have on your results?\n\nNow, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.\n\n\n::: panel-tabset\n\n## Crude Oil\n\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "CPI\n\n\nCode\n# Convert to numpy arrays\ncpi_train = np.array(cpi_train)\ncpi_test = np.array(cpi_test)\n\n# Create mini-batches\ncpi_train_batches_x, cpi_train_batches_y = form_arrays(cpi_train, lookback=lookback, delay=1, step=1, feature_columns=[0], target_columns=[0])\ncpi_test_batches_x, cpi_test_batches_y = form_arrays(cpi_test, lookback=lookback, delay=1, step=1, feature_columns=[0], target_columns=[0])\n\n# Display the shape\nprint(f\"CPI Train shape: {cpi_train_batches_x.shape}, {cpi_train_batches_y.shape}\")\n\n\nCPI Train shape: (323, 5), (323,)\n\n\nCode\nprint(f\"CPI Test shape: {cpi_test_batches_x.shape}, {cpi_test_batches_y.shape}\")\n\n\nCPI Test shape: (77, 5), (77,)"
   },
   {
     "objectID": "deep-learning-ts.html#natural-gas-5",
     "href": "deep-learning-ts.html#natural-gas-5",
     "title": "Deep Learning for TS",
     "section": "Natural Gas",
-    "text": "Natural Gas\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n\n## Electricity\n\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "Natural Gas"
   },
   {
     "objectID": "deep-learning-ts.html#gdp-5",
     "href": "deep-learning-ts.html#gdp-5",
     "title": "Deep Learning for TS",
     "section": "GDP",
-    "text": "GDP\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n## CPI\n\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "GDP"
   },
   {
     "objectID": "deep-learning-ts.html#how-far-into-the-future-can-the-deep-learning-model-accurately-predict-the-future",
     "href": "deep-learning-ts.html#how-far-into-the-future-can-the-deep-learning-model-accurately-predict-the-future",
     "title": "Deep Learning for TS",
     "section": "8.3 How far into the future can the deep learning model accurately predict the future?",
-    "text": "8.3 How far into the future can the deep learning model accurately predict the future?\nNow, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.\n::: panel-tabset"
+    "text": "8.3 How far into the future can the deep learning model accurately predict the future?\nNow, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models."
   },
   {
     "objectID": "deep-learning-ts.html#crude-oil-6",
     "href": "deep-learning-ts.html#crude-oil-6",
     "title": "Deep Learning for TS",
     "section": "Crude Oil",
-    "text": "Crude Oil\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n\n## Natural Gas\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "Crude Oil"
   },
   {
     "objectID": "deep-learning-ts.html#electricity-3",
     "href": "deep-learning-ts.html#electricity-3",
     "title": "Deep Learning for TS",
     "section": "Electricity",
-    "text": "Electricity\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n## GDP\n\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "Electricity"
   },
   {
     "objectID": "deep-learning-ts.html#cpi-3",
     "href": "deep-learning-ts.html#cpi-3",
     "title": "Deep Learning for TS",
     "section": "CPI",
-    "text": "CPI\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n\n\n\n\n\n## 8.4. How does your deep learning modeling compare to the traditional single-variable time-series ARMA/ARIMA models from HW-3?\n\nNow, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.\n\n\n::: panel-tabset\n\n## Crude Oil\n\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "CPI"
   },
   {
     "objectID": "deep-learning-ts.html#natural-gas-6",
     "href": "deep-learning-ts.html#natural-gas-6",
     "title": "Deep Learning for TS",
     "section": "Natural Gas",
-    "text": "Natural Gas\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n\n## Electricity\n\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "Natural Gas"
   },
   {
     "objectID": "deep-learning-ts.html#gdp-6",
     "href": "deep-learning-ts.html#gdp-6",
     "title": "Deep Learning for TS",
     "section": "GDP",
-    "text": "GDP\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n## CPI\n\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "GDP"
   },
   {
     "objectID": "deep-learning-ts.html#crude-oil-7",
     "href": "deep-learning-ts.html#crude-oil-7",
     "title": "Deep Learning for TS",
     "section": "Crude Oil",
-    "text": "Crude Oil\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n\n## Natural Gas\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "Crude Oil"
   },
   {
     "objectID": "deep-learning-ts.html#electricity-4",
     "href": "deep-learning-ts.html#electricity-4",
     "title": "Deep Learning for TS",
     "section": "Electricity",
-    "text": "Electricity\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n\n\n\n\n\n## GDP\n\n\n\n\n```{r, warning=FALSE, message=FALSE, echo=TRUE}\n#| code-fold: true\n#| code-summary: 'Code'\n#| warning: false\n#| output: true"
+    "text": "Electricity"
   },
   {
     "objectID": "deep-learning-ts.html#cpi-4",
     "href": "deep-learning-ts.html#cpi-4",
     "title": "Deep Learning for TS",
     "section": "CPI",
-    "text": "CPI\n```{r, warning=FALSE, message=FALSE, echo=TRUE} #| code-fold: true #| code-summary: ‘Code’ #| warning: false #| output: true\n```"
+    "text": "CPI"
   },
   {
     "objectID": "univariate-ts-models.html",
@@ -474,5 +474,215 @@
     "title": "Introduction",
     "section": "",
     "text": "[1] Wang, L. (2022). Research on the impact of energy price fluctuations on regional economic development based on panel data model. Resources Policy, 75, 102484. https://doi.org/10.1016/j.resourpol.2021.102484\n[2] Congressional Budget Office. (2006, July). The economic effects of recent increases in energy prices (Pub. No. 2835). The Congress of the United States, Congressional Budget Office. https://www.cbo.gov/system/files?file=2018-10/07-21-energy-dist.pdf\n[3] https://www.eia.gov/totalenergy/data/monthly/\nNext Page: Data Sources →"
+  },
+  {
+    "objectID": "deep-learning-ts.html#electricity-5",
+    "href": "deep-learning-ts.html#electricity-5",
+    "title": "Deep Learning for TS",
+    "section": "Electricity",
+    "text": "Electricity"
+  },
+  {
+    "objectID": "deep-learning-ts.html#cpi-5",
+    "href": "deep-learning-ts.html#cpi-5",
+    "title": "Deep Learning for TS",
+    "section": "CPI",
+    "text": "CPI"
+  },
+  {
+    "objectID": "deep-learning-ts.html#electricity-6",
+    "href": "deep-learning-ts.html#electricity-6",
+    "title": "Deep Learning for TS",
+    "section": "Electricity",
+    "text": "Electricity"
+  },
+  {
+    "objectID": "deep-learning-ts.html#cpi-6",
+    "href": "deep-learning-ts.html#cpi-6",
+    "title": "Deep Learning for TS",
+    "section": "CPI",
+    "text": "CPI"
+  },
+  {
+    "objectID": "deep-learning-ts.html#natural-gas-7",
+    "href": "deep-learning-ts.html#natural-gas-7",
+    "title": "Deep Learning for TS",
+    "section": "Natural Gas",
+    "text": "Natural Gas"
+  },
+  {
+    "objectID": "deep-learning-ts.html#electricity-7",
+    "href": "deep-learning-ts.html#electricity-7",
+    "title": "Deep Learning for TS",
+    "section": "Electricity",
+    "text": "Electricity"
+  },
+  {
+    "objectID": "deep-learning-ts.html#gdp-7",
+    "href": "deep-learning-ts.html#gdp-7",
+    "title": "Deep Learning for TS",
+    "section": "GDP",
+    "text": "GDP"
+  },
+  {
+    "objectID": "deep-learning-ts.html#cpi-7",
+    "href": "deep-learning-ts.html#cpi-7",
+    "title": "Deep Learning for TS",
+    "section": "CPI",
+    "text": "CPI"
+  },
+  {
+    "objectID": "deep-learning-ts.html#what-effect-does-including-regularization-have-on-your-results",
+    "href": "deep-learning-ts.html#what-effect-does-including-regularization-have-on-your-results",
+    "title": "Deep Learning for TS",
+    "section": "8.2 What effect does including regularization have on your results?",
+    "text": "8.2 What effect does including regularization have on your results?\nNow, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models."
+  },
+  {
+    "objectID": "deep-learning-ts.html#crude-oil-8",
+    "href": "deep-learning-ts.html#crude-oil-8",
+    "title": "Deep Learning for TS",
+    "section": "Crude Oil",
+    "text": "Crude Oil"
+  },
+  {
+    "objectID": "deep-learning-ts.html#natural-gas-8",
+    "href": "deep-learning-ts.html#natural-gas-8",
+    "title": "Deep Learning for TS",
+    "section": "Natural Gas",
+    "text": "Natural Gas"
+  },
+  {
+    "objectID": "deep-learning-ts.html#electricity-8",
+    "href": "deep-learning-ts.html#electricity-8",
+    "title": "Deep Learning for TS",
+    "section": "Electricity",
+    "text": "Electricity"
+  },
+  {
+    "objectID": "deep-learning-ts.html#gdp-8",
+    "href": "deep-learning-ts.html#gdp-8",
+    "title": "Deep Learning for TS",
+    "section": "GDP",
+    "text": "GDP"
+  },
+  {
+    "objectID": "deep-learning-ts.html#cpi-8",
+    "href": "deep-learning-ts.html#cpi-8",
+    "title": "Deep Learning for TS",
+    "section": "CPI",
+    "text": "CPI"
+  },
+  {
+    "objectID": "deep-learning-ts.html#crude-oil-9",
+    "href": "deep-learning-ts.html#crude-oil-9",
+    "title": "Deep Learning for TS",
+    "section": "Crude Oil",
+    "text": "Crude Oil"
+  },
+  {
+    "objectID": "deep-learning-ts.html#natural-gas-9",
+    "href": "deep-learning-ts.html#natural-gas-9",
+    "title": "Deep Learning for TS",
+    "section": "Natural Gas",
+    "text": "Natural Gas"
+  },
+  {
+    "objectID": "deep-learning-ts.html#electricity-9",
+    "href": "deep-learning-ts.html#electricity-9",
+    "title": "Deep Learning for TS",
+    "section": "Electricity",
+    "text": "Electricity"
+  },
+  {
+    "objectID": "deep-learning-ts.html#gdp-9",
+    "href": "deep-learning-ts.html#gdp-9",
+    "title": "Deep Learning for TS",
+    "section": "GDP",
+    "text": "GDP"
+  },
+  {
+    "objectID": "deep-learning-ts.html#cpi-9",
+    "href": "deep-learning-ts.html#cpi-9",
+    "title": "Deep Learning for TS",
+    "section": "CPI",
+    "text": "CPI"
+  },
+  {
+    "objectID": "deep-learning-ts.html#how-does-your-deep-learning-modeling-compare-to-the-traditional-single-variable-time-series-armaarima-models-from-hw-3",
+    "href": "deep-learning-ts.html#how-does-your-deep-learning-modeling-compare-to-the-traditional-single-variable-time-series-armaarima-models-from-hw-3",
+    "title": "Deep Learning for TS",
+    "section": "8.4. How does your deep learning modeling compare to the traditional single-variable time-series ARMA/ARIMA models from HW-3?",
+    "text": "8.4. How does your deep learning modeling compare to the traditional single-variable time-series ARMA/ARIMA models from HW-3?\nNow, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models."
+  },
+  {
+    "objectID": "deep-learning-ts.html#crude-oil-10",
+    "href": "deep-learning-ts.html#crude-oil-10",
+    "title": "Deep Learning for TS",
+    "section": "Crude Oil",
+    "text": "Crude Oil"
+  },
+  {
+    "objectID": "deep-learning-ts.html#natural-gas-10",
+    "href": "deep-learning-ts.html#natural-gas-10",
+    "title": "Deep Learning for TS",
+    "section": "Natural Gas",
+    "text": "Natural Gas"
+  },
+  {
+    "objectID": "deep-learning-ts.html#electricity-10",
+    "href": "deep-learning-ts.html#electricity-10",
+    "title": "Deep Learning for TS",
+    "section": "Electricity",
+    "text": "Electricity"
+  },
+  {
+    "objectID": "deep-learning-ts.html#gdp-10",
+    "href": "deep-learning-ts.html#gdp-10",
+    "title": "Deep Learning for TS",
+    "section": "GDP",
+    "text": "GDP"
+  },
+  {
+    "objectID": "deep-learning-ts.html#cpi-10",
+    "href": "deep-learning-ts.html#cpi-10",
+    "title": "Deep Learning for TS",
+    "section": "CPI",
+    "text": "CPI"
+  },
+  {
+    "objectID": "deep-learning-ts.html#crude-oil-11",
+    "href": "deep-learning-ts.html#crude-oil-11",
+    "title": "Deep Learning for TS",
+    "section": "Crude Oil",
+    "text": "Crude Oil"
+  },
+  {
+    "objectID": "deep-learning-ts.html#natural-gas-11",
+    "href": "deep-learning-ts.html#natural-gas-11",
+    "title": "Deep Learning for TS",
+    "section": "Natural Gas",
+    "text": "Natural Gas"
+  },
+  {
+    "objectID": "deep-learning-ts.html#electricity-11",
+    "href": "deep-learning-ts.html#electricity-11",
+    "title": "Deep Learning for TS",
+    "section": "Electricity",
+    "text": "Electricity"
+  },
+  {
+    "objectID": "deep-learning-ts.html#gdp-11",
+    "href": "deep-learning-ts.html#gdp-11",
+    "title": "Deep Learning for TS",
+    "section": "GDP",
+    "text": "GDP"
+  },
+  {
+    "objectID": "deep-learning-ts.html#cpi-11",
+    "href": "deep-learning-ts.html#cpi-11",
+    "title": "Deep Learning for TS",
+    "section": "CPI",
+    "text": "CPI"
   }
 ]
