@@ -701,9 +701,6 @@ print(f"Test shape: {electricity_test_batches_x.shape}, {electricity_test_batche
 
 ```
 
-### Hyper parameter tuning to get the best parmeters
-
-
 
 ## GDP
 
