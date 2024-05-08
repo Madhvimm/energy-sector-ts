@@ -852,7 +852,7 @@ input_shape = (oil_train_batches_x.shape[1], 1)
 batch_size = 64  # Update based on the best hyperparameters
 
 # BUILD MODEL
-recurrent_hidden_units = 100  # Update based on the best hyperparameters
+recurrent_hidden_units = 50  # Update based on the best hyperparameters
 
 
 # CREATE MODEL
@@ -1046,7 +1046,7 @@ input_shape = (gas_train_batches_x.shape[1], 1)
 batch_size = 32  # Update based on the best hyperparameters
 
 # BUILD MODEL
-recurrent_hidden_units = 100  # Update based on the best hyperparameters
+recurrent_hidden_units = 50  # Update based on the best hyperparameters
 
 
 # CREATE MODEL
@@ -1435,7 +1435,7 @@ input_shape = (gdp_train_batches_x.shape[1], 1)
 batch_size = 128  # Update based on the best hyperparameters
 
 # BUILD MODEL
-recurrent_hidden_units = 30  # Update based on the best hyperparameters
+recurrent_hidden_units = 50  # Update based on the best hyperparameters
 
 
 # CREATE MODEL
@@ -1820,7 +1820,6 @@ Now, I will implement an LSTM model to address the challenges posed by the intri
 ## Crude Oil
 
 
-
 ```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
@@ -1831,8 +1830,8 @@ Now, I will implement an LSTM model to address the challenges posed by the intri
 optimizer = "rmsprop"
 loss_function = "MeanSquaredError"
 learning_rate = 0.001
-numbers_epochs = 200
-L2_reg = 0.001
+numbers_epochs = 100
+L2_reg = 0.0001
 L2_no_reg = 0
 input_shape = (oil_train_batches_x.shape[1], 1) 
 
@@ -1843,7 +1842,7 @@ input_shape = (oil_train_batches_x.shape[1], 1)
 batch_size = 64 # Update based on the best hyperparameters
 
 # BUILD MODEL
-recurrent_hidden_units = 100 # Update based on the best hyperparameters
+recurrent_hidden_units = 50 # Update based on the best hyperparameters
 
 # CREATE MODEL WITHOUT REGULARIZATION
 model_no_reg_l = keras.Sequential()
@@ -2037,7 +2036,6 @@ train_mse_reg_l, train_mae_reg_l, val_mse_reg_l, val_mae_reg_l = regression_repo
 
 
 ## Natural Gas
-
 
 
 ```{python, warning=FALSE, message=FALSE, echo=TRUE}
@@ -2256,6 +2254,7 @@ train_mse_reg_gas_l, train_mae_reg_gas_l, val_mse_reg_gas_l, val_mae_reg_gas_l =
 ## Electricity
 
 
+
 ```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
@@ -2266,7 +2265,7 @@ train_mse_reg_gas_l, train_mae_reg_gas_l, val_mse_reg_gas_l, val_mae_reg_gas_l =
 optimizer = "rmsprop"
 loss_function = "MeanSquaredError"
 learning_rate = 0.001
-numbers_epochs = 100
+numbers_epochs = 200
 L2_reg = 0.01
 L2_no_reg = 0
 input_shape = (electricity_train_batches_x.shape[1], 1) 
@@ -2278,7 +2277,7 @@ input_shape = (electricity_train_batches_x.shape[1], 1)
 batch_size = 128 # Update based on the best hyperparameters
 
 # BUILD MODEL
-recurrent_hidden_units = 50 # Update based on the best hyperparameters
+recurrent_hidden_units = 100 # Update based on the best hyperparameters
 
 # CREATE MODEL WITHOUT REGULARIZATION
 model_no_reg_elec_l = keras.Sequential()
@@ -2470,9 +2469,6 @@ train_mse_reg_elec_l, train_mae_reg_elec_l, val_mse_reg_elec_l, val_mae_reg_elec
 ## GDP
 
 
-
-
-
 ```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
@@ -2483,7 +2479,7 @@ train_mse_reg_elec_l, train_mae_reg_elec_l, val_mse_reg_elec_l, val_mae_reg_elec
 optimizer = "adam"
 loss_function = "MeanSquaredError"
 learning_rate = 0.001
-numbers_epochs = 100
+numbers_epochs = 50
 L2_reg = 0.0001
 L2_no_reg = 0
 input_shape = (gdp_train_batches_x.shape[1], 1) 
@@ -2696,10 +2692,10 @@ train_mse_reg_gdp_l, train_mae_reg_gdp_l, val_mse_reg_gdp_l, val_mae_reg_gdp_l =
 #| output: true
 
 
-optimizer = "adam"
+optimizer = "rmsprop"
 loss_function = "MeanSquaredError"
 learning_rate = 0.001
-numbers_epochs = 100
+numbers_epochs = 200
 L2_reg = 0.01
 L2_no_reg = 0
 input_shape = (cpi_train_batches_x.shape[1], 1) 
@@ -2708,10 +2704,10 @@ input_shape = (cpi_train_batches_x.shape[1], 1)
 # ------ Choose the batch size ------
 # batch_size = 1 # stochastic training
 # batch_size = int(len(trainX) / 2.) # mini-batch training
-batch_size = 128 # Update based on the best hyperparameters
+batch_size = 64 # Update based on the best hyperparameters
 
 # BUILD MODEL
-recurrent_hidden_units = 30 # Update based on the best hyperparameters
+recurrent_hidden_units = 50 # Update based on the best hyperparameters
 
 # CREATE MODEL WITHOUT REGULARIZATION
 model_no_reg_cpi_l = keras.Sequential()
@@ -2925,10 +2921,10 @@ Now, I will explore the application of GRUs in forecasting.
 #| output: true
 
 
-optimizer = "adam"
+optimizer = "rmsprop"
 loss_function = "MeanSquaredError"
 learning_rate = 0.001
-numbers_epochs = 200
+numbers_epochs = 100
 L2_reg = 0.0001
 L2_no_reg = 0
 input_shape = (oil_train_batches_x.shape[1], 1)
@@ -2941,7 +2937,7 @@ batch_size = 64 # Update based on the best hyperparameters
 
 
 # BUILD MODEL
-recurrent_hidden_units = 30 # Update based on the best hyperparameters
+recurrent_hidden_units = 50 # Update based on the best hyperparameters
 
 
 # CREATE MODEL WITHOUT REGULARIZATION
@@ -3137,7 +3133,6 @@ train_mse_reg_g, train_mae_reg_g, val_mse_reg_g, val_mae_reg_g = regression_repo
 
 ## Natural Gas
 
-
 ```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
@@ -3145,7 +3140,7 @@ train_mse_reg_g, train_mae_reg_g, val_mse_reg_g, val_mae_reg_g = regression_repo
 #| output: true
 
 
-optimizer = "rmsprop"
+optimizer = "adam"
 loss_function = "MeanSquaredError"
 learning_rate = 0.001
 numbers_epochs = 100
@@ -3364,11 +3359,11 @@ train_mse_reg_gas_g, train_mae_reg_gas_g, val_mse_reg_gas_g, val_mae_reg_gas_g =
 #| output: true
 
 
-optimizer = "adam"
+optimizer = "rmsprop"
 loss_function = "MeanSquaredError"
 learning_rate = 0.001
-numbers_epochs = 100
-L2_reg = 0.001
+numbers_epochs = 200
+L2_reg = 0.01
 L2_no_reg = 0
 input_shape = (electricity_train_batches_x.shape[1], 1)
 
@@ -3585,7 +3580,7 @@ train_mse_reg_electricity_g, train_mae_reg_electricity_g, val_mse_reg_electricit
 optimizer = "adam"
 loss_function = "MeanSquaredError"
 learning_rate = 0.001
-numbers_epochs = 200
+numbers_epochs = 50
 L2_reg = 0.0001
 L2_no_reg = 0
 input_shape = (gdp_train_batches_x.shape[1], 1)
@@ -3594,11 +3589,11 @@ input_shape = (gdp_train_batches_x.shape[1], 1)
 # ------ Choose the batch size ------
 # batch_size = 1 # stochastic training
 # batch_size = int(len(trainX) / 2.) # mini-batch training
-batch_size = 32 # Update based on the best hyperparameters
+batch_size = 128 # Update based on the best hyperparameters
 
 
 # BUILD MODEL
-recurrent_hidden_units = 30 # Update based on the best hyperparameters
+recurrent_hidden_units = 50 # Update based on the best hyperparameters
 
 
 # CREATE MODEL WITHOUT REGULARIZATION
@@ -3793,6 +3788,8 @@ train_mse_reg_gdp_g, train_mae_reg_gdp_g, val_mse_reg_gdp_g, val_mae_reg_gdp_g =
 ## CPI
 
 
+
+
 ```{python, warning=FALSE, message=FALSE, echo=TRUE}
 #| code-fold: true
 #| code-summary: 'Code'
@@ -3800,11 +3797,11 @@ train_mse_reg_gdp_g, train_mae_reg_gdp_g, val_mse_reg_gdp_g, val_mae_reg_gdp_g =
 #| output: true
 
 
-optimizer = "adam"
+optimizer = "rmsprop"
 loss_function = "MeanSquaredError"
 learning_rate = 0.001
 numbers_epochs = 200
-L2_reg = 0.0001
+L2_reg = 0.01
 L2_no_reg = 0
 input_shape = (cpi_train_batches_x.shape[1], 1)
 
@@ -3812,7 +3809,7 @@ input_shape = (cpi_train_batches_x.shape[1], 1)
 # ------ Choose the batch size ------
 # batch_size = 1 # stochastic training
 # batch_size = int(len(trainX) / 2.) # mini-batch training
-batch_size = 32 # Update based on the best hyperparameters
+batch_size = 64 # Update based on the best hyperparameters
 
 
 # BUILD MODEL
@@ -4196,74 +4193,252 @@ print(result_df)
 
 ## 8.1 How do the results from the 3 different ANN models compare with each other in terms of accuracy and predictive power?
 
+
+::: panel-tabset
+
+## Crude Oil
+
+Based on the validation RMSE (Root Mean Squared Error) values, which measure the models' predictive accuracy, the performance of the three ANN models for crude oil price forecasting can be ranked as follows:
+
+GRU (Regularized): 0.764183
+RNN (Regularized): 0.794744
+LSTM (Regularized): 0.798898
+LSTM (No Regularization): 0.832182
+RNN (No Regularization): 0.841763
+GRU (No Regularization): 0.856426
+
+The GRU model with regularization demonstrates the highest accuracy and predictive power, closely followed by the RNN model with regularization. This suggests that regularization techniques are effective in improving the performance of RNN and GRU models for crude oil price forecasting.
+
+
+
+## Natural Gas
+
 Based on the validation RMSE (Root Mean Squared Error) values, the performance of the three ANN models can be ranked as follows:
 
-LSTM (Regularized): 0.731646
-GRU (Regularized): 0.777009
-RNN (No Regularization): 0.840821
-LSTM (No Regularization): 0.843815
-GRU (No Regularization): 0.848463
+LSTM (Regularized): 0.898807
+GRU (Regularized): 0.906645
+GRU (No Regularization): 1.103939
+RNN (Regularized): 1.136816
+LSTM (No Regularization): 1.152883
+RNN (No Regularization): 1.155457
 
-The LSTM model with regularization demonstrates the highest accuracy and predictive power, followed closely by the GRU model with regularization. The RNN model without regularization performs slightly better than the LSTM and GRU models without regularization.
-Overall, the LSTM and GRU models outperform the simple RNN model in terms of accuracy and predictive power for crude oil price prediction.
 
+The LSTM model with regularization demonstrates the highest accuracy and predictive power, closely followed by the GRU model with regularization. This suggests that regularization techniques are effective in improving the performance of LSTM and GRU models for Natural Gas price forecasting.
+
+
+## Electricity
+
+Based on the validation RMSE (Root Mean Squared Error) values, the performance of the three ANN models can be ranked as follows:
+
+GRU (No Regularization): 0.654712
+RNN (No Regularization): 0.693142
+LSTM (No Regularization): 0.696627
+RNN (Regularized): 0.985358
+GRU (Regularized): 1.266256
+LSTM (Regularized): 1.340776
+
+
+The GRU model with no regularization demonstrates the highest accuracy and predictive power, closely followed by the RNN model with no regularization. This suggests that non-regularization techniques are effective in improving the performance of GRU, RNN and LSTM models for Electricity price forecasting.
+
+
+## GDP
+
+Based on the validation RMSE (Root Mean Squared Error) values, the performance of the three ANN models can be ranked as follows:
+
+RNN (No Regularization): 0.57151
+GRU (No Regularization): 0.589705
+LSTM (No Regularization): 0.601461
+GRU (Regularized): 1.502871
+LSTM (Regularized): 1.640242
+RNN (Regularized): 1.904983
+
+
+The RNN model with no regularization demonstrates the highest accuracy and predictive power, closely followed by the GRU model with no regularization. This suggests that non-regularization techniques are effective in improving the performance of GRU, RNN and LSTM models for GDP forecasting.
+
+
+## CPI
+
+Based on the validation RMSE (Root Mean Squared Error) values, the performance of the three ANN models can be ranked as follows:
+
+GRU (No Regularization): 0.580746
+RNN (No Regularization): 0.633293
+LSTM (No Regularization): 0.706091
+RNN (Regularized): 1.051578
+LSTM (Regularized): 1.398939
+GRU (Regularized): 1.523046
+
+
+The GRU model with no-regularization demonstrates the highest accuracy and predictive power, closely followed by the RNN model with no regularization. 
+
+
+
+:::
 
 
 
 ## 8.2 What effect does including regularization have on your results?
 
 
+**Crude Oil:**
 
-Comparing the performance of models with and without regularization, we can observe the following:
+In the case of crude oil price forecasting, regularization has a positive impact on the performance of the models. The regularized GRU and RNN models outperform their non-regularized counterparts, indicating that regularization techniques help in reducing overfitting and improving the models' ability to generalize well to unseen data.
 
-LSTM:
+**Natural Gas:**
 
-With regularization: 0.731646
-Without regularization: 0.843815
+For natural gas price forecasting, regularization has a significant positive impact on the performance of the LSTM and GRU models. The regularized LSTM and GRU models achieve lower validation RMSE values compared to their non-regularized counterparts, suggesting that regularization helps in capturing the underlying patterns more effectively. 
 
+**Electricity:**
 
-GRU:
+In contrast to the crude oil and natural gas datasets, regularization has a negative impact on the performance of the models for electricity price forecasting. The non-regularized GRU, RNN, and LSTM models outperform regularized. This suggests that regularization techniques may not be suitable for capturing the complex patterns present in electricity price data.
 
-With regularization: 0.777009
-Without regularization: 0.848463
+**GDP:**
 
+Similar to the electricity dataset, regularization has a negative effect on the performance of the models for GDP forecasting. The non-regularized RNN, GRU, and LSTM models achieve significantly lower validation RMSE values compared to regularized. This indicates that the models are able to capture the underlying patterns in the GDP data more effectively without regularization.
 
-RNN:
+**CPI:**
 
-With regularization: 1.171465
-Without regularization: 0.840821
-
-
-
-For both LSTM and GRU models, incorporating regularization significantly improves the validation RMSE. The regularized LSTM and GRU models achieve lower RMSE values compared to their non-regularized counterparts, indicating better accuracy and predictive power.
-However, for the RNN model, regularization seems to have a negative impact on performance. The regularized RNN model has a higher validation RMSE (1.171465) compared to the non-regularized RNN model (0.840821).
-These results suggest that regularization techniques are effective in improving the performance of LSTM and GRU models for crude oil price prediction. However, the simple RNN model does not benefit from regularization in this case.
-
-
-
+Similar to the Electricity Prices and GDP, regularization has a negative effect on the performance of the models for CPI forecasting. The non-regularized RNN, GRU, and LSTM models achieve significantly lower validation RMSE values compared to regularized. This indicates that the models are able to capture the underlying patterns in the CPI data more effectively without regularization.
 
 
 
 ## 8.3 How far into the future can the deep learning model accurately predict the future?
 
 
-The ability of the deep learning models to accurately predict future crude oil prices depends on various factors, such as the quality and quantity of historical data, the complexity of the underlying patterns, and the stability of the market dynamics.
-Based on the results, we can see that the models achieve relatively low validation RMSE values, indicating good predictive performance. However, it's important to note that the results shown are for a specific validation set, which likely covers a limited time period.
-
+The ability of the deep learning models to accurately predict future crude oil prices depends on various factors, such as the quality and quantity of historical data, the complexity of the underlying patterns, and the stability of the market dynamics. Based on the results, we can see that the models achieve relatively low validation RMSE values, indicating good predictive performance. 
 
 
 
 
 ## 8.4. How does your deep learning modeling compare to the traditional single-variable time-series ARMA/ARIMA models from HW-3?
 
-Now, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.
 
+::: panel-tabset
+
+## Crude Oil
+
+**From the ARIMA model** results for crude oil, we have:
+
+Training set RMSE: 0.07735308
+
+**From Deep Learning method:**
+
+GRU (Regularized): 0.764183
+RNN (Regularized): 0.794744
+LSTM (Regularized): 0.798898
+LSTM (No Regularization): 0.832182
+RNN (No Regularization): 0.841763
+GRU (No Regularization): 0.856426
+
+
+Comparing these results, we can observe that the ARIMA model achieves a significantly lower RMSE value (0.07735308) compared to the deep learning models. This suggests that for crude oil price forecasting, the traditional single-variable time-series ARIMA model outperforms the deep learning models.
+
+
+
+
+## Natural Gas
+
+**From the ARIMA model** results for Natural Gas, we have:
+
+Training set RMSE: 0.1178166
+
+**From Deep Learning method:**
+
+LSTM (Regularized): 0.898807
+GRU (Regularized): 0.906645
+GRU (No Regularization): 1.103939
+RNN (Regularized): 1.136816
+LSTM (No Regularization): 1.152883
+RNN (No Regularization): 1.155457
+
+
+Comparing these results, we can observe that the ARIMA model achieves a significantly lower RMSE value (0.1178166) compared to the deep learning models. This suggests that for Natural Gas price forecasting, the traditional single-variable time-series ARIMA model outperforms the deep learning models.
+
+
+## Electricity
+
+**From the ARIMA model** results for Electricity prives, we have:
+
+Training set RMSE: 0.01863433
+
+**From Deep Learning method:**
+
+GRU (Regularized): 0.764183
+RNN (Regularized): 0.794744
+LSTM (Regularized): 0.798898
+LSTM (No Regularization): 0.832182
+RNN (No Regularization): 0.841763
+GRU (No Regularization): 0.856426
+
+
+Comparing these results, we can observe that the ARIMA model achieves a significantly lower RMSE value (0.01863433) compared to the deep learning models. This suggests that for electricity price forecasting, the traditional single-variable time-series ARIMA model outperforms the deep learning models.
+
+## GDP
+
+**From the ARIMA model** results for GDP, we have:
+
+Training set RMSE: 0.01250364
+
+**From Deep Learning method:**
+
+RNN (No Regularization): 0.57151
+GRU (No Regularization): 0.589705
+LSTM (No Regularization): 0.601461
+GRU (Regularized): 1.502871
+LSTM (Regularized): 1.640242
+RNN (Regularized): 1.904983
+
+
+Comparing these results, we can observe that the ARIMA model achieves a significantly lower RMSE value (0.01250364) compared to the deep learning models. This suggests that for GDP forecasting, the traditional single-variable time-series ARIMA model outperforms the deep learning models.
+
+
+## CPI
+
+**From the ARIMA model** results for CPI, we have:
+
+Training set RMSE: 0.002346106
+
+**From Deep Learning method:**
+
+GRU (No Regularization): 0.580746
+RNN (No Regularization): 0.633293
+LSTM (No Regularization): 0.706091
+RNN (Regularized): 1.051578
+LSTM (Regularized): 1.398939
+GRU (Regularized): 1.523046
+
+
+Comparing these results, we can observe that the ARIMA model achieves a significantly lower RMSE value (0.002346106) compared to the deep learning models. This suggests that for CPI forecasting, the traditional single-variable time-series ARIMA model outperforms the deep learning models.
+
+
+
+
+
+:::
+
+
+
+In summary, across all the datasets (Crude Oil, Natural Gas, Electricity, GDP, and CPI), the traditional single-variable time-series ARIMA models consistently outperform the deep learning models in terms of RMSE. The ARIMA models achieve significantly lower RMSE values compared to the deep learning models, indicating their superior predictive accuracy for these specific datasets.
 
 
 
 
 # 9. Write a discussion paragraph Comparing your models (use RMSE) and forecasts from these sections with your Deep Learning Models.
 
-Now, we will move forward to fit an ARCH/GARCH model to the stock price data. The first step in this process is to prepare the time series by calculating the stock price returns, which are typically used in financial time series modeling because they are more likely to exhibit stationary properties—a key requirement for ARCH/GARCH models.
+
+When comparing the traditional ARIMA models with the deep learning models (RNNs, LSTMs, and GRUs) for forecasting various economic variables such as crude oil prices, natural gas prices, electricity prices, GDP, and CPI, a clear pattern emerges. Across all these datasets, the ARIMA models consistently outperform the deep learning models as seen by their lower RMSE values.
+
+For crude oil price forecasting, the ARIMA model achieves an RMSE of 0.07735308, while the best-performing deep learning model (GRU with regularization) has an RMSE of 0.764183. Similarly, for natural gas prices, the ARIMA model's RMSE is 0.1178166, considerably lower than the LSTM with regularization, which has an RMSE of 0.898807.
+
+These results suggest that, the traditional ARIMA models are more effective in capturing the underlying patterns and making accurate predictions compared to the more complex deep learning approaches. While deep learning models have shown great success in various domains, it appears that the simpler ARIMA models are better suited for these specific time-series forecasting problems. 
+
+
+
+
+<a href="financial-ts-models.qmd" class="previous-page-link" style="float: left;">&larr; Previous Page: Financial TS</a>
+
+
+
+<a href="conclusions.qmd" class="next-page-link" style="float: right;">Next Page: Conclusion &rarr;</a>
+
 
 
