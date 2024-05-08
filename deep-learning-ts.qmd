@@ -66,13 +66,6 @@ from sklearn.model_selection import RandomizedSearchCV
 ```
 
 
-
-
-
-
-
-
-
 ```{python, warning=FALSE, message=FALSE, echo=FALSE}
 #| code-fold: true
 #| code-summary: 'Read data'
@@ -146,9 +139,6 @@ cpi_log_ts = pd.Series(cpi_data['LOG_CPI'].values, index=pd.date_range(start=f'{
 
 
 ```
-
-
-
 
 
 
@@ -593,54 +583,6 @@ print(f"Test shape: {oil_test_batches_x.shape}, {oil_test_batches_y.shape}")
 
 ```
 
-### Hyper parameter tuning to get the best parmeters
-
-
-```{python}
-from scikeras.wrappers import KerasRegressor
-from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import SimpleRNN, Dense
-from sklearn.model_selection import RandomizedSearchCV
-import numpy as np
-
-# Define the number of features
-#features = 1
-
-# Model definition function
-#def get_model(optimizer="adam", units=50, L2=0.01):
-#    model = Sequential()
-#    model.add(SimpleRNN(units, input_shape=(lookback, features), activation='relu', 
-#                        recurrent_regularizer=regularizers.l2(L2)))
-#    model.add(Dense(1, activation='linear'))
-#    model.compile(loss="mse", optimizer=optimizer)
-#    return model
-
-# Create the SciKeras wrapper and specify training-related parameters
-#model = KerasRegressor(model=get_model, model__optimizer="adam", model__units=50, model__L2=0.01)
-
-# Define the hyperparameter space to search
-#param_dist = {
-#    'model__optimizer': ['adam', 'rmsprop'],
-#    'model__units': [30, 50, 100],
-#    'model__L2': [0.01, 0.001, 0.0001],
-#    'batch_size': [32, 64, 128],
-#    'epochs': [50, 100, 200]
-#}
-
-#X_train = oil_train_batches_x
-#y_train = oil_train_batches_y
-
-# Initialize and fit the RandomizedSearchCV
-#random_search = RandomizedSearchCV(estimator=model, param_distributions=param_dist, n_iter=10, cv=3)
-#random_search.fit(X_train, y_train)
-
-# Print the best score and parameters
-#print("Best score: %f using %s" % (random_search.best_score_, random_search.best_params_))
-
-```
-
-
-
 
 ## Natural Gas
 
@@ -698,53 +640,6 @@ print(f"Train shape: {gas_train_batches_x.shape}, {gas_train_batches_y.shape}")
 print(f"Test shape: {gas_test_batches_x.shape}, {gas_test_batches_y.shape}")
 
 ```
-
-### Hyper parameter tuning to get the best parmeters
-
-
-```{python}
-# from scikeras.wrappers import KerasRegressor
-# from tensorflow.keras.models import Sequential
-# from tensorflow.keras.layers import SimpleRNN, Dense
-# from sklearn.model_selection import RandomizedSearchCV
-# import numpy as np
-# 
-# # Define the number of features
-# features = 1
-# 
-# # Model definition function
-# def get_model(optimizer="adam", units=50, L2=0.01):
-#     model = Sequential()
-#     model.add(SimpleRNN(units, input_shape=(lookback, features), activation='relu',
-#                         recurrent_regularizer=regularizers.l2(L2)))
-#     model.add(Dense(1, activation='linear'))
-#     model.compile(loss="mse", optimizer=optimizer)
-#     return model
-# 
-# # Create the SciKeras wrapper and specify training-related parameters
-# model = KerasRegressor(model=get_model, model__optimizer="adam", model__units=50, model__L2=0.01)
-# 
-# # Define the hyperparameter space to search
-# param_dist = {
-#     'model__optimizer': ['adam', 'rmsprop'],
-#     'model__units': [30, 50, 100],
-#     'model__L2': [0.01, 0.001, 0.0001],
-#     'batch_size': [32, 64, 128],
-#     'epochs': [50, 100, 200]
-# }
-# 
-# X_train = gas_train_batches_x
-# y_train = gas_train_batches_y
-# 
-# # Initialize and fit the RandomizedSearchCV
-# random_search = RandomizedSearchCV(estimator=model, param_distributions=param_dist, n_iter=10, cv=3)
-# random_search.fit(X_train, y_train)
-# 
-# # Print the best score and parameters
-# print("Best score: %f using %s" % (random_search.best_score_, random_search.best_params_))
-
-```
-
 
 
 ## Electricity
@@ -806,6 +701,8 @@ print(f"Test shape: {electricity_test_batches_x.shape}, {electricity_test_batche
 
 ```
 
+### Hyper parameter tuning to get the best parmeters
+
 
 
 ## GDP
@@ -866,7 +763,6 @@ print(f"Test shape: {gdp_test_batches_x.shape}, {gdp_test_batches_y.shape}")
 ```
 
 
-
 ## CPI
 
 
@@ -924,6 +820,9 @@ print(f"Test shape: {cpi_test_batches_x.shape}, {cpi_test_batches_y.shape}")
 
 
 ```
+
+
+
 
 ::: 
 
@@ -983,8 +882,6 @@ model_reg = Sequential([
      
 ```
 
-
-
 ```{python, warning=FALSE, message=FALSE, echo=TRUE}
 # MODEL SUMMARY
 print("Model without regularization:")
@@ -994,8 +891,6 @@ print("Model with regularization:")
 print(model_reg.summary())
 
 ```
-
-
 
 
 ```{python, warning=FALSE, message=FALSE, echo=FALSE}
@@ -1067,8 +962,6 @@ history_plot_separate(history_oil_no_reg, history_oil_reg)
 ```
 
 
-
-
 ```{python, warning=FALSE, message=FALSE, echo=TRUE}
 # PREDICTIONS
 Ytp_oil_no_reg = model_no_reg.predict(oil_train_batches_x)
@@ -1138,9 +1031,6 @@ train_mse_reg, train_mae_reg, val_mse_reg, val_mae_reg = regression_report(oil_t
 
 
 
-
-
-
 ## Natural Gas
 
 ```{python, warning=FALSE, message=FALSE, echo=FALSE}
@@ -1186,8 +1076,6 @@ model_reg_gas = Sequential([
 
 ```
 
-
-
 ```{python, warning=FALSE, message=FALSE, echo=TRUE}
 
 # MODEL SUMMARY
@@ -1198,7 +1086,6 @@ print("Model with regularization:")
 print(model_reg_gas.summary())
 
 ```
-
 
 ```{python, warning=FALSE, message=FALSE, echo=TRUE}
 
@@ -1265,9 +1152,6 @@ def history_plot_separate(history_no_reg, history_reg):
 history_plot_separate(history_gas_no_reg, history_gas_reg)
 
 ```
-
-
-
 
 ```{python, warning=FALSE, message=FALSE, echo=TRUE}
 # PREDICTIONS
@@ -1338,47 +1222,589 @@ train_mse_reg_gas, train_mae_reg_gas, val_mse_reg_gas, val_mae_reg_gas = regress
 
 
 
-
-
-
-
 ## Electricity
 
 
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
+```{python, warning=FALSE, message=FALSE, echo=FALSE}
+
+optimizer = "rmsprop"
+loss_function = "MeanSquaredError"
+learning_rate = 0.001
+number_of_epochs = 200 # Update based on the best hyperparameters
+L2 = 0.01  # Update based on the best hyperparameters
+input_shape = (electricity_train_batches_x.shape[1], 1)  
+
+
+# ------ Choose the batch size ------
+#batch_size=1                       # stocastic training
+#batch_size=int(len(Xt1_oil)/2.)    # mini-batch training
+batch_size = 128  # Update based on the best hyperparameters
+
+# BUILD MODEL
+recurrent_hidden_units = 100  # Update based on the best hyperparameters
+
+
+# CREATE MODEL
+model_no_reg = keras.Sequential()
+
+# ADD RECURRENT LAYER
+
+# #COMMENT/UNCOMMENT TO USE RNN, LSTM,GRU
+#model.add(LSTM(
+#model.add(GRU(
+model_no_reg_elec = Sequential([
+    Input(shape=input_shape),  # Add Input layer to define input shape
+    SimpleRNN(units=recurrent_hidden_units, return_sequences=False, activation='relu'),
+    Dense(units=1, activation='linear')
+])
+
+#CREATE MODEL WITH REGULARIZATION
+model_reg_elec = Sequential([
+    Input(shape=input_shape),  # Add Input layer to define input shape
+    SimpleRNN(units=recurrent_hidden_units, return_sequences=False, activation='relu',
+              recurrent_regularizer=regularizers.l2(L2)),
+    Dense(units=1, activation='linear')
+])
 
 ```
+
+
+
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
+
+# MODEL SUMMARY
+print("Model without regularization:")
+print(model_no_reg_elec.summary())
+
+print("Model with regularization:")
+print(model_reg_elec.summary())
+
+```
+
+
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
+
+# COMPILING THE MODELS
+model_no_reg_elec.compile(optimizer=RMSprop(learning_rate=learning_rate), loss=loss_function)
+model_reg_elec.compile(optimizer=RMSprop(learning_rate=learning_rate), loss=loss_function)
+
+early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+
+
+# TRAINING THE MODELS
+history_elec_no_reg = model_no_reg_elec.fit(electricity_train_batches_x,
+                                      electricity_train_batches_y,
+                                      epochs=number_of_epochs,
+                                      batch_size=batch_size,
+                                      verbose=False,
+                                      validation_data=(electricity_test_batches_x, electricity_test_batches_y),
+                                      callbacks=[early_stopping])
+
+history_elec_reg = model_reg_elec.fit(electricity_train_batches_x,
+                                electricity_train_batches_y,
+                                epochs=number_of_epochs,
+                                batch_size=batch_size,
+                                verbose=False,
+                                validation_data=(electricity_test_batches_x, electricity_test_batches_y),
+                                callbacks=[early_stopping])
+
+def history_plot_separate(history_no_reg, history_reg):
+    # Get the history dictionaries
+    history_dict_no_reg = history_no_reg.history
+    history_dict_reg = history_reg.history
+    
+    # Get the loss values and epochs for both models
+    loss_values_no_reg = history_dict_no_reg['loss']
+    val_loss_values_no_reg = history_dict_no_reg['val_loss']
+    loss_values_reg = history_dict_reg['loss']
+    val_loss_values_reg = history_dict_reg['val_loss']
+    
+    # Determine the number of epochs the training actually ran for
+    epochs_no_reg = range(1, len(loss_values_no_reg) + 1)
+    epochs_reg = range(1, len(loss_values_reg) + 1)
+    
+    # Plot for non-regularized model
+    plt.figure()
+    plt.plot(epochs_no_reg, loss_values_no_reg, 'bo-', label='Training Loss (No Reg)')
+    plt.plot(epochs_no_reg, val_loss_values_no_reg, 'b-', label='Validation Loss (No Reg)')
+    plt.title('Training and Validation Loss for Non-Regularized Model')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.show()
+
+    # Plot for regularized model
+    plt.figure()
+    plt.plot(epochs_reg, loss_values_reg, 'ro-', label='Training Loss (Reg)')
+    plt.plot(epochs_reg, val_loss_values_reg, 'r-', label='Validation Loss (Reg)')
+    plt.title('Training and Validation Loss for Regularized Model')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.show()
+
+# Call the function to plot the history separately
+history_plot_separate(history_elec_no_reg, history_elec_reg)
+
+```
+
+
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
+# PREDICTIONS
+Ytp_elec_no_reg = model_no_reg_elec.predict(electricity_train_batches_x)
+Yvp_elec_no_reg = model_no_reg_elec.predict(electricity_test_batches_x)
+Ytp_elec_reg = model_reg_elec.predict(electricity_train_batches_x)
+Yvp_elec_reg = model_reg_elec.predict(electricity_test_batches_x)
+
+def regression_report(yt, ytp, yv, yvp, model_name):
+    print(f"--------- Regression Report ({model_name}) ---------")
+    print("TRAINING:")
+    train_mse = np.mean((yt - ytp) ** 2)
+    train_mae = np.mean(np.abs(yt - ytp))
+    print("MSE", train_mse)
+    print("MAE", train_mae)
+
+    # PARITY PLOT
+    fig, ax = plt.subplots()
+    ax.plot(yt, ytp, 'ro')
+    ax.plot(yt, yt, 'b-')
+    ax.set(xlabel='Actual Electricity Prices', ylabel='Predicted Electricity Prices',
+           title=f'Training Data Parity Plot ({model_name})')
+    plt.show()
+
+    # PLOT PART OF THE PREDICTED TIME-SERIES
+    frac_plot = 1.0
+    upper = int(frac_plot * yt.shape[0])
+    fig, ax = plt.subplots()
+    ax.plot(yt[0:upper], 'b-')
+    ax.plot(ytp[0:upper], 'r-', alpha=0.5)
+    ax.plot(ytp[0:upper], 'ro', alpha=0.25)
+    ax.set(xlabel='Time', ylabel='Electricity Prices (Blue=Actual & Red=Prediction)',
+           title=f'Training: Time-Series Prediction ({model_name})')
+    plt.show()
+
+    print("VALIDATION:")
+    val_mse = np.mean((yv - yvp) ** 2)
+    val_mae = np.mean(np.abs(yv - yvp))
+    print("MSE", val_mse)
+    print("MAE", val_mae)
+
+    # PARITY PLOT
+    fig, ax = plt.subplots()
+    ax.plot(yv, yvp, 'ro')
+    ax.plot(yv, yv, 'b-')
+    ax.set(xlabel='Actual Electricity Prices', ylabel='Predicted Electricity Prices',
+           title=f'Validation Data Parity Plot ({model_name})')
+    plt.show()
+
+    # PLOT PART OF THE PREDICTED TIME-SERIES
+    upper = int(frac_plot * yv.shape[0])
+    fig, ax = plt.subplots()
+    ax.plot(yv[0:upper], 'b-')
+    ax.plot(yvp[0:upper], 'r-', alpha=0.5)
+    ax.plot(yvp[0:upper], 'ro', alpha=0.25)
+    ax.set(xlabel='Time', ylabel='Electricity Prices (Blue=Actual & Red=Prediction)',
+           title=f'Validation: Time-Series Prediction ({model_name})')
+    plt.show()
+
+    return train_mse, train_mae, val_mse, val_mae
+
+# Regression report for the non-regularized model
+train_mse_no_reg_elec, train_mae_no_reg_elec, val_mse_no_reg_elec, val_mae_no_reg_elec = regression_report(electricity_train_batches_y, Ytp_elec_no_reg, electricity_test_batches_y, Yvp_elec_no_reg, "Non-Regularized Model")
+
+# Regression report for the regularized model
+train_mse_reg_elec, train_mae_reg_elec, val_mse_reg_elec, val_mae_reg_elec = regression_report(electricity_train_batches_y, Ytp_elec_reg, electricity_test_batches_y, Yvp_elec_reg, "Regularized Model")
+```
+
 
 
 
 ## GDP
 
 
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
+```{python, warning=FALSE, message=FALSE, echo=FALSE}
+
+optimizer = "adam"
+loss_function = "MeanSquaredError"
+learning_rate = 0.001
+number_of_epochs = 50 # Update based on the best hyperparameters
+L2 = 0.0001  # Update based on the best hyperparameters
+input_shape = (gdp_train_batches_x.shape[1], 1)  
+
+
+# ------ Choose the batch size ------
+#batch_size=1                       # stocastic training
+#batch_size=int(len(Xt1_oil)/2.)    # mini-batch training
+batch_size = 128  # Update based on the best hyperparameters
+
+# BUILD MODEL
+recurrent_hidden_units = 30  # Update based on the best hyperparameters
+
+
+# CREATE MODEL
+model_no_reg = keras.Sequential()
+
+# ADD RECURRENT LAYER
+
+# #COMMENT/UNCOMMENT TO USE RNN, LSTM,GRU
+#model.add(LSTM(
+#model.add(GRU(
+model_no_reg_gdp = Sequential([
+    Input(shape=input_shape),  # Add Input layer to define input shape
+    SimpleRNN(units=recurrent_hidden_units, return_sequences=False, activation='relu'),
+    Dense(units=1, activation='linear')
+])
+
+#CREATE MODEL WITH REGULARIZATION
+model_reg_gdp = Sequential([
+    Input(shape=input_shape),  # Add Input layer to define input shape
+    SimpleRNN(units=recurrent_hidden_units, return_sequences=False, activation='relu',
+              recurrent_regularizer=regularizers.l2(L2)),
+    Dense(units=1, activation='linear')
+])
 
 ```
+
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
+
+# MODEL SUMMARY
+print("Model without regularization:")
+print(model_no_reg_gdp.summary())
+
+print("Model with regularization:")
+print(model_reg_gdp.summary())
+
+```
+
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
+
+# COMPILING THE MODELS
+model_no_reg_gdp.compile(optimizer=RMSprop(learning_rate=learning_rate), loss=loss_function)
+model_reg_gdp.compile(optimizer=RMSprop(learning_rate=learning_rate), loss=loss_function)
+
+early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+
+
+# TRAINING THE MODELS
+history_gdp_no_reg = model_no_reg_gdp.fit(gdp_train_batches_x,
+                                      gdp_train_batches_y,
+                                      epochs=number_of_epochs,
+                                      batch_size=batch_size,
+                                      verbose=False,
+                                      validation_data=(gdp_test_batches_x, gdp_test_batches_y),
+                                      callbacks=[early_stopping])
+
+history_gdp_reg = model_reg_gdp.fit(gdp_train_batches_x,
+                                gdp_train_batches_y,
+                                epochs=number_of_epochs,
+                                batch_size=batch_size,
+                                verbose=False,
+                                validation_data=(gdp_test_batches_x, gdp_test_batches_y),
+                                callbacks=[early_stopping])
+
+def history_plot_separate(history_no_reg, history_reg):
+    # Get the history dictionaries
+    history_dict_no_reg = history_no_reg.history
+    history_dict_reg = history_reg.history
+    
+    # Get the loss values and epochs for both models
+    loss_values_no_reg = history_dict_no_reg['loss']
+    val_loss_values_no_reg = history_dict_no_reg['val_loss']
+    loss_values_reg = history_dict_reg['loss']
+    val_loss_values_reg = history_dict_reg['val_loss']
+    
+    # Determine the number of epochs the training actually ran for
+    epochs_no_reg = range(1, len(loss_values_no_reg) + 1)
+    epochs_reg = range(1, len(loss_values_reg) + 1)
+    
+    # Plot for non-regularized model
+    plt.figure()
+    plt.plot(epochs_no_reg, loss_values_no_reg, 'bo-', label='Training Loss (No Reg)')
+    plt.plot(epochs_no_reg, val_loss_values_no_reg, 'b-', label='Validation Loss (No Reg)')
+    plt.title('Training and Validation Loss for Non-Regularized Model')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.show()
+
+    # Plot for regularized model
+    plt.figure()
+    plt.plot(epochs_reg, loss_values_reg, 'ro-', label='Training Loss (Reg)')
+    plt.plot(epochs_reg, val_loss_values_reg, 'r-', label='Validation Loss (Reg)')
+    plt.title('Training and Validation Loss for Regularized Model')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.show()
+
+# Call the function to plot the history separately
+history_plot_separate(history_gdp_no_reg, history_gdp_reg)
+
+```
+
+
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
+# PREDICTIONS
+Ytp_gdp_no_reg = model_no_reg_gdp.predict(gdp_train_batches_x)
+Yvp_gdp_no_reg = model_no_reg_gdp.predict(gdp_test_batches_x)
+Ytp_gdp_reg = model_reg_gdp.predict(gdp_train_batches_x)
+Yvp_gdp_reg = model_reg_gdp.predict(gdp_test_batches_x)
+
+def regression_report(yt, ytp, yv, yvp, model_name):
+    print(f"--------- Regression Report ({model_name}) ---------")
+    print("TRAINING:")
+    train_mse = np.mean((yt - ytp) ** 2)
+    train_mae = np.mean(np.abs(yt - ytp))
+    print("MSE", train_mse)
+    print("MAE", train_mae)
+
+    # PARITY PLOT
+    fig, ax = plt.subplots()
+    ax.plot(yt, ytp, 'ro')
+    ax.plot(yt, yt, 'b-')
+    ax.set(xlabel='Actual GDP', ylabel='Predicted GDP',
+           title=f'Training Data Parity Plot ({model_name})')
+    plt.show()
+
+    # PLOT PART OF THE PREDICTED TIME-SERIES
+    frac_plot = 1.0
+    upper = int(frac_plot * yt.shape[0])
+    fig, ax = plt.subplots()
+    ax.plot(yt[0:upper], 'b-')
+    ax.plot(ytp[0:upper], 'r-', alpha=0.5)
+    ax.plot(ytp[0:upper], 'ro', alpha=0.25)
+    ax.set(xlabel='Time', ylabel='GDP (Blue=Actual & Red=Prediction)',
+           title=f'Training: Time-Series Prediction ({model_name})')
+    plt.show()
+
+    print("VALIDATION:")
+    val_mse = np.mean((yv - yvp) ** 2)
+    val_mae = np.mean(np.abs(yv - yvp))
+    print("MSE", val_mse)
+    print("MAE", val_mae)
+
+    # PARITY PLOT
+    fig, ax = plt.subplots()
+    ax.plot(yv, yvp, 'ro')
+    ax.plot(yv, yv, 'b-')
+    ax.set(xlabel='Actual GDP', ylabel='Predicted GDP',
+           title=f'Validation Data Parity Plot ({model_name})')
+    plt.show()
+
+    # PLOT PART OF THE PREDICTED TIME-SERIES
+    upper = int(frac_plot * yv.shape[0])
+    fig, ax = plt.subplots()
+    ax.plot(yv[0:upper], 'b-')
+    ax.plot(yvp[0:upper], 'r-', alpha=0.5)
+    ax.plot(yvp[0:upper], 'ro', alpha=0.25)
+    ax.set(xlabel='Time', ylabel='GDP (Blue=Actual & Red=Prediction)',
+           title=f'Validation: Time-Series Prediction ({model_name})')
+    plt.show()
+
+    return train_mse, train_mae, val_mse, val_mae
+
+# Regression report for the non-regularized model
+train_mse_no_reg_gdp, train_mae_no_reg_gdp, val_mse_no_reg_gdp, val_mae_no_reg_gdp = regression_report(gdp_train_batches_y, Ytp_gdp_no_reg, gdp_test_batches_y, Yvp_gdp_no_reg, "Non-Regularized Model")
+
+# Regression report for the regularized model
+train_mse_reg_gdp, train_mae_reg_gdp, val_mse_reg_gdp, val_mae_reg_gdp = regression_report(gdp_train_batches_y, Ytp_gdp_reg, gdp_test_batches_y, Yvp_gdp_reg, "Regularized Model")
+```
+
+
 
 
 
 ## CPI
 
 
-```{r, warning=FALSE, message=FALSE, echo=TRUE}
-#| code-fold: true
-#| code-summary: 'Code'
-#| warning: false
-#| output: true
+```{python, warning=FALSE, message=FALSE, echo=FALSE}
+
+optimizer = "rmsprop"
+loss_function = "MeanSquaredError"
+learning_rate = 0.001
+number_of_epochs = 200 # Update based on the best hyperparameters
+L2 = 0.01  # Update based on the best hyperparameters
+input_shape = (cpi_train_batches_x.shape[1], 1)  
+
+
+# ------ Choose the batch size ------
+#batch_size=1                       # stocastic training
+#batch_size=int(len(Xt1_oil)/2.)    # mini-batch training
+batch_size = 64  # Update based on the best hyperparameters
+
+# BUILD MODEL
+recurrent_hidden_units = 50  # Update based on the best hyperparameters
+
+
+# CREATE MODEL
+model_no_reg = keras.Sequential()
+
+# ADD RECURRENT LAYER
+
+# #COMMENT/UNCOMMENT TO USE RNN, LSTM,GRU
+#model.add(LSTM(
+#model.add(GRU(
+model_no_reg_cpi = Sequential([
+    Input(shape=input_shape),  # Add Input layer to define input shape
+    SimpleRNN(units=recurrent_hidden_units, return_sequences=False, activation='relu'),
+    Dense(units=1, activation='linear')
+])
+
+#CREATE MODEL WITH REGULARIZATION
+model_reg_cpi = Sequential([
+    Input(shape=input_shape),  # Add Input layer to define input shape
+    SimpleRNN(units=recurrent_hidden_units, return_sequences=False, activation='relu',
+              recurrent_regularizer=regularizers.l2(L2)),
+    Dense(units=1, activation='linear')
+])
 
 ```
 
+
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
+
+# MODEL SUMMARY
+print("Model without regularization:")
+print(model_no_reg_cpi.summary())
+
+print("Model with regularization:")
+print(model_reg_cpi.summary())
+
+```
+
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
+
+# COMPILING THE MODELS
+model_no_reg_cpi.compile(optimizer=RMSprop(learning_rate=learning_rate), loss=loss_function)
+model_reg_cpi.compile(optimizer=RMSprop(learning_rate=learning_rate), loss=loss_function)
+
+early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+
+
+# TRAINING THE MODELS
+history_cpi_no_reg = model_no_reg_cpi.fit(cpi_train_batches_x,
+                                      cpi_train_batches_y,
+                                      epochs=number_of_epochs,
+                                      batch_size=batch_size,
+                                      verbose=False,
+                                      validation_data=(cpi_test_batches_x, cpi_test_batches_y),
+                                      callbacks=[early_stopping])
+
+history_cpi_reg = model_reg_cpi.fit(cpi_train_batches_x,
+                                cpi_train_batches_y,
+                                epochs=number_of_epochs,
+                                batch_size=batch_size,
+                                verbose=False,
+                                validation_data=(cpi_test_batches_x, cpi_test_batches_y),
+                                callbacks=[early_stopping])
+
+def history_plot_separate(history_no_reg, history_reg):
+    # Get the history dictionaries
+    history_dict_no_reg = history_no_reg.history
+    history_dict_reg = history_reg.history
+    
+    # Get the loss values and epochs for both models
+    loss_values_no_reg = history_dict_no_reg['loss']
+    val_loss_values_no_reg = history_dict_no_reg['val_loss']
+    loss_values_reg = history_dict_reg['loss']
+    val_loss_values_reg = history_dict_reg['val_loss']
+    
+    # Determine the number of epochs the training actually ran for
+    epochs_no_reg = range(1, len(loss_values_no_reg) + 1)
+    epochs_reg = range(1, len(loss_values_reg) + 1)
+    
+    # Plot for non-regularized model
+    plt.figure()
+    plt.plot(epochs_no_reg, loss_values_no_reg, 'bo-', label='Training Loss (No Reg)')
+    plt.plot(epochs_no_reg, val_loss_values_no_reg, 'b-', label='Validation Loss (No Reg)')
+    plt.title('Training and Validation Loss for Non-Regularized Model')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.show()
+
+    # Plot for regularized model
+    plt.figure()
+    plt.plot(epochs_reg, loss_values_reg, 'ro-', label='Training Loss (Reg)')
+    plt.plot(epochs_reg, val_loss_values_reg, 'r-', label='Validation Loss (Reg)')
+    plt.title('Training and Validation Loss for Regularized Model')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.show()
+
+# Call the function to plot the history separately
+history_plot_separate(history_cpi_no_reg, history_cpi_reg)
+
+```
+
+
+```{python, warning=FALSE, message=FALSE, echo=TRUE}
+# PREDICTIONS
+Ytp_cpi_no_reg = model_no_reg_cpi.predict(cpi_train_batches_x)
+Yvp_cpi_no_reg = model_no_reg_cpi.predict(cpi_test_batches_x)
+Ytp_cpi_reg = model_reg_cpi.predict(cpi_train_batches_x)
+Yvp_cpi_reg = model_reg_cpi.predict(cpi_test_batches_x)
+
+def regression_report(yt, ytp, yv, yvp, model_name):
+    print(f"--------- Regression Report ({model_name}) ---------")
+    print("TRAINING:")
+    train_mse = np.mean((yt - ytp) ** 2)
+    train_mae = np.mean(np.abs(yt - ytp))
+    print("MSE", train_mse)
+    print("MAE", train_mae)
+
+    # PARITY PLOT
+    fig, ax = plt.subplots()
+    ax.plot(yt, ytp, 'ro')
+    ax.plot(yt, yt, 'b-')
+    ax.set(xlabel='Actual cpi', ylabel='Predicted CPI',
+           title=f'Training Data Parity Plot ({model_name})')
+    plt.show()
+
+    # PLOT PART OF THE PREDICTED TIME-SERIES
+    frac_plot = 1.0
+    upper = int(frac_plot * yt.shape[0])
+    fig, ax = plt.subplots()
+    ax.plot(yt[0:upper], 'b-')
+    ax.plot(ytp[0:upper], 'r-', alpha=0.5)
+    ax.plot(ytp[0:upper], 'ro', alpha=0.25)
+    ax.set(xlabel='Time', ylabel='cpi (Blue=Actual & Red=Prediction)',
+           title=f'Training: Time-Series Prediction ({model_name})')
+    plt.show()
+
+    print("VALIDATION:")
+    val_mse = np.mean((yv - yvp) ** 2)
+    val_mae = np.mean(np.abs(yv - yvp))
+    print("MSE", val_mse)
+    print("MAE", val_mae)
+
+    # PARITY PLOT
+    fig, ax = plt.subplots()
+    ax.plot(yv, yvp, 'ro')
+    ax.plot(yv, yv, 'b-')
+    ax.set(xlabel='Actual CPI', ylabel='Predicted CPI',
+           title=f'Validation Data Parity Plot ({model_name})')
+    plt.show()
+
+    # PLOT PART OF THE PREDICTED TIME-SERIES
+    upper = int(frac_plot * yv.shape[0])
+    fig, ax = plt.subplots()
+    ax.plot(yv[0:upper], 'b-')
+    ax.plot(yvp[0:upper], 'r-', alpha=0.5)
+    ax.plot(yvp[0:upper], 'ro', alpha=0.25)
+    ax.set(xlabel='Time', ylabel='CPI (Blue=Actual & Red=Prediction)',
+           title=f'Validation: Time-Series Prediction ({model_name})')
+    plt.show()
+
+    return train_mse, train_mae, val_mse, val_mae
+
+# Regression report for the non-regularized model
+train_mse_no_reg_cpi, train_mae_no_reg_cpi, val_mse_no_reg_cpi, val_mae_no_reg_cpi = regression_report(cpi_train_batches_y, Ytp_cpi_no_reg, cpi_test_batches_y, Yvp_cpi_no_reg, "Non-Regularized Model")
+
+# Regression report for the regularized model
+train_mse_reg_cpi, train_mae_reg_cpi, val_mse_reg_cpi, val_mae_reg_cpi = regression_report(cpi_train_batches_y, Ytp_cpi_reg, cpi_test_batches_y, Yvp_cpi_reg, "Regularized Model")
+```
 
 :::
 
